@@ -1,6 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
-import 'index.dart';
+import 'package:go_router/go_router.dart';
+import 'package:i18n_tool/lifecycle.dart';
+import 'package:i18n_tool/r.dart';
+import 'package:i18n_tool/routes.dart';
+import 'package:rettulf/rettulf.dart';
 
 class I18nToolApp extends StatefulWidget {
   const I18nToolApp({super.key});
@@ -10,12 +14,28 @@ class I18nToolApp extends StatefulWidget {
 }
 
 class _I18nToolAppState extends State<I18nToolApp> {
+  final $routingConfig = ValueNotifier(buildRoutingConfig());
+  late final router = _buildRouter($routingConfig);
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: const PlatformMenuBarExample(),
-      ),
+    return MaterialApp.router(
+      title: R.appName,
+      routerConfig: router,
+      themeMode: ThemeMode.system,
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      builder: (ctx, child) => child ?? const SizedBox(),
+    );
+  }
+
+  GoRouter _buildRouter(ValueNotifier<RoutingConfig> $routingConfig) {
+    return GoRouter.routingConfig(
+      routingConfig: $routingConfig,
+      navigatorKey: $key,
+      initialLocation: "/",
+      debugLogDiagnostics: kDebugMode,
+      errorBuilder: (ctx, state) => Scaffold(body: "Error".text()),
     );
   }
 }
