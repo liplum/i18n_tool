@@ -1,9 +1,10 @@
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:i18n_tool/lifecycle.dart';
 import 'package:i18n_tool/r.dart';
-import 'package:i18n_tool/routes.dart';
+import 'package:i18n_tool/page/routes.dart';
 import 'package:rettulf/rettulf.dart';
 
 class I18nToolApp extends StatefulWidget {
@@ -19,12 +20,12 @@ class _I18nToolAppState extends State<I18nToolApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
+    return FluentApp.router(
       title: R.appName,
       routerConfig: router,
       themeMode: ThemeMode.system,
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
+      theme: FluentThemeData.light(),
+      darkTheme: FluentThemeData.dark(),
       builder: (ctx, child) => child ?? const SizedBox(),
     );
   }
@@ -35,7 +36,7 @@ class _I18nToolAppState extends State<I18nToolApp> {
       navigatorKey: $key,
       initialLocation: "/",
       debugLogDiagnostics: kDebugMode,
-      errorBuilder: (ctx, state) => Scaffold(body: "Error".text()),
+      errorBuilder: (ctx, state) => Scaffold(body: state.error.toString().text()),
     );
   }
 }

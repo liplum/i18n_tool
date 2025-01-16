@@ -42,6 +42,7 @@ dependencies:
   flutter_riverpod: ^2.6.1
   easy_localization: ^3.0.7
   rettulf: ^2.3.0
+  fluent_ui: ^4.10.0
 
 dev_dependencies:
   flutter_test:

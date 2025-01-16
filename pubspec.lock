@@ -262,6 +262,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  fluent_ui:
+    dependency: "direct main"
+    description:
+      name: fluent_ui
+      sha256: "069dc196e093864ba7252a3ed5cc4e28039f04fc9cb687f35aeaa2e2b265dd7e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.10.0"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -458,6 +466,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.11.1"
+  math_expressions:
+    dependency: transitive
+    description:
+      name: math_expressions
+      sha256: e32d803d758ace61cc6c4bdfed1226ff60a6a23646b35685670d28b5616139f8
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.6.0"
   meta:
     dependency: transitive
     description:
@@ -554,6 +570,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.0"
+  recase:
+    dependency: transitive
+    description:
+      name: recase
+      sha256: e4eb4ec2dcdee52dcf99cb4ceabaffc631d7424ee55e56f280bc039737f89213
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.1.0"
   rettulf:
     dependency: "direct main"
     description:
@@ -570,6 +594,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.6.1"
+  scroll_pos:
+    dependency: transitive
+    description:
+      name: scroll_pos
+      sha256: cebf602b2dd939de6832bb902ffefb574608d1b84f420b82b381a4007d3c1e1b
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.0"
   shared_preferences:
     dependency: transitive
     description:

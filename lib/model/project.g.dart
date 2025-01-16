@@ -14,6 +14,8 @@ abstract class _$ProjectCWProxy {
   /// Project(...).copyWith(id: 12, name: "My name")
   /// ````
   Project call({
+    String? name,
+    String? shortName,
     String? rootPath,
   });
 }
@@ -33,9 +35,19 @@ class _$ProjectCWProxyImpl implements _$ProjectCWProxy {
   /// Project(...).copyWith(id: 12, name: "My name")
   /// ````
   Project call({
+    Object? name = const $CopyWithPlaceholder(),
+    Object? shortName = const $CopyWithPlaceholder(),
     Object? rootPath = const $CopyWithPlaceholder(),
   }) {
     return Project(
+      name: name == const $CopyWithPlaceholder() || name == null
+          ? _value.name
+          // ignore: cast_nullable_to_non_nullable
+          : name as String,
+      shortName: shortName == const $CopyWithPlaceholder() || shortName == null
+          ? _value.shortName
+          // ignore: cast_nullable_to_non_nullable
+          : shortName as String,
       rootPath: rootPath == const $CopyWithPlaceholder() || rootPath == null
           ? _value.rootPath
           // ignore: cast_nullable_to_non_nullable
@@ -55,9 +67,13 @@ extension $ProjectCopyWith on Project {
 // **************************************************************************
 
 Project _$ProjectFromJson(Map<String, dynamic> json) => Project(
+      name: json['name'] as String,
+      shortName: json['shortName'] as String,
       rootPath: json['rootPath'] as String,
     );
 
 Map<String, dynamic> _$ProjectToJson(Project instance) => <String, dynamic>{
+      'name': instance.name,
+      'shortName': instance.shortName,
       'rootPath': instance.rootPath,
     };

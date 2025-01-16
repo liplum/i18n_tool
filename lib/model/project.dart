@@ -6,9 +6,15 @@ part "project.g.dart";
 @CopyWith(skipFields: true)
 @JsonSerializable()
 class Project {
+  final String name;
+
+  /// limit to 2
+  final String shortName;
   final String rootPath;
 
   const Project({
+    required this.name,
+    required this.shortName,
     required this.rootPath,
   });
 
