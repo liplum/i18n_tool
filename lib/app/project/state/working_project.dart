@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n_tool/app/project/utils/project.dart';
 
@@ -14,8 +15,6 @@ class WorkingProjectNotifier extends FamilyNotifier<WorkingProject, Project> {
     // The logic we previously had in our FutureProvider is now in the build method.
     return WorkingProject(
       project: arg,
-      l10nFiles: [],
-      openTabs: [],
     );
   }
 
@@ -25,7 +24,13 @@ class WorkingProjectNotifier extends FamilyNotifier<WorkingProject, Project> {
   }
 
   void openTab(L10nFile file) {
-    if (state.openTabs.any((it) => it.file.locale == file.locale)) return;
+    final existing = state.openTabs.firstWhereOrNull((it) => it.file.locale == file.locale);
+    if (existing != null) {
+      if (state.selectedTab != existing) {
+        state = state.copyWith(selectedTab: existing);
+      }
+      return;
+    }
     state = state.copyWith(openTabs: [
       ...state.openTabs,
       L10nFileTab(project: state, file: file),
@@ -33,9 +38,19 @@ class WorkingProjectNotifier extends FamilyNotifier<WorkingProject, Project> {
   }
 
   void closeTab(L10nFile file) {
-    if (!state.openTabs.any((it) => it.file.locale == file.locale)) return;
+    final existing = state.openTabs.firstWhereOrNull((it) => it.file.locale == file.locale);
+    if (existing == null) return;
+    final newOpenedTabs = [...state.openTabs.where((it) => it.file.locale != file.locale)];
     state = state.copyWith(
-      openTabs: [...state.openTabs.where((it) => it.file.locale != file.locale)],
+      openTabs: newOpenedTabs,
+      selectedTab: state.selectedTab?.file.locale == file.locale ? newOpenedTabs.firstOrNull : state.selectedTab,
+    );
+  }
+
+  void selectTab(L10nFile file) {
+    if (state.selectedTab?.file.locale == file.locale) return;
+    state = state.copyWith(
+      selectedTab: state.openTabs.firstWhereOrNull((it) => it.file.locale == file.locale),
     );
   }
 }

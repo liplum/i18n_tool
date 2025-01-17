@@ -26,7 +26,7 @@ extension ProjectEx on Project {
 }
 
 Locale? _parseLocale(String fileName) {
-  final localeParts = fileName.split('_');
+  final localeParts = fileName.split('-');
   if (localeParts.length == 1) {
     return Locale(localeParts[0]);
   } else if (localeParts.length == 2) {

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:locale_names/locale_names.dart';
 
 import '../../model/project.dart';
 
@@ -12,11 +13,13 @@ class WorkingProject {
   final Project project;
   final List<L10nFile> l10nFiles;
   final List<L10nFileTab> openTabs;
+  final L10nFileTab? selectedTab;
 
   const WorkingProject({
     required this.project,
-    required this.l10nFiles,
-    required this.openTabs,
+    this.l10nFiles = const [],
+    this.openTabs = const [],
+    this.selectedTab,
   });
 }
 
@@ -68,6 +71,6 @@ class L10nFile {
   Map<String, dynamic> toJson() => _$L10nFileToJson(this);
 
   String title() {
-    return locale.toLanguageTag();
+    return locale.defaultDisplayLanguageScript;
   }
 }

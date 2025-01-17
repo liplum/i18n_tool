@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n_tool/app/project/model/working_project.dart';
@@ -86,8 +87,10 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
     final files = project.l10nFiles;
     final openTabs = project.openTabs;
     return TabView(
-      currentIndex: currentIndex,
-      onChanged: (index) => setState(() => currentIndex = index),
+      currentIndex: project.openTabs.indexWhere((it) => it.file.locale == project.selectedTab?.file.locale),
+      onChanged: (index) {
+        ref.read($workingProject(this.project).notifier).selectTab(openTabs[index].file);
+      },
       tabWidthBehavior: TabWidthBehavior.sizeToContent,
       closeButtonVisibility: CloseButtonVisibilityMode.always,
       showScrollButtons: true,

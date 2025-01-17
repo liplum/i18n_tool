@@ -17,6 +17,7 @@ abstract class _$WorkingProjectCWProxy {
     Project? project,
     List<L10nFile>? l10nFiles,
     List<L10nFileTab>? openTabs,
+    L10nFileTab? selectedTab,
   });
 }
 
@@ -38,6 +39,7 @@ class _$WorkingProjectCWProxyImpl implements _$WorkingProjectCWProxy {
     Object? project = const $CopyWithPlaceholder(),
     Object? l10nFiles = const $CopyWithPlaceholder(),
     Object? openTabs = const $CopyWithPlaceholder(),
+    Object? selectedTab = const $CopyWithPlaceholder(),
   }) {
     return WorkingProject(
       project: project == const $CopyWithPlaceholder() || project == null
@@ -52,6 +54,10 @@ class _$WorkingProjectCWProxyImpl implements _$WorkingProjectCWProxy {
           ? _value.openTabs
           // ignore: cast_nullable_to_non_nullable
           : openTabs as List<L10nFileTab>,
+      selectedTab: selectedTab == const $CopyWithPlaceholder()
+          ? _value.selectedTab
+          // ignore: cast_nullable_to_non_nullable
+          : selectedTab as L10nFileTab?,
     );
   }
 }
