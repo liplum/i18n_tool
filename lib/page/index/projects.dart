@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:i18n_tool/model/project.dart';
 import 'package:rettulf/rettulf.dart';
 
-class StartProjectsPage extends ConsumerStatefulWidget {
-  const StartProjectsPage({super.key});
+class IndexProjectsPage extends ConsumerStatefulWidget {
+  const IndexProjectsPage({super.key});
 
   @override
   ConsumerState createState() => _StartProjectsPageState();
@@ -28,7 +28,7 @@ final _projects = [
   ),
 ];
 
-class _StartProjectsPageState extends ConsumerState<StartProjectsPage> {
+class _StartProjectsPageState extends ConsumerState<IndexProjectsPage> {
   List<Project> projects = _projects;
 
   @override
@@ -60,7 +60,7 @@ class _StartProjectsPageState extends ConsumerState<StartProjectsPage> {
       title: project.name.text(),
       subtitle: project.rootPath.text(),
       onPressed: () {
-        context.push("/edit/:project");
+        context.push("/project/:project");
       },
     );
   }

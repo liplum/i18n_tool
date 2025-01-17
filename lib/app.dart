@@ -1,11 +1,11 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:i18n_tool/lifecycle.dart';
 import 'package:i18n_tool/r.dart';
 import 'package:i18n_tool/page/routes.dart';
-import 'package:rettulf/rettulf.dart';
+
+import 'page/error.dart';
 
 class I18nToolApp extends StatefulWidget {
   const I18nToolApp({super.key});
@@ -36,7 +36,7 @@ class _I18nToolAppState extends State<I18nToolApp> {
       navigatorKey: $key,
       initialLocation: "/",
       debugLogDiagnostics: kDebugMode,
-      errorBuilder: (ctx, state) => Scaffold(body: state.error.toString().text()),
+      errorBuilder: (ctx, state) => ErrorPage(message: state.error.toString()),
     );
   }
 }

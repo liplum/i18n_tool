@@ -1,28 +1,38 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rettulf/rettulf.dart';
 
-class StartIndexPage extends ConsumerStatefulWidget {
+class ProjectIndexPage extends ConsumerStatefulWidget {
   final Widget child;
 
-  const StartIndexPage({
+  const ProjectIndexPage({
     super.key,
     required this.child,
   });
 
   @override
-  ConsumerState createState() => _StartIndexPageState();
+  ConsumerState createState() => _ProjectIndexPageState();
 }
 
-class _StartIndexPageState extends ConsumerState<StartIndexPage> {
+class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
   @override
   Widget build(BuildContext context) {
     return NavigationView(
+      appBar: NavigationAppBar(
+        title: "Edit the project".text(),
+      ),
       pane: NavigationPane(items: [
         PaneItem(
-          icon: const Icon(FluentIcons.project_collection),
-          title: const Text('Projects'),
+          icon: Icon(FluentIcons.file_code),
+          title: "English".text(),
           body: const SizedBox.shrink(),
+        ),
+        PaneItemSeparator(),
+        PaneItemAction(
+          icon: const Icon(FluentIcons.add),
+          title: const Text('Add new language'),
+          onTap: () {},
         ),
       ]),
       paneBodyBuilder: (item, child) {

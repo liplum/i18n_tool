@@ -3,40 +3,30 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rettulf/rettulf.dart';
 
-class EditIndexPage extends ConsumerStatefulWidget {
+class SettingsIndexPage extends ConsumerStatefulWidget {
   final Widget child;
 
-  const EditIndexPage({
+  const SettingsIndexPage({
     super.key,
     required this.child,
   });
 
   @override
-  ConsumerState createState() => _EditIndexPageState();
+  ConsumerState createState() => _SettingsIndexPageState();
 }
 
-class _EditIndexPageState extends ConsumerState<EditIndexPage> {
+class _SettingsIndexPageState extends ConsumerState<SettingsIndexPage> {
   @override
   Widget build(BuildContext context) {
     return NavigationView(
+      appBar: NavigationAppBar(
+        title: "App settings".text(),
+      ),
       pane: NavigationPane(items: [
-        PaneItemAction(
-          icon: const Icon(FluentIcons.home),
-          title: const Text('Home'),
-          onTap: () {
-            context.go("/start");
-          },
-        ),
-        PaneItemSeparator(),
         PaneItem(
-          icon: Icon(FluentIcons.file_code),
-          title: "English".text(),
+          icon: Icon(FluentIcons.settings),
+          title: "General".text(),
           body: const SizedBox.shrink(),
-        ),
-        PaneItemAction(
-          icon: const Icon(FluentIcons.add),
-          title: const Text('Add new language'),
-          onTap: () {},
         ),
       ]),
       paneBodyBuilder: (item, child) {

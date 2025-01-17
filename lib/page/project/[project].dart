@@ -1,14 +1,14 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class EditProjectPage extends ConsumerStatefulWidget {
-  const EditProjectPage({super.key});
+class ProjectPage extends ConsumerStatefulWidget {
+  const ProjectPage({super.key});
 
   @override
-  ConsumerState createState() => _EditProjectPageState();
+  ConsumerState createState() => _ProjectPageState();
 }
 
-class _EditProjectPageState extends ConsumerState<EditProjectPage> {
+class _ProjectPageState extends ConsumerState<ProjectPage> {
   @override
   Widget build(BuildContext context) {
     return ScaffoldPage(
