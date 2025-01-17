@@ -1,6 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n_tool/app/project/model/working_project.dart';
+import 'package:i18n_tool/app/project/state/file.dart';
 import 'package:i18n_tool/app/project/state/working_project.dart';
 import 'package:i18n_tool/widget/loading.dart';
 import 'package:rettulf/rettulf.dart';
@@ -118,8 +119,13 @@ class L10nFileEditorTab extends ConsumerStatefulWidget {
 class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
   @override
   Widget build(BuildContext context) {
+    final content = ref.watch($fileContent(widget.tab.file.path));
     return Card(
-      child: "sfas".text(),
+      child: switch (content) {
+        AsyncData(:final value) => value.content.text().scrolled(),
+        AsyncError(:final error) => Text('Error: $error'),
+        _ => const Center(child: ProgressRing()),
+      },
     );
   }
 }
