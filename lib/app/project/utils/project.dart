@@ -17,7 +17,7 @@ extension ProjectEx on Project {
       final fileType = _getFileType(file.path);
       l10nFiles.add(L10nFile(
         fileType: fileType,
-        path: file.path,
+        path: file.absolute.path,
         locale: locale,
       ));
     }

@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import 'index/index.dart';
 import 'index/projects.dart';
-import 'project/_uuid.dart';
 import 'project/index.dart';
 import 'settings/general.dart';
 import 'settings/index.dart';
@@ -38,20 +37,12 @@ RoutingConfig buildRoutingConfig() {
           ),
         ],
       ),
-      ShellRoute(
-        navigatorKey: _$project,
-        builder: (ctx, state, child) {
-          return ProjectIndexPage(child: child);
+      GoRoute(
+        path: "/project/:uuid",
+        builder: (ctx, state) {
+          final uuid = state.pathParameters["uuid"];
+          return ProjectIndexPage(uuid: uuid ?? "");
         },
-        routes: [
-          GoRoute(
-            path: "/project/:uuid",
-            builder: (ctx, state) {
-              final uuid = state.pathParameters["uuid"];
-              return ProjectPage(uuid: uuid ?? "");
-            },
-          ),
-        ],
       ),
       ShellRoute(
         navigatorKey: _$settings,

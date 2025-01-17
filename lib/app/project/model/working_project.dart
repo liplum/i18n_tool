@@ -8,19 +8,27 @@ import '../../model/project.dart';
 part "working_project.g.dart";
 
 @CopyWith(skipFields: true)
-@JsonSerializable()
 class WorkingProject {
   final Project project;
   final List<L10nFile> l10nFiles;
+  final List<L10nFileTab> openTabs;
 
   const WorkingProject({
     required this.project,
     required this.l10nFiles,
+    required this.openTabs,
   });
+}
 
-  factory WorkingProject.fromJson(Map<String, dynamic> json) => _$WorkingProjectFromJson(json);
+@CopyWith(skipFields: true)
+class L10nFileTab {
+  final WorkingProject project;
+  final L10nFile file;
 
-  Map<String, dynamic> toJson() => _$WorkingProjectToJson(this);
+  const L10nFileTab({
+    required this.project,
+    required this.file,
+  });
 }
 
 @JsonEnum(alwaysCreate: true)
@@ -58,4 +66,8 @@ class L10nFile {
   factory L10nFile.fromJson(Map<String, dynamic> json) => _$L10nFileFromJson(json);
 
   Map<String, dynamic> toJson() => _$L10nFileToJson(this);
+
+  String title() {
+    return locale.toLanguageTag();
+  }
 }

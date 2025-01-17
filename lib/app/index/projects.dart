@@ -71,6 +71,7 @@ class _StartProjectsPageState extends ConsumerState<IndexProjectsPage> {
       title: Text('Open').padAll(4),
       items: [
         MenuFlyoutItem(
+          leading: const Icon(FluentIcons.fabric_folder),
           text: const Text('Folder'),
           onPressed: pickAndOpenFolder,
         ),
