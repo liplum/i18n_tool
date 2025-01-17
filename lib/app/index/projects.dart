@@ -1,10 +1,11 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:i18n_tool/model/project.dart';
-import 'package:i18n_tool/state/project.dart';
 import 'package:rettulf/rettulf.dart';
 import "package:file_picker/file_picker.dart";
+
+import '../model/project.dart';
+import '../state/project.dart';
 
 class IndexProjectsPage extends ConsumerStatefulWidget {
   const IndexProjectsPage({super.key});

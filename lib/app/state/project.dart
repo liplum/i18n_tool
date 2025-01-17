@@ -1,6 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:i18n_tool/model/project.dart';
+
+import '../model/project.dart';
 
 final _projects = [
   Project(

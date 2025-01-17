@@ -2,10 +2,11 @@ import 'dart:io';
 
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:i18n_tool/model/project.dart';
-import 'package:i18n_tool/state/project.dart';
 import 'package:rettulf/rettulf.dart';
 import "package:path/path.dart" as p;
+
+import '../model/project.dart';
+import '../state/project.dart';
 
 class ProjectPage extends ConsumerStatefulWidget {
   final String uuid;
