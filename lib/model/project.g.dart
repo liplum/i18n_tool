@@ -14,7 +14,9 @@ abstract class _$ProjectCWProxy {
   /// Project(...).copyWith(id: 12, name: "My name")
   /// ````
   Project call({
+    String? uuid,
     String? name,
+    Color? color,
     String? shortName,
     String? rootPath,
   });
@@ -35,15 +37,25 @@ class _$ProjectCWProxyImpl implements _$ProjectCWProxy {
   /// Project(...).copyWith(id: 12, name: "My name")
   /// ````
   Project call({
+    Object? uuid = const $CopyWithPlaceholder(),
     Object? name = const $CopyWithPlaceholder(),
+    Object? color = const $CopyWithPlaceholder(),
     Object? shortName = const $CopyWithPlaceholder(),
     Object? rootPath = const $CopyWithPlaceholder(),
   }) {
     return Project(
+      uuid: uuid == const $CopyWithPlaceholder() || uuid == null
+          ? _value.uuid
+          // ignore: cast_nullable_to_non_nullable
+          : uuid as String,
       name: name == const $CopyWithPlaceholder() || name == null
           ? _value.name
           // ignore: cast_nullable_to_non_nullable
           : name as String,
+      color: color == const $CopyWithPlaceholder() || color == null
+          ? _value.color
+          // ignore: cast_nullable_to_non_nullable
+          : color as Color,
       shortName: shortName == const $CopyWithPlaceholder() || shortName == null
           ? _value.shortName
           // ignore: cast_nullable_to_non_nullable
@@ -67,13 +79,17 @@ extension $ProjectCopyWith on Project {
 // **************************************************************************
 
 Project _$ProjectFromJson(Map<String, dynamic> json) => Project(
+      uuid: json['uuid'] as String,
       name: json['name'] as String,
+      color: colorFromJson((json['color'] as num).toInt()),
       shortName: json['shortName'] as String,
       rootPath: json['rootPath'] as String,
     );
 
 Map<String, dynamic> _$ProjectToJson(Project instance) => <String, dynamic>{
+      'uuid': instance.uuid,
       'name': instance.name,
+      'color': colorToJson(instance.color),
       'shortName': instance.shortName,
       'rootPath': instance.rootPath,
     };

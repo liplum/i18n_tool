@@ -43,6 +43,8 @@ dependencies:
   easy_localization: ^3.0.7
   rettulf: ^2.3.0
   fluent_ui: ^4.10.0
+  uuid: ^4.5.1
+  path: ^1.9.0
 
 dev_dependencies:
   flutter_test:
