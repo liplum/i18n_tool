@@ -20,14 +20,14 @@ final _projects = [
   ),
 ];
 
-final $projects = NotifierProvider<ProjectList, List<Project>>(
-  ProjectList.new,
+final $projects = NotifierProvider<ProjectListNotifier, List<Project>>(
+  ProjectListNotifier.new,
 );
 
 // We use an AsyncNotifier because our logic is asynchronous.
 // More specifically, we'll need AutoDisposeAsyncNotifier because
 // of the "autoDispose" modifier.
-class ProjectList extends Notifier<List<Project>> {
+class ProjectListNotifier extends Notifier<List<Project>> {
   @override
   List<Project> build() {
     // The logic we previously had in our FutureProvider is now in the build method.
