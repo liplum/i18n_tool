@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n_tool/app/project/model/working_project.dart';
@@ -55,7 +54,14 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
       loading: loading,
       child: NavigationView(
         appBar: NavigationAppBar(
-          title: "Edit the project".text(),
+          title: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: project.color.withValues(alpha: 0.8),
+              child: project.shortName.text(),
+            ),
+            title: project.name.text(),
+            subtitle: project.rootPath.text(),
+          ),
         ),
         pane: NavigationPane(items: [
           ...files.map((file) {
@@ -96,6 +102,7 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
       tabWidthBehavior: TabWidthBehavior.sizeToContent,
       closeButtonVisibility: CloseButtonVisibilityMode.always,
       showScrollButtons: true,
+      shortcutsEnabled: true,
       tabs: [
         ...openTabs.map(
           (it) => Tab(

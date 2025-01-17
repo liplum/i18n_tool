@@ -40,10 +40,11 @@ class WorkingProjectNotifier extends FamilyNotifier<WorkingProject, Project> {
       }
       return;
     }
-    state = state.copyWith(openTabs: [
-      ...state.openTabs,
-      L10nFileTab(project: state, file: file),
-    ]);
+    final newTab = L10nFileTab(project: state, file: file);
+    state = state.copyWith(
+      openTabs: [...state.openTabs, newTab],
+      selectedTab: newTab,
+    );
   }
 
   void closeTab(L10nFile file) {
