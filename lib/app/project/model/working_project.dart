@@ -11,16 +11,22 @@ part "working_project.g.dart";
 @CopyWith(skipFields: true)
 class WorkingProject {
   final Project project;
+  final Locale? templateLocale;
   final List<L10nFile> l10nFiles;
   final List<L10nFileTab> openTabs;
   final L10nFileTab? selectedTab;
 
   const WorkingProject({
     required this.project,
+    this.templateLocale,
     this.l10nFiles = const [],
     this.openTabs = const [],
     this.selectedTab,
   });
+}
+
+extension WorkingProjectEx on WorkingProject {
+  bool isTemplate(L10nFile file) => file.locale == templateLocale;
 }
 
 @CopyWith(skipFields: true)
@@ -40,24 +46,12 @@ enum L10nFileType {
   yaml,
 }
 
-Map<String, dynamic> localeToJson(Locale locale) => {
-      "languageCode": locale.languageCode,
-      "countryCode": locale.countryCode,
-      "scriptCode": locale.scriptCode,
-    };
-
-Locale localeFromJson(Map<String, dynamic> json) => Locale.fromSubtags(
-      languageCode: json["languageCode"],
-      countryCode: json["countryCode"],
-      scriptCode: json["scriptCode"],
-    );
-
 @JsonSerializable()
 @CopyWith(skipFields: true)
 class L10nFile {
   final L10nFileType fileType;
   final String path;
-  @JsonKey(toJson: localeToJson, fromJson: localeFromJson)
+  @localeJsonKey
   final Locale locale;
 
   const L10nFile({
@@ -73,4 +67,8 @@ class L10nFile {
   String title() {
     return locale.defaultDisplayLanguageScript;
   }
+}
+
+extension L10nFileEx on L10nFile {
+  bool isTheSameLocale(L10nFile? file) => locale == file?.locale;
 }

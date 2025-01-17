@@ -15,6 +15,7 @@ abstract class _$WorkingProjectCWProxy {
   /// ````
   WorkingProject call({
     Project? project,
+    Locale? templateLocale,
     List<L10nFile>? l10nFiles,
     List<L10nFileTab>? openTabs,
     L10nFileTab? selectedTab,
@@ -37,6 +38,7 @@ class _$WorkingProjectCWProxyImpl implements _$WorkingProjectCWProxy {
   /// ````
   WorkingProject call({
     Object? project = const $CopyWithPlaceholder(),
+    Object? templateLocale = const $CopyWithPlaceholder(),
     Object? l10nFiles = const $CopyWithPlaceholder(),
     Object? openTabs = const $CopyWithPlaceholder(),
     Object? selectedTab = const $CopyWithPlaceholder(),
@@ -46,6 +48,10 @@ class _$WorkingProjectCWProxyImpl implements _$WorkingProjectCWProxy {
           ? _value.project
           // ignore: cast_nullable_to_non_nullable
           : project as Project,
+      templateLocale: templateLocale == const $CopyWithPlaceholder()
+          ? _value.templateLocale
+          // ignore: cast_nullable_to_non_nullable
+          : templateLocale as Locale?,
       l10nFiles: l10nFiles == const $CopyWithPlaceholder() || l10nFiles == null
           ? _value.l10nFiles
           // ignore: cast_nullable_to_non_nullable

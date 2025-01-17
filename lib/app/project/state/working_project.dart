@@ -21,10 +21,19 @@ class WorkingProjectNotifier extends FamilyNotifier<WorkingProject, Project> {
   Future<void> loadProject() async {
     final l10nFiles = await state.project.loadL10nFiles();
     state = state.copyWith(l10nFiles: l10nFiles);
+    resolveTemplateLocale();
+  }
+
+  void resolveTemplateLocale() {
+    final templateLocale =
+        state.l10nFiles.firstWhereOrNull((it) => it.locale.languageCode == "en") ?? state.l10nFiles.firstOrNull;
+    state = state.copyWith(
+      templateLocale: templateLocale?.locale,
+    );
   }
 
   void openTab(L10nFile file) {
-    final existing = state.openTabs.firstWhereOrNull((it) => it.file.locale == file.locale);
+    final existing = state.openTabs.firstWhereOrNull((it) => it.file.isTheSameLocale(file));
     if (existing != null) {
       if (state.selectedTab != existing) {
         state = state.copyWith(selectedTab: existing);
@@ -38,19 +47,19 @@ class WorkingProjectNotifier extends FamilyNotifier<WorkingProject, Project> {
   }
 
   void closeTab(L10nFile file) {
-    final existing = state.openTabs.firstWhereOrNull((it) => it.file.locale == file.locale);
+    final existing = state.openTabs.firstWhereOrNull((it) => it.file.isTheSameLocale(file));
     if (existing == null) return;
-    final newOpenedTabs = [...state.openTabs.where((it) => it.file.locale != file.locale)];
+    final newOpenedTabs = [...state.openTabs.where((it) => !it.file.isTheSameLocale(file))];
     state = state.copyWith(
       openTabs: newOpenedTabs,
-      selectedTab: state.selectedTab?.file.locale == file.locale ? newOpenedTabs.firstOrNull : state.selectedTab,
+      selectedTab: file.isTheSameLocale(state.selectedTab?.file) ? newOpenedTabs.firstOrNull : state.selectedTab,
     );
   }
 
   void selectTab(L10nFile file) {
-    if (state.selectedTab?.file.locale == file.locale) return;
+    if (file.isTheSameLocale(state.selectedTab?.file)) return;
     state = state.copyWith(
-      selectedTab: state.openTabs.firstWhereOrNull((it) => it.file.locale == file.locale),
+      selectedTab: state.openTabs.firstWhereOrNull((it) => it.file.isTheSameLocale(file)),
     );
   }
 }

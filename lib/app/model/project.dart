@@ -11,6 +11,23 @@ part "project.g.dart";
 int colorToJson(Color color) => color.value;
 
 Color colorFromJson(int value) => Color(value);
+
+const colorJsonKey = JsonKey(toJson: colorToJson, fromJson: colorFromJson);
+
+Map<String, dynamic> localeToJson(Locale locale) => {
+      "languageCode": locale.languageCode,
+      "countryCode": locale.countryCode,
+      "scriptCode": locale.scriptCode,
+    };
+
+Locale localeFromJson(Map<String, dynamic> json) => Locale.fromSubtags(
+      languageCode: json["languageCode"],
+      countryCode: json["countryCode"],
+      scriptCode: json["scriptCode"],
+    );
+
+const localeJsonKey = JsonKey(toJson: localeToJson, fromJson: localeFromJson);
+
 final _shortNameReg = RegExp(r'\s+|-|_');
 
 @JsonEnum(alwaysCreate: true)
@@ -23,7 +40,7 @@ enum ProjectType {
 class Project {
   final String uuid;
   final String name;
-  @JsonKey(toJson: colorToJson, fromJson: colorFromJson)
+  @colorJsonKey
   final Color color;
 
   /// limit to 2

@@ -49,7 +49,8 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
 
   @override
   Widget build(BuildContext context) {
-    final files = ref.watch($workingProject(project)).l10nFiles;
+    final workingProject = ref.watch($workingProject(project));
+    final files = workingProject.l10nFiles;
     return OnLoading(
       loading: loading,
       child: NavigationView(
@@ -59,8 +60,8 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
         pane: NavigationPane(items: [
           ...files.map((file) {
             return PaneItemAction(
-              icon: Icon(FluentIcons.file_code),
-              title: file.locale.toLanguageTag().text(),
+              icon: Icon(workingProject.isTemplate(file) ? FluentIcons.file_template : FluentIcons.file_code),
+              title: file.title().text(),
               onTap: () {
                 ref.read($workingProject(project).notifier).openTab(file);
               },
@@ -83,26 +84,30 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
   int currentIndex = 0;
 
   Widget buildEditingPanel() {
-    final project = ref.watch($workingProject(this.project));
-    final files = project.l10nFiles;
-    final openTabs = project.openTabs;
+    final workingProject = ref.watch($workingProject(project));
+    final files = workingProject.l10nFiles;
+    final openTabs = workingProject.openTabs;
     return TabView(
-      currentIndex: project.openTabs.indexWhere((it) => it.file.locale == project.selectedTab?.file.locale),
+      currentIndex:
+          workingProject.openTabs.indexWhere((it) => it.file.isTheSameLocale(workingProject.selectedTab?.file)),
       onChanged: (index) {
-        ref.read($workingProject(this.project).notifier).selectTab(openTabs[index].file);
+        ref.read($workingProject(project).notifier).selectTab(openTabs[index].file);
       },
       tabWidthBehavior: TabWidthBehavior.sizeToContent,
       closeButtonVisibility: CloseButtonVisibilityMode.always,
       showScrollButtons: true,
-      tabs: openTabs
-          .map((it) => Tab(
-                text: it.file.title().text(),
-                body: L10nFileEditorTab(tab: it),
-                onClosed: () {
-                  ref.read($workingProject(project.project).notifier).closeTab(it.file);
-                },
-              ))
-          .toList(),
+      tabs: [
+        ...openTabs.map(
+          (it) => Tab(
+            icon: Icon(workingProject.isTemplate(it.file) ? FluentIcons.file_template : FluentIcons.file_code),
+            text: it.file.title().text(),
+            body: L10nFileEditorTab(tab: it),
+            onClosed: () {
+              ref.read($workingProject(workingProject.project).notifier).closeTab(it.file);
+            },
+          ),
+        ),
+      ],
     );
   }
 }

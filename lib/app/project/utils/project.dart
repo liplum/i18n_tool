@@ -5,6 +5,17 @@ import "package:path/path.dart" as p;
 import '../../model/project.dart';
 import '../model/working_project.dart';
 
+import 'package:intl/locale.dart' as intl;
+
+Locale? tryParseLocale(final String rawLocale) {
+  final intlLocale = intl.Locale.tryParse(rawLocale);
+  if (intlLocale != null) {
+    return Locale.fromSubtags(
+        languageCode: intlLocale.languageCode, countryCode: intlLocale.countryCode, scriptCode: intlLocale.scriptCode);
+  }
+  return null;
+}
+
 extension ProjectEx on Project {
   Future<List<L10nFile>> loadL10nFiles() async {
     final rootDir = Directory(rootPath);
@@ -12,7 +23,7 @@ extension ProjectEx on Project {
     final files = subFiles.whereType<File>().toList();
     final l10nFiles = <L10nFile>[];
     for (final file in files) {
-      final locale = _parseLocale(p.basenameWithoutExtension(file.path));
+      final locale = tryParseLocale(p.basenameWithoutExtension(file.path));
       if (locale == null) continue;
       final fileType = _getFileType(file.path);
       l10nFiles.add(L10nFile(
@@ -22,24 +33,6 @@ extension ProjectEx on Project {
       ));
     }
     return l10nFiles;
-  }
-}
-
-Locale? _parseLocale(String fileName) {
-  final localeParts = fileName.split('-');
-  if (localeParts.length == 1) {
-    return Locale(localeParts[0]);
-  } else if (localeParts.length == 2) {
-    return Locale(localeParts[0], localeParts[1]);
-  } else if (localeParts.length == 3) {
-    return Locale.fromSubtags(
-      languageCode: localeParts[0],
-      scriptCode: localeParts[1],
-      countryCode: localeParts[2],
-    );
-  } else {
-    // ignore unsupported locale format
-    return null;
   }
 }
 
