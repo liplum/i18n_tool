@@ -93,3 +93,7 @@ Map<String, dynamic> _$ProjectToJson(Project instance) => <String, dynamic>{
       'shortName': instance.shortName,
       'rootPath': instance.rootPath,
     };
+
+const _$ProjectTypeEnumMap = {
+  ProjectType.nestedObject: 'nestedObject',
+};

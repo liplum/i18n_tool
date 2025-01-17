@@ -26,11 +26,9 @@ class _I18nToolAppState extends State<I18nToolApp> {
       themeMode: ThemeMode.system,
       theme: FluentThemeData.light(),
       darkTheme: FluentThemeData.dark(),
-      builder: (ctx, child) => Flyout(
-        builder: (context) {
-          return child ?? const SizedBox();
-        }
-      ),
+      builder: (ctx, child) => Flyout(builder: (context) {
+        return child ?? const SizedBox();
+      }),
     );
   }
 
