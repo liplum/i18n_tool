@@ -5,7 +5,6 @@ import 'package:i18n_tool/app/project/state/file.dart';
 import 'package:i18n_tool/app/project/state/working_project.dart';
 import 'package:i18n_tool/widget/loading.dart';
 import 'package:rettulf/rettulf.dart';
-import "package:path/path.dart" as p;
 
 import '../state/project.dart';
 
@@ -23,35 +22,13 @@ class ProjectIndexPage extends ConsumerStatefulWidget {
 
 class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
   late var project = ref.read($projects).firstWhere((it) => it.uuid == widget.uuid);
-  var loading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    loadProject();
-  }
-
-  Future<void> loadProject() async {
-    setState(() {
-      loading = true;
-    });
-    try {
-      await ref.read($workingProject(project).notifier).loadProject();
-    } catch (error, stackTrace) {
-      debugPrintStack(stackTrace: stackTrace);
-    } finally {
-      setState(() {
-        loading = false;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    final workingProject = ref.watch($workingProject(project));
-    final files = workingProject.l10nFiles;
+    final workingProjectAsync = ref.watch($workingProject(project));
+    final workingProject = workingProjectAsync.value;
     return OnLoading(
-      loading: loading,
+      loading: workingProjectAsync.isLoading,
       child: NavigationView(
         appBar: NavigationAppBar(
           title: ListTile(
@@ -63,57 +40,60 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
             subtitle: project.rootPath.text(),
           ),
         ),
-        pane: NavigationPane(items: [
-          ...files.map((file) {
-            return PaneItemAction(
-              icon: Icon(workingProject.isTemplate(file) ? FluentIcons.file_template : FluentIcons.file_code),
-              title: file.title().text(),
-              onTap: () {
-                ref.read($workingProject(project).notifier).openTab(file);
-              },
-            );
-          }),
-          PaneItemSeparator(),
-          PaneItemAction(
-            icon: const Icon(FluentIcons.add),
-            title: const Text('Add new language'),
-            onTap: () {},
-          ),
-        ]),
+        pane: NavigationPane(
+          items: workingProject == null
+              ? []
+              : [
+                  ...workingProject.l10nFiles.map((file) {
+                    return PaneItemAction(
+                      icon: Icon(workingProject.isTemplate(file) ? FluentIcons.file_template : FluentIcons.file_code),
+                      title: file.title().text(),
+                      onTap: () {
+                        ref.read($workingProject(project).notifier).openTab(file);
+                      },
+                    );
+                  }),
+                  PaneItemSeparator(),
+                  PaneItemAction(
+                    icon: const Icon(FluentIcons.add),
+                    title: const Text('Add new language'),
+                    onTap: () {},
+                  ),
+                ],
+        ),
         paneBodyBuilder: (item, child) {
-          return buildEditingPanel();
+          return buildEditingPanel(workingProject);
         },
       ),
     );
   }
 
-  int currentIndex = 0;
-
-  Widget buildEditingPanel() {
-    final workingProject = ref.watch($workingProject(project));
-    final files = workingProject.l10nFiles;
-    final openTabs = workingProject.openTabs;
+  Widget buildEditingPanel(WorkingProject? workingProject) {
     return TabView(
-      currentIndex:
-          workingProject.openTabs.indexWhere((it) => it.file.isTheSameLocale(workingProject.selectedTab?.file)),
-      onChanged: (index) {
-        ref.read($workingProject(project).notifier).selectTab(openTabs[index].file);
-      },
+      currentIndex: workingProject == null
+          ? 0
+          : workingProject.openTabs.indexWhere((it) => it.file.isTheSameLocale(workingProject.selectedTab?.file)),
+      onChanged: workingProject == null
+          ? null
+          : (index) {
+              ref.read($workingProject(project).notifier).selectTab(workingProject.openTabs[index].file);
+            },
       tabWidthBehavior: TabWidthBehavior.sizeToContent,
       closeButtonVisibility: CloseButtonVisibilityMode.always,
       showScrollButtons: true,
       shortcutsEnabled: true,
       tabs: [
-        ...openTabs.map(
-          (it) => Tab(
-            icon: Icon(workingProject.isTemplate(it.file) ? FluentIcons.file_template : FluentIcons.file_code),
-            text: it.file.title().text(),
-            body: L10nFileEditorTab(tab: it),
-            onClosed: () {
-              ref.read($workingProject(workingProject.project).notifier).closeTab(it.file);
-            },
+        if (workingProject != null)
+          ...workingProject.openTabs.map(
+            (it) => Tab(
+              icon: Icon(workingProject.isTemplate(it.file) ? FluentIcons.file_template : FluentIcons.file_code),
+              text: it.file.title().text(),
+              body: L10nFileEditorTab(tab: it),
+              onClosed: () {
+                ref.read($workingProject(workingProject.project).notifier).closeTab(it.file);
+              },
+            ),
           ),
-        ),
       ],
     );
   }

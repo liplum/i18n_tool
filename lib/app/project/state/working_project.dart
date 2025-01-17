@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n_tool/app/project/utils/project.dart';
@@ -5,62 +7,78 @@ import 'package:i18n_tool/app/project/utils/project.dart';
 import '../../model/project.dart';
 import '../model/working_project.dart';
 
-final $workingProject = NotifierProvider.family<WorkingProjectNotifier, WorkingProject, Project>(
+final $workingProject = AsyncNotifierProvider.family.autoDispose<WorkingProjectNotifier, WorkingProject, Project>(
   WorkingProjectNotifier.new,
 );
 
-class WorkingProjectNotifier extends FamilyNotifier<WorkingProject, Project> {
+class WorkingProjectNotifier extends AutoDisposeFamilyAsyncNotifier<WorkingProject, Project> {
   @override
-  WorkingProject build(Project arg) {
+  Future<WorkingProject> build(Project arg) async {
     // The logic we previously had in our FutureProvider is now in the build method.
-    return WorkingProject(
-      project: arg,
-    );
+    final initialState = await _rebuild();
+    final stream = Directory(arg.rootPath).watch().listen((event) async {
+      if (event is FileSystemModifyEvent) {
+        state = AsyncValue.loading();
+        final newState = await _rebuild(state.value);
+        state = AsyncValue.data(newState);
+      }
+    });
+    ref.onDispose(() {
+      stream.cancel();
+    });
+    return initialState;
   }
 
-  Future<void> loadProject() async {
-    final l10nFiles = await state.project.loadL10nFiles();
-    state = state.copyWith(l10nFiles: l10nFiles);
-    resolveTemplateLocale();
-  }
-
-  void resolveTemplateLocale() {
-    final templateLocale =
-        state.l10nFiles.firstWhereOrNull((it) => it.locale.languageCode == "en") ?? state.l10nFiles.firstOrNull;
-    state = state.copyWith(
-      templateLocale: templateLocale?.locale,
-    );
+  Future<WorkingProject> _rebuild([WorkingProject? prev]) async {
+    final l10nFiles = await arg.loadL10nFiles();
+    final templateLocale = l10nFiles.firstWhereOrNull((it) => it.locale.languageCode == "en") ?? l10nFiles.firstOrNull;
+    return prev?.copyWith(
+          project: arg,
+          templateLocale: templateLocale?.locale,
+          l10nFiles: l10nFiles,
+        ) ??
+        WorkingProject(
+          project: arg,
+          templateLocale: templateLocale?.locale,
+          l10nFiles: l10nFiles,
+        );
   }
 
   void openTab(L10nFile file) {
+    final state = this.state.value;
+    if (state == null) return;
     final existing = state.openTabs.firstWhereOrNull((it) => it.file.isTheSameLocale(file));
     if (existing != null) {
       if (state.selectedTab != existing) {
-        state = state.copyWith(selectedTab: existing);
+        this.state = AsyncValue.data(state.copyWith(selectedTab: existing));
       }
       return;
     }
     final newTab = L10nFileTab(project: state, file: file);
-    state = state.copyWith(
+    this.state = AsyncValue.data(state.copyWith(
       openTabs: [...state.openTabs, newTab],
       selectedTab: newTab,
-    );
+    ));
   }
 
   void closeTab(L10nFile file) {
+    final state = this.state.value;
+    if (state == null) return;
     final existing = state.openTabs.firstWhereOrNull((it) => it.file.isTheSameLocale(file));
     if (existing == null) return;
     final newOpenedTabs = [...state.openTabs.where((it) => !it.file.isTheSameLocale(file))];
-    state = state.copyWith(
+    this.state = AsyncValue.data(state.copyWith(
       openTabs: newOpenedTabs,
       selectedTab: file.isTheSameLocale(state.selectedTab?.file) ? newOpenedTabs.firstOrNull : state.selectedTab,
-    );
+    ));
   }
 
   void selectTab(L10nFile file) {
+    final state = this.state.value;
+    if (state == null) return;
     if (file.isTheSameLocale(state.selectedTab?.file)) return;
-    state = state.copyWith(
+    this.state = AsyncValue.data(state.copyWith(
       selectedTab: state.openTabs.firstWhereOrNull((it) => it.file.isTheSameLocale(file)),
-    );
+    ));
   }
 }

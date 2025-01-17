@@ -12,20 +12,27 @@ class FileContentNotifier extends AutoDisposeFamilyAsyncNotifier<FileContent, St
   Future<FileContent> build(String arg) async {
     final file = File(arg);
     final stream = file.watch().listen((event) async {
-      if (event.type == FileSystemEvent.modify) {
+      if (event is FileSystemModifyEvent) {
         state = AsyncValue.loading();
-        final newContent = await file.readAsString();
-        state = AsyncValue.data(FileContent(
-          content: newContent,
-        ));
+        final newState = await _rebuild(state.value);
+        state = AsyncValue.data(newState);
       }
     });
     ref.onDispose(() {
       stream.cancel();
     });
+    final initialState = await _rebuild();
+    return initialState;
+  }
+
+  Future<FileContent> _rebuild([FileContent? prev]) async {
+    final file = File(arg);
     final initialContent = await file.readAsString();
-    return FileContent(
-      content: initialContent,
-    );
+    return prev?.copyWith(
+          content: initialContent,
+        ) ??
+        FileContent(
+          content: initialContent,
+        );
   }
 }
