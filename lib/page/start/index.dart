@@ -2,19 +2,19 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rettulf/rettulf.dart';
 
-class StartPage extends ConsumerStatefulWidget {
+class StartIndexPage extends ConsumerStatefulWidget {
   final Widget child;
 
-  const StartPage({
+  const StartIndexPage({
     super.key,
     required this.child,
   });
 
   @override
-  ConsumerState createState() => _ProjectsPageState();
+  ConsumerState createState() => _StartIndexPageState();
 }
 
-class _ProjectsPageState extends ConsumerState<StartPage> {
+class _StartIndexPageState extends ConsumerState<StartIndexPage> {
   @override
   Widget build(BuildContext context) {
     return NavigationView(
@@ -26,7 +26,7 @@ class _ProjectsPageState extends ConsumerState<StartPage> {
         ),
       ]),
       paneBodyBuilder: (item, child) {
-        final name = item?.key is ValueKey ? (item!.key as ValueKey).value : null;
+        final name = item?.key ?? item.runtimeType;
         return FocusTraversalGroup(
           key: ValueKey('body$name'),
           child: widget.child,

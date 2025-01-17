@@ -1,5 +1,6 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:i18n_tool/model/project.dart';
 import 'package:rettulf/rettulf.dart';
 
@@ -58,7 +59,9 @@ class _StartProjectsPageState extends ConsumerState<StartProjectsPage> {
       ),
       title: project.name.text(),
       subtitle: project.rootPath.text(),
-      onPressed: () {},
+      onPressed: () {
+        context.push("/edit/:project");
+      },
     );
   }
 }
