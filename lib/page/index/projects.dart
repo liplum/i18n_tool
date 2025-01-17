@@ -1,10 +1,8 @@
-import 'dart:io';
-
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:i18n_tool/lifecycle.dart';
 import 'package:i18n_tool/model/project.dart';
+import 'package:i18n_tool/state/project.dart';
 import 'package:rettulf/rettulf.dart';
 import "package:file_picker/file_picker.dart";
 
@@ -15,25 +13,7 @@ class IndexProjectsPage extends ConsumerStatefulWidget {
   ConsumerState createState() => _StartProjectsPageState();
 }
 
-final _projects = [
-  Project(
-    uuid: "221E8EF8-93DD-4E8F-86BB-CD09DF43DC5B",
-    name: "i18n_tool",
-    shortName: "IT",
-    color: Colors.green,
-    rootPath: "/User/liplum/i18n_tool",
-  ),
-  Project(
-    uuid: "2482F6C6-840C-4A70-A880-9F4EE8DF9021",
-    name: "TestProject",
-    shortName: "TP",
-    color: Colors.blue,
-    rootPath: "/User/liplum/Projects/TestProject",
-  ),
-];
-
 class _StartProjectsPageState extends ConsumerState<IndexProjectsPage> {
-  List<Project> projects = _projects;
   final $search = TextEditingController();
 
   @override
@@ -44,6 +24,7 @@ class _StartProjectsPageState extends ConsumerState<IndexProjectsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final projects = ref.watch($projects);
     return ScaffoldPage(
       header: PageHeader(
         title: const Text('Projects'),
@@ -64,20 +45,23 @@ class _StartProjectsPageState extends ConsumerState<IndexProjectsPage> {
           ).expanded(),
           buildOpenButton(),
         ].row(spacing: 8).padSymmetric(h: 16, v: 4),
-        ($search >>
-            (ctx, search) {
-              final projects = this.projects.where((it) => it.match($search.text)).toList(growable: false);
-              return ListView.builder(
-                itemCount: projects.length,
-                itemBuilder: (context, index) {
-                  final project = projects[index];
-                  return ProjectTile(
-                    project: project,
-                  );
-                },
-              ).expanded();
-            }),
+        $search >>
+            (ctx, search) => buildProjectList(
+                  projects.where((it) => it.match($search.text)).toList(growable: false),
+                ).expanded(),
       ].column(),
+    );
+  }
+
+  Widget buildProjectList(List<Project> projects) {
+    return ListView.builder(
+      itemCount: projects.length,
+      itemBuilder: (context, index) {
+        final project = projects[index];
+        return ProjectTile(
+          project: project,
+        );
+      },
     );
   }
 
@@ -97,9 +81,7 @@ class _StartProjectsPageState extends ConsumerState<IndexProjectsPage> {
     final result = await FilePicker.platform.getDirectoryPath();
     if (result == null) return;
     final project = Project.create(rootPath: result);
-    setState(() {
-      projects = [...projects, project];
-    });
+    ref.read($projects.notifier).addProject(project);
   }
 }
 
@@ -154,7 +136,7 @@ class _ProjectTileState extends ConsumerState<ProjectTile> {
                   leading: const Icon(FluentIcons.delete),
                   text: const Text('Delete'),
                   onPressed: () {
-                    print("deleted");
+                    ref.read($projects.notifier).removeProject(widget.project.uuid);
                   },
                 ),
               ]);
