@@ -11,6 +11,7 @@ part "project.g.dart";
 int colorToJson(Color color) => color.value;
 
 Color colorFromJson(int value) => Color(value);
+final _shortNameReg = RegExp(r'\s+|-|_');
 
 @CopyWith(skipFields: true)
 @JsonSerializable()
@@ -43,7 +44,7 @@ class Project {
       uuid: uuid,
       name: name,
       color: color,
-      shortName: name.padLeft(2).substring(0, 2),
+      shortName: _getShortName(name),
       rootPath: rootPath,
     );
   }
@@ -58,6 +59,12 @@ class Project {
   factory Project.fromJson(Map<String, dynamic> json) => _$ProjectFromJson(json);
 
   Map<String, dynamic> toJson() => _$ProjectToJson(this);
+}
+
+String _getShortName(String name) {
+  final parts = name.split(_shortNameReg).where((it)=>it.isNotEmpty).toList(growable: false);
+  if (parts.length <= 1) return name.padLeft(2).substring(0, 2);
+  return "${parts[0][0]}${parts[1][0]}";
 }
 
 Color _generateColorFromSeed(int seed) {

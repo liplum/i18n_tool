@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:i18n_tool/lifecycle.dart';
 import 'package:i18n_tool/model/project.dart';
 import 'package:rettulf/rettulf.dart';
+import "package:file_picker/file_picker.dart";
 
 class IndexProjectsPage extends ConsumerStatefulWidget {
   const IndexProjectsPage({super.key});
@@ -58,7 +62,8 @@ class _StartProjectsPageState extends ConsumerState<IndexProjectsPage> {
             suffixMode: OverlayVisibilityMode.editing,
             placeholder: 'Search',
           ).expanded(),
-        ].row().padSymmetric(h: 16, v: 4),
+          buildOpenButton(),
+        ].row(spacing: 8).padSymmetric(h: 16, v: 4),
         ($search >>
             (ctx, search) {
               final projects = this.projects.where((it) => it.match($search.text)).toList(growable: false);
@@ -66,7 +71,7 @@ class _StartProjectsPageState extends ConsumerState<IndexProjectsPage> {
                 itemCount: projects.length,
                 itemBuilder: (context, index) {
                   final project = projects[index];
-                  return buildProjectTile(
+                  return ProjectTile(
                     project: project,
                   );
                 },
@@ -76,9 +81,52 @@ class _StartProjectsPageState extends ConsumerState<IndexProjectsPage> {
     );
   }
 
-  Widget buildProjectTile({
-    required Project project,
-  }) {
+  Widget buildOpenButton() {
+    return DropDownButton(
+      title: Text('Open').padAll(4),
+      items: [
+        MenuFlyoutItem(
+          text: const Text('Folder'),
+          onPressed: pickAndOpenFolder,
+        ),
+      ],
+    );
+  }
+
+  Future<void> pickAndOpenFolder() async {
+    final result = await FilePicker.platform.getDirectoryPath();
+    if (result == null) return;
+    final project = Project.create(rootPath: result);
+    setState(() {
+      projects = [...projects, project];
+    });
+  }
+}
+
+class ProjectTile extends ConsumerStatefulWidget {
+  final Project project;
+
+  const ProjectTile({
+    super.key,
+    required this.project,
+  });
+
+  @override
+  ConsumerState createState() => _ProjectTileState();
+}
+
+class _ProjectTileState extends ConsumerState<ProjectTile> {
+  final $actions = FlyoutController();
+
+  @override
+  void dispose() {
+    $actions.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final project = widget.project;
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: project.color,
@@ -86,9 +134,34 @@ class _StartProjectsPageState extends ConsumerState<IndexProjectsPage> {
       ),
       title: project.name.text(),
       subtitle: project.rootPath.text(),
+      trailing: buildActions(),
       onPressed: () {
         context.push("/project/:project");
       },
+    );
+  }
+
+  Widget buildActions() {
+    return FlyoutTarget(
+      controller: $actions,
+      child: IconButton(
+        icon: Icon(FluentIcons.more_vertical),
+        onPressed: () {
+          $actions.showFlyout(
+            builder: (ctx) {
+              return MenuFlyout(items: [
+                MenuFlyoutItem(
+                  leading: const Icon(FluentIcons.delete),
+                  text: const Text('Delete'),
+                  onPressed: () {
+                    print("deleted");
+                  },
+                ),
+              ]);
+            },
+          );
+        },
+      ),
     );
   }
 }
