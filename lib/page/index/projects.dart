@@ -30,6 +30,13 @@ final _projects = [
 
 class _StartProjectsPageState extends ConsumerState<IndexProjectsPage> {
   List<Project> projects = _projects;
+  final $search = TextEditingController();
+
+  @override
+  void dispose() {
+    $search.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,15 +44,35 @@ class _StartProjectsPageState extends ConsumerState<IndexProjectsPage> {
       header: PageHeader(
         title: const Text('Projects'),
       ),
-      content: ListView.builder(
-        itemCount: projects.length,
-        itemBuilder: (context, index) {
-          final project = projects[index];
-          return buildProjectTile(
-            project: project,
-          );
-        },
-      ),
+      content: [
+        [
+          TextBox(
+            controller: $search,
+            prefix: const Icon(FluentIcons.search).padAll(8),
+            suffix: IconButton(
+              icon: Icon(FluentIcons.clear),
+              onPressed: () {
+                $search.clear();
+              },
+            ),
+            suffixMode: OverlayVisibilityMode.editing,
+            placeholder: 'Search',
+          ).expanded(),
+        ].row().padSymmetric(h: 16, v: 4),
+        ($search >>
+            (ctx, search) {
+              final projects = this.projects.where((it) => it.match($search.text)).toList(growable: false);
+              return ListView.builder(
+                itemCount: projects.length,
+                itemBuilder: (context, index) {
+                  final project = projects[index];
+                  return buildProjectTile(
+                    project: project,
+                  );
+                },
+              ).expanded();
+            }),
+      ].column(),
     );
   }
 

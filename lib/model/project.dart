@@ -48,6 +48,13 @@ class Project {
     );
   }
 
+  bool match(String search) {
+    if (name.contains(search)) {
+      return true;
+    }
+    return false;
+  }
+
   factory Project.fromJson(Map<String, dynamic> json) => _$ProjectFromJson(json);
 
   Map<String, dynamic> toJson() => _$ProjectToJson(this);
