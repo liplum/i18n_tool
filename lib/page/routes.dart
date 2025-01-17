@@ -1,11 +1,11 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
-import 'package:i18n_tool/page/project/%5Bproject%5D.dart';
 import 'package:i18n_tool/page/project/index.dart';
 
 import 'index/index.dart';
 import 'index/projects.dart';
+import 'project/_uuid.dart';
 import 'settings/general.dart';
 import 'settings/index.dart';
 
@@ -45,8 +45,11 @@ RoutingConfig buildRoutingConfig() {
         },
         routes: [
           GoRoute(
-            path: "/project/:project",
-            builder: (ctx, state) => const ProjectPage(),
+            path: "/project/:uuid",
+            builder: (ctx, state) {
+              final uuid = state.pathParameters["uuid"];
+              return ProjectPage(uuid: uuid ?? "");
+            },
           ),
         ],
       ),

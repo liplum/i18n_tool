@@ -111,14 +111,14 @@ class _ProjectTileState extends ConsumerState<ProjectTile> {
     final project = widget.project;
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: project.color,
+        backgroundColor: project.color.withValues(alpha: 0.8),
         child: project.shortName.text(),
       ),
       title: project.name.text(),
       subtitle: project.rootPath.text(),
       trailing: buildActions(),
       onPressed: () {
-        context.push("/project/:project");
+        context.push("/project/${project.uuid}");
       },
     );
   }
