@@ -1,6 +1,8 @@
 import 'dart:ui';
 
+import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:i18n_tool/serialization/parser.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:locale_names/locale_names.dart';
 import 'package:meta/meta.dart';
@@ -13,6 +15,7 @@ part "working_project.g.dart";
 @CopyWith(skipFields: true)
 class WorkingProject {
   final Project project;
+  final L10nParser parser;
   final Locale? templateLocale;
   final List<L10nFile> l10nFiles;
   final List<L10nFileTab> openTabs;
@@ -20,11 +23,18 @@ class WorkingProject {
 
   const WorkingProject({
     required this.project,
+    required this.parser,
     this.templateLocale,
     this.l10nFiles = const [],
     this.openTabs = const [],
     this.selectedTab,
   });
+
+  L10nFile? get templateL10nFile {
+    final templateLocale = this.templateLocale;
+    if (templateLocale == null) return null;
+    return l10nFiles.firstWhereOrNull((it) => it.locale == templateLocale);
+  }
 }
 
 extension WorkingProjectEx on WorkingProject {

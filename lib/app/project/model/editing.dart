@@ -10,13 +10,13 @@ part "editing.g.dart";
 @CopyWith(skipFields: true)
 class L10nEditing {
   final Locale locale;
-  final L10nCollection collection;
+  final L10nData data;
 
-  final ({Locale locale, L10nCollection collection}) template;
+  final ({Locale locale, L10nData data}) template;
 
   const L10nEditing({
     required this.locale,
-    required this.collection,
+    required this.data,
     required this.template,
   });
 }

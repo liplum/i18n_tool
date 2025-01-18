@@ -4,8 +4,10 @@ import '../collection.dart';
 import '../parser.dart';
 
 class PropertiesL10nParser implements L10nParser {
+  const PropertiesL10nParser();
+
   @override
-  L10nCollection parse(String content) {
+  L10nData parse(String content) {
     final pairs = <({String key, String value})>[];
     final properties = Properties.fromString(content);
     for (final key in properties.keys) {
@@ -14,6 +16,6 @@ class PropertiesL10nParser implements L10nParser {
         pairs.add((key: key, value: value));
       }
     }
-    return L10nCollection.create(pairs: pairs);
+    return L10nData.create(pairs: pairs);
   }
 }

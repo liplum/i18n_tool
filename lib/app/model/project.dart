@@ -52,7 +52,6 @@ enum ProjectFileType {
     }
     return null;
   }
-
 }
 
 @CopyWith(skipFields: true)

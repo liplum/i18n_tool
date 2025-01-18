@@ -9,5 +9,7 @@ class L10nFileParseException implements Exception {
 }
 
 abstract class L10nParser {
-  L10nCollection parse(String content);
+  const L10nParser();
+
+  L10nData parse(String content);
 }

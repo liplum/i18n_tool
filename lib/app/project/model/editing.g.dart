@@ -15,8 +15,8 @@ abstract class _$L10nEditingCWProxy {
   /// ````
   L10nEditing call({
     Locale? locale,
-    L10nCollection? collection,
-    ({L10nCollection collection, Locale locale})? template,
+    L10nData? data,
+    ({L10nData data, Locale locale})? template,
   });
 }
 
@@ -36,7 +36,7 @@ class _$L10nEditingCWProxyImpl implements _$L10nEditingCWProxy {
   /// ````
   L10nEditing call({
     Object? locale = const $CopyWithPlaceholder(),
-    Object? collection = const $CopyWithPlaceholder(),
+    Object? data = const $CopyWithPlaceholder(),
     Object? template = const $CopyWithPlaceholder(),
   }) {
     return L10nEditing(
@@ -44,14 +44,14 @@ class _$L10nEditingCWProxyImpl implements _$L10nEditingCWProxy {
           ? _value.locale
           // ignore: cast_nullable_to_non_nullable
           : locale as Locale,
-      collection: collection == const $CopyWithPlaceholder() || collection == null
-          ? _value.collection
+      data: data == const $CopyWithPlaceholder() || data == null
+          ? _value.data
           // ignore: cast_nullable_to_non_nullable
-          : collection as L10nCollection,
+          : data as L10nData,
       template: template == const $CopyWithPlaceholder() || template == null
           ? _value.template
           // ignore: cast_nullable_to_non_nullable
-          : template as ({L10nCollection collection, Locale locale}),
+          : template as ({L10nData data, Locale locale}),
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n_tool/app/project/utils/project.dart';
+import 'package:i18n_tool/app/utils/project.dart';
 
 import '../../model/project.dart';
 import '../model/working_project.dart';
@@ -41,6 +42,7 @@ class WorkingProjectNotifier extends AutoDisposeFamilyAsyncNotifier<WorkingProje
         ) ??
         WorkingProject(
           project: arg,
+          parser: arg.createParser(),
           templateLocale: templateLocale?.locale,
           l10nFiles: l10nFiles,
         );

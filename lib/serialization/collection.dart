@@ -4,18 +4,18 @@ import 'package:meta/meta.dart';
 const keyPathSeparator = ".";
 
 @immutable
-abstract class L10nCollection {
+abstract class L10nData {
   String? get(String key);
 
-  L10nCollection set(String key, String? value);
+  L10nData set(String key, String? value);
 
-  factory L10nCollection.create({
+  factory L10nData.create({
     required List<({String key, String value})> pairs,
   }) {
     return _FlatL10nList(pairs: pairs);
   }
 
-  factory L10nCollection.fromHierarchy(Map<String, dynamic> hierarchy) {
+  factory L10nData.fromHierarchy(Map<String, dynamic> hierarchy) {
     final pairs = <({String key, String value})>[];
     void visit(String? parent, Map<dynamic, dynamic> tree) {
       final result = <String, dynamic>{};
@@ -34,7 +34,7 @@ abstract class L10nCollection {
 }
 
 @immutable
-class _FlatL10nList implements L10nCollection {
+class _FlatL10nList implements L10nData {
   final List<({String key, String value})> pairs;
 
   const _FlatL10nList({
@@ -48,7 +48,7 @@ class _FlatL10nList implements L10nCollection {
   }
 
   @override
-  L10nCollection set(String key, String? value) {
+  L10nData set(String key, String? value) {
     final index = pairs.indexWhere((it) => it.key == key);
     if (index < 0) {
       if (value != null) {
