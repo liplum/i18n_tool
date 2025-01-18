@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:i18n_tool/parser/parser.dart';
+import '../collection.dart';
+import '../parser.dart';
 
 class JsonL10nParser implements L10nParser {
   @override

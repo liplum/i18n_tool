@@ -1,20 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 
-class L10nFileParseException implements Exception {
-  final Exception? cause;
-
-  const L10nFileParseException({
-    this.cause,
-  });
-}
-
-abstract class L10nParser {
-  L10nCollection parse(String content);
-}
-
-abstract class L10nParserPlugin {}
-
 const keyPathSeparator = ".";
 
 @immutable
@@ -37,7 +23,7 @@ abstract class L10nCollection {
         if (value is String) {
           result[key] = value;
         } else if (value is Map) {
-          visit(parent == null ? key : "$parent.$key", value);
+          visit(parent == null ? key : "$parent$keyPathSeparator$key", value);
         }
       }
     }

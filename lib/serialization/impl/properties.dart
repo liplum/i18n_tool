@@ -1,5 +1,7 @@
-import 'package:i18n_tool/parser/parser.dart';
 import 'package:properties/properties.dart';
+
+import '../collection.dart';
+import '../parser.dart';
 
 class PropertiesL10nParser implements L10nParser {
   @override

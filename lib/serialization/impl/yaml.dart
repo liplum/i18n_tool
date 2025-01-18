@@ -1,5 +1,7 @@
-import 'package:i18n_tool/parser/parser.dart';
 import 'package:yaml/yaml.dart';
+
+import '../collection.dart';
+import '../parser.dart';
 
 class YamlL10nParser implements L10nParser {
   @override
