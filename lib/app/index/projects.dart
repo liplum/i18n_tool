@@ -79,11 +79,14 @@ class _StartProjectsPageState extends ConsumerState<IndexProjectsPage> {
   }
 
   Future<void> createProject() async {
-    await showDialog(
+    final createdProject = await showDialog<Project>(
       context: context,
       builder: (ctx) => CreateProjectForm(),
       useRootNavigator: true,
     );
+    if (createdProject == null) return;
+    if (!mounted) return;
+    context.push("/project/${createdProject.uuid}");
   }
 }
 
@@ -101,6 +104,13 @@ class ProjectTile extends ConsumerStatefulWidget {
 
 class _ProjectTileState extends ConsumerState<ProjectTile> {
   final $actions = FlyoutController();
+  var existing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkProjectExisting();
+  }
 
   @override
   void dispose() {
@@ -108,20 +118,39 @@ class _ProjectTileState extends ConsumerState<ProjectTile> {
     super.dispose();
   }
 
+  Future<void> checkProjectExisting() async {
+    final file = File(widget.project.rootPath);
+    final existing = await file.exists();
+    if (!mounted) return;
+    setState(() {
+      this.existing = existing;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final style = existing
+        ? null
+        : TextStyle(
+            decoration: TextDecoration.lineThrough,
+            color: FluentTheme.of(context).inactiveColor,
+          );
     final project = widget.project;
     return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: project.color.withValues(alpha: 0.8),
-        child: project.shortName.text(),
-      ),
-      title: project.name.text(),
-      subtitle: project.rootPath.text(),
+      leading: existing
+          ? CircleAvatar(
+              backgroundColor: project.color.withValues(alpha: 0.8),
+              child: project.shortName.text(),
+            )
+          : Icon(FluentIcons.page_remove),
+      title: project.name.text(style: style),
+      subtitle: project.rootPath.text(style: style),
       trailing: buildActions(),
-      onPressed: () {
-        context.push("/project/${project.uuid}");
-      },
+      onPressed: existing
+          ? () {
+              context.push("/project/${project.uuid}");
+            }
+          : null,
     );
   }
 
@@ -283,6 +312,6 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
       ),
     );
     ref.read($projects.notifier).addProject(project);
-    context.pop();
+    context.pop(project);
   }
 }
