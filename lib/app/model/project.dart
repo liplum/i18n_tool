@@ -32,12 +32,7 @@ const localeJsonKey = JsonKey(toJson: localeToJson, fromJson: localeFromJson);
 final _shortNameReg = RegExp(r'\s+|-|_');
 
 @JsonEnum(alwaysCreate: true)
-enum ProjectType {
-  nestedObject,
-}
-
-@JsonEnum(alwaysCreate: true)
-enum L10nFileType {
+enum ProjectFileType {
   json(extensions: [".json"]),
   yaml(extensions: [".yaml", ".yml"]),
   properties(extensions: [".properties"]),
@@ -45,12 +40,11 @@ enum L10nFileType {
 
   final List<String> extensions;
 
-  const L10nFileType({
+  const ProjectFileType({
     required this.extensions,
   });
 
-  L10nFileType? detect(String path) {
-    final ext = p.extension(path);
+  static ProjectFileType? tryParseExtension(String ext) {
     for (final type in values) {
       if (type.extensions.contains(ext)) {
         return type;
@@ -58,12 +52,29 @@ enum L10nFileType {
     }
     return null;
   }
+
+}
+
+@CopyWith(skipFields: true)
+@JsonSerializable()
+class ProjectType {
+  final ProjectFileType fileType;
+
+  const ProjectType({
+    required this.fileType,
+  });
+
+  factory ProjectType.fromJson(Map<String, dynamic> json) => _$ProjectTypeFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ProjectTypeToJson(this);
 }
 
 @immutable
 @CopyWith(skipFields: true)
 @JsonSerializable()
 class Project {
+  static const latestVersion = 1;
+  final int version;
   final String uuid;
   final String name;
   @colorJsonKey
@@ -72,21 +83,22 @@ class Project {
   /// limit to 2
   final String shortName;
   final String rootPath;
-  final L10nFileType fileType;
+  final ProjectType type;
 
   const Project({
+    this.version = Project.latestVersion,
     required this.uuid,
     required this.name,
     required this.color,
     required this.shortName,
     required this.rootPath,
-    required this.fileType,
+    required this.type,
   });
 
   factory Project.create({
     String? name,
     required String rootPath,
-    required L10nFileType fileType,
+    required ProjectType type,
   }) {
     final name = p.basenameWithoutExtension(rootPath);
     final uuid = const Uuid().v4();
@@ -97,7 +109,7 @@ class Project {
       color: color,
       shortName: _getShortName(name),
       rootPath: rootPath,
-      fileType: fileType,
+      type: type,
     );
   }
 

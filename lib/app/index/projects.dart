@@ -1,8 +1,13 @@
+import 'dart:io';
+
+import 'package:collection/collection.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:i18n_tool/app/project/utils/project.dart';
 import 'package:rettulf/rettulf.dart';
 import "package:file_picker/file_picker.dart";
+import "package:path/path.dart" as p;
 
 import '../model/project.dart';
 import '../state/project.dart';
@@ -67,26 +72,18 @@ class _StartProjectsPageState extends ConsumerState<IndexProjectsPage> {
   }
 
   Widget buildOpenButton() {
-    return DropDownButton(
-      title: Text('Open').padAll(4),
-      items: [
-        MenuFlyoutItem(
-          leading: const Icon(FluentIcons.fabric_folder),
-          text: const Text('Folder'),
-          onPressed: pickAndOpenFolder,
-        ),
-      ],
+    return Button(
+      onPressed: createProject,
+      child: "Create".text(),
     );
   }
 
-  Future<void> pickAndOpenFolder() async {
-    final result = await FilePicker.platform.getDirectoryPath();
-    if (result == null) return;
-    final project = Project.create(
-      rootPath: result,
-      fileType: L10nFileType.yaml,
+  Future<void> createProject() async {
+    await showDialog(
+      context: context,
+      builder: (ctx) => CreateProjectForm(),
+      useRootNavigator: true,
     );
-    ref.read($projects.notifier).addProject(project);
   }
 }
 
@@ -150,5 +147,142 @@ class _ProjectTileState extends ConsumerState<ProjectTile> {
         },
       ),
     );
+  }
+}
+
+class CreateProjectForm extends ConsumerStatefulWidget {
+  const CreateProjectForm({super.key});
+
+  @override
+  ConsumerState createState() => _CreateProjectFormState();
+}
+
+class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
+  final $rootPath = TextEditingController();
+  ProjectFileType? fileType;
+
+  @override
+  void initState() {
+    super.initState();
+    $rootPath.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    $rootPath.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final fileType = this.fileType;
+    return Container(
+      color: FluentTheme.of(context).micaBackgroundColor,
+      child: ScaffoldPage(
+        header: PageHeader(
+          title: "Create project".text(),
+        ),
+        bottomBar: [
+          FilledButton(
+            onPressed: $rootPath.text.isNotEmpty && fileType != null
+                ? () {
+                    createProject(
+                      fileType: fileType,
+                    );
+                  }
+                : null,
+            child: "Create".text(),
+          ),
+        ].row(maa: MainAxisAlignment.end).padAll(8),
+        content: buildBody().padSymmetric(h: 32),
+      ),
+    );
+  }
+
+  Widget buildBody() {
+    return [
+      buildRootPath(),
+      buildFileType(),
+    ].column(spacing: 8);
+  }
+
+  Widget buildRootPath() {
+    return [
+      "Project root path".text(),
+      [
+        TextBox(
+          controller: $rootPath,
+        ).expanded(),
+        buildOpenButton()
+      ].row(spacing: 8).expanded(),
+    ].row(spacing: 8);
+  }
+
+  Widget buildFileType() {
+    return [
+      "File type".text(),
+      ComboBox<ProjectFileType>(
+        value: fileType,
+        items: [
+          ...ProjectFileType.values.map((it) {
+            return ComboBoxItem(
+              value: it,
+              child: Text(it.name),
+            );
+          })
+        ],
+        onChanged: (newValue) {
+          setState(() {
+            fileType = newValue;
+          });
+        },
+      ),
+    ].row(spacing: 8);
+  }
+
+  Future<void> pickAndOpenFolder() async {
+    final result = await FilePicker.platform.getDirectoryPath(
+      lockParentWindow: true,
+    );
+    if (result == null) return;
+    $rootPath.text = result;
+    final estimated = await estimateFileType(result);
+    if (estimated == null) return;
+    if (!mounted) return;
+    setState(() {
+      fileType = estimated;
+    });
+  }
+
+  Future<ProjectFileType?> estimateFileType(String rootPath) async {
+    final rootDir = Directory(rootPath);
+    final subFiles = await rootDir.list().toList();
+    final files =
+        subFiles.whereType<File>().where((it) => tryParseLocale(p.basenameWithoutExtension(it.path)) != null).toList();
+    final ext2Count = files.groupFoldBy<String, int>((it) => p.extension(it.path), (pre, next) => (pre ?? 0) + 1);
+    final ascendingByCount = ext2Count.entries.sortedBy<num>((it) => it.value);
+    final mostCommonExt = ascendingByCount.lastOrNull;
+    if (mostCommonExt == null) return null;
+    return ProjectFileType.tryParseExtension(mostCommonExt.key);
+  }
+
+  Widget buildOpenButton() {
+    return Button(
+      onPressed: pickAndOpenFolder,
+      child: Text('Open folder'),
+    );
+  }
+
+  Future<void> createProject({
+    required ProjectFileType fileType,
+  }) async {
+    final project = Project.create(
+      rootPath: $rootPath.text,
+      type: ProjectType(
+        fileType: fileType,
+      ),
+    );
+    ref.read($projects.notifier).addProject(project);
+    context.pop();
   }
 }

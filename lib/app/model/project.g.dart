@@ -6,6 +6,50 @@ part of 'project.dart';
 // CopyWithGenerator
 // **************************************************************************
 
+abstract class _$ProjectTypeCWProxy {
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored.
+  ///
+  /// Usage
+  /// ```dart
+  /// ProjectType(...).copyWith(id: 12, name: "My name")
+  /// ````
+  ProjectType call({
+    ProjectFileType? fileType,
+  });
+}
+
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfProjectType.copyWith(...)`.
+class _$ProjectTypeCWProxyImpl implements _$ProjectTypeCWProxy {
+  const _$ProjectTypeCWProxyImpl(this._value);
+
+  final ProjectType _value;
+
+  @override
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored.
+  ///
+  /// Usage
+  /// ```dart
+  /// ProjectType(...).copyWith(id: 12, name: "My name")
+  /// ````
+  ProjectType call({
+    Object? fileType = const $CopyWithPlaceholder(),
+  }) {
+    return ProjectType(
+      fileType: fileType == const $CopyWithPlaceholder() || fileType == null
+          ? _value.fileType
+          // ignore: cast_nullable_to_non_nullable
+          : fileType as ProjectFileType,
+    );
+  }
+}
+
+extension $ProjectTypeCopyWith on ProjectType {
+  /// Returns a callable class that can be used as follows: `instanceOfProjectType.copyWith(...)`.
+  // ignore: library_private_types_in_public_api
+  _$ProjectTypeCWProxy get copyWith => _$ProjectTypeCWProxyImpl(this);
+}
+
 abstract class _$ProjectCWProxy {
   /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored.
   ///
@@ -14,12 +58,13 @@ abstract class _$ProjectCWProxy {
   /// Project(...).copyWith(id: 12, name: "My name")
   /// ````
   Project call({
+    int? version,
     String? uuid,
     String? name,
     Color? color,
     String? shortName,
     String? rootPath,
-    L10nFileType? fileType,
+    ProjectType? type,
   });
 }
 
@@ -38,14 +83,19 @@ class _$ProjectCWProxyImpl implements _$ProjectCWProxy {
   /// Project(...).copyWith(id: 12, name: "My name")
   /// ````
   Project call({
+    Object? version = const $CopyWithPlaceholder(),
     Object? uuid = const $CopyWithPlaceholder(),
     Object? name = const $CopyWithPlaceholder(),
     Object? color = const $CopyWithPlaceholder(),
     Object? shortName = const $CopyWithPlaceholder(),
     Object? rootPath = const $CopyWithPlaceholder(),
-    Object? fileType = const $CopyWithPlaceholder(),
+    Object? type = const $CopyWithPlaceholder(),
   }) {
     return Project(
+      version: version == const $CopyWithPlaceholder() || version == null
+          ? _value.version
+          // ignore: cast_nullable_to_non_nullable
+          : version as int,
       uuid: uuid == const $CopyWithPlaceholder() || uuid == null
           ? _value.uuid
           // ignore: cast_nullable_to_non_nullable
@@ -66,10 +116,10 @@ class _$ProjectCWProxyImpl implements _$ProjectCWProxy {
           ? _value.rootPath
           // ignore: cast_nullable_to_non_nullable
           : rootPath as String,
-      fileType: fileType == const $CopyWithPlaceholder() || fileType == null
-          ? _value.fileType
+      type: type == const $CopyWithPlaceholder() || type == null
+          ? _value.type
           // ignore: cast_nullable_to_non_nullable
-          : fileType as L10nFileType,
+          : type as ProjectType,
     );
   }
 }
@@ -84,30 +134,36 @@ extension $ProjectCopyWith on Project {
 // JsonSerializableGenerator
 // **************************************************************************
 
+ProjectType _$ProjectTypeFromJson(Map<String, dynamic> json) => ProjectType(
+      fileType: $enumDecode(_$ProjectFileTypeEnumMap, json['fileType']),
+    );
+
+Map<String, dynamic> _$ProjectTypeToJson(ProjectType instance) => <String, dynamic>{
+      'fileType': _$ProjectFileTypeEnumMap[instance.fileType]!,
+    };
+
+const _$ProjectFileTypeEnumMap = {
+  ProjectFileType.json: 'json',
+  ProjectFileType.yaml: 'yaml',
+  ProjectFileType.properties: 'properties',
+};
+
 Project _$ProjectFromJson(Map<String, dynamic> json) => Project(
+      version: (json['version'] as num?)?.toInt() ?? Project.latestVersion,
       uuid: json['uuid'] as String,
       name: json['name'] as String,
       color: colorFromJson((json['color'] as num).toInt()),
       shortName: json['shortName'] as String,
       rootPath: json['rootPath'] as String,
-      fileType: $enumDecode(_$L10nFileTypeEnumMap, json['fileType']),
+      type: ProjectType.fromJson(json['type'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$ProjectToJson(Project instance) => <String, dynamic>{
+      'version': instance.version,
       'uuid': instance.uuid,
       'name': instance.name,
       'color': colorToJson(instance.color),
       'shortName': instance.shortName,
       'rootPath': instance.rootPath,
-      'fileType': _$L10nFileTypeEnumMap[instance.fileType]!,
+      'type': instance.type,
     };
-
-const _$L10nFileTypeEnumMap = {
-  L10nFileType.json: 'json',
-  L10nFileType.yaml: 'yaml',
-  L10nFileType.properties: 'properties',
-};
-
-const _$ProjectTypeEnumMap = {
-  ProjectType.nestedObject: 'nestedObject',
-};

@@ -20,7 +20,7 @@ class _StartIndexPageState extends ConsumerState<IndexIndexPage> {
   Widget build(BuildContext context) {
     return NavigationView(
       appBar: NavigationAppBar(
-        leading: Icon(FluentIcons.home),
+        leading: Icon(FluentIcons.home_solid),
         title: "Welcome to i18n Tool".text(),
       ),
       pane: NavigationPane(

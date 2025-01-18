@@ -18,14 +18,27 @@ class _I18nToolAppState extends State<I18nToolApp> {
   final $routingConfig = ValueNotifier(buildRoutingConfig());
   late final router = _buildRouter($routingConfig);
 
+  FluentThemeData buildTheme(FluentThemeData theme) {
+    return theme.copyWith(
+      buttonTheme: theme.buttonTheme.merge(ButtonThemeData(
+        defaultButtonStyle: ButtonStyle(
+          padding: WidgetStateProperty.all(kDefaultButtonPadding.add(EdgeInsets.all(4))),
+        ),
+        filledButtonStyle: ButtonStyle(
+          padding: WidgetStateProperty.all(kDefaultButtonPadding.add(EdgeInsets.all(4))),
+        ),
+      )),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FluentApp.router(
       title: R.appName,
       routerConfig: router,
       themeMode: ThemeMode.system,
-      theme: FluentThemeData.light(),
-      darkTheme: FluentThemeData.dark(),
+      theme: buildTheme(FluentThemeData.light()),
+      darkTheme: buildTheme(FluentThemeData.dark()),
       builder: (ctx, child) => Flyout(builder: (context) {
         return child ?? const SizedBox();
       }),
