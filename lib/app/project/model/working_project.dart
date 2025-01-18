@@ -3,11 +3,13 @@ import 'dart:ui';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:locale_names/locale_names.dart';
+import 'package:meta/meta.dart';
 
 import '../../model/project.dart';
 
 part "working_project.g.dart";
 
+@immutable
 @CopyWith(skipFields: true)
 class WorkingProject {
   final Project project;
@@ -29,6 +31,7 @@ extension WorkingProjectEx on WorkingProject {
   bool isTemplate(L10nFile file) => file.locale == templateLocale;
 }
 
+@immutable
 @CopyWith(skipFields: true)
 class L10nFileTab {
   final WorkingProject project;
@@ -46,6 +49,7 @@ enum L10nFileType {
   yaml,
 }
 
+@immutable
 @JsonSerializable()
 @CopyWith(skipFields: true)
 class L10nFile {

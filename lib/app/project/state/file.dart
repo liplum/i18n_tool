@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n_tool/app/project/model/file.dart';
 
@@ -19,6 +20,7 @@ class FileContentNotifier extends AutoDisposeFamilyAsyncNotifier<FileContent, St
       }
     });
     ref.onDispose(() {
+      debugPrint("Watcher [$arg] disposed");
       stream.cancel();
     });
     final initialState = await _rebuild();

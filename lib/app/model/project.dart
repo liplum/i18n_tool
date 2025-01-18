@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:meta/meta.dart';
 import 'package:uuid/uuid.dart';
 import "package:path/path.dart" as p;
 
@@ -35,6 +36,7 @@ enum ProjectType {
   nestedObject,
 }
 
+@immutable
 @CopyWith(skipFields: true)
 @JsonSerializable()
 class Project {

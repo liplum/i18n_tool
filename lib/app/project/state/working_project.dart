@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:collection/collection.dart';
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n_tool/app/project/utils/project.dart';
 
@@ -24,6 +25,7 @@ class WorkingProjectNotifier extends AutoDisposeFamilyAsyncNotifier<WorkingProje
       }
     });
     ref.onDispose(() {
+      debugPrint("Watcher [${arg.rootPath}] disposed");
       stream.cancel();
     });
     return initialState;
