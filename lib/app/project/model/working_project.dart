@@ -43,23 +43,15 @@ class L10nFileTab {
   });
 }
 
-@JsonEnum(alwaysCreate: true)
-enum L10nFileType {
-  json,
-  yaml,
-}
-
 @immutable
 @JsonSerializable()
 @CopyWith(skipFields: true)
 class L10nFile {
-  final L10nFileType fileType;
   final String path;
   @localeJsonKey
   final Locale locale;
 
   const L10nFile({
-    required this.fileType,
     required this.path,
     required this.locale,
   });

@@ -25,25 +25,11 @@ extension ProjectEx on Project {
     for (final file in files) {
       final locale = tryParseLocale(p.basenameWithoutExtension(file.path));
       if (locale == null) continue;
-      final fileType = _getFileType(file.path);
       l10nFiles.add(L10nFile(
-        fileType: fileType,
         path: file.absolute.path,
         locale: locale,
       ));
     }
     return l10nFiles;
-  }
-}
-
-L10nFileType _getFileType(String filePath) {
-  final fileExtension = p.extension(filePath);
-  if (fileExtension == '.json') {
-    return L10nFileType.json;
-  } else if (fileExtension == '.yaml') {
-    return L10nFileType.yaml;
-  } else {
-    // Defaults to JSON if extension is not recognized
-    return L10nFileType.json;
   }
 }

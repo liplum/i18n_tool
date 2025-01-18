@@ -36,6 +36,30 @@ enum ProjectType {
   nestedObject,
 }
 
+@JsonEnum(alwaysCreate: true)
+enum L10nFileType {
+  json(extensions: [".json"]),
+  yaml(extensions: [".yaml", ".yml"]),
+  properties(extensions: [".properties"]),
+  ;
+
+  final List<String> extensions;
+
+  const L10nFileType({
+    required this.extensions,
+  });
+
+  L10nFileType? detect(String path) {
+    final ext = p.extension(path);
+    for (final type in values) {
+      if (type.extensions.contains(ext)) {
+        return type;
+      }
+    }
+    return null;
+  }
+}
+
 @immutable
 @CopyWith(skipFields: true)
 @JsonSerializable()
@@ -48,6 +72,7 @@ class Project {
   /// limit to 2
   final String shortName;
   final String rootPath;
+  final L10nFileType fileType;
 
   const Project({
     required this.uuid,
@@ -55,11 +80,13 @@ class Project {
     required this.color,
     required this.shortName,
     required this.rootPath,
+    required this.fileType,
   });
 
   factory Project.create({
     String? name,
     required String rootPath,
+    required L10nFileType fileType,
   }) {
     final name = p.basenameWithoutExtension(rootPath);
     final uuid = const Uuid().v4();
@@ -70,6 +97,7 @@ class Project {
       color: color,
       shortName: _getShortName(name),
       rootPath: rootPath,
+      fileType: fileType,
     );
   }
 

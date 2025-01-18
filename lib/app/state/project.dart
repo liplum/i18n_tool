@@ -10,6 +10,7 @@ final _projects = [
     shortName: "IT",
     color: Colors.green,
     rootPath: "/User/liplum/i18n_tool",
+    fileType: L10nFileType.json,
   ),
   Project(
     uuid: "2482F6C6-840C-4A70-A880-9F4EE8DF9021",
@@ -17,6 +18,7 @@ final _projects = [
     shortName: "TP",
     color: Colors.blue,
     rootPath: "/User/liplum/Projects/TestProject",
+    fileType: L10nFileType.json,
   ),
 ];
 

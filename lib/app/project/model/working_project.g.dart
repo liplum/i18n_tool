@@ -132,7 +132,6 @@ abstract class _$L10nFileCWProxy {
   /// L10nFile(...).copyWith(id: 12, name: "My name")
   /// ````
   L10nFile call({
-    L10nFileType? fileType,
     String? path,
     Locale? locale,
   });
@@ -153,15 +152,10 @@ class _$L10nFileCWProxyImpl implements _$L10nFileCWProxy {
   /// L10nFile(...).copyWith(id: 12, name: "My name")
   /// ````
   L10nFile call({
-    Object? fileType = const $CopyWithPlaceholder(),
     Object? path = const $CopyWithPlaceholder(),
     Object? locale = const $CopyWithPlaceholder(),
   }) {
     return L10nFile(
-      fileType: fileType == const $CopyWithPlaceholder() || fileType == null
-          ? _value.fileType
-          // ignore: cast_nullable_to_non_nullable
-          : fileType as L10nFileType,
       path: path == const $CopyWithPlaceholder() || path == null
           ? _value.path
           // ignore: cast_nullable_to_non_nullable
@@ -185,18 +179,11 @@ extension $L10nFileCopyWith on L10nFile {
 // **************************************************************************
 
 L10nFile _$L10nFileFromJson(Map<String, dynamic> json) => L10nFile(
-      fileType: $enumDecode(_$L10nFileTypeEnumMap, json['fileType']),
       path: json['path'] as String,
       locale: localeFromJson(json['locale'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$L10nFileToJson(L10nFile instance) => <String, dynamic>{
-      'fileType': _$L10nFileTypeEnumMap[instance.fileType]!,
       'path': instance.path,
       'locale': localeToJson(instance.locale),
     };
-
-const _$L10nFileTypeEnumMap = {
-  L10nFileType.json: 'json',
-  L10nFileType.yaml: 'yaml',
-};

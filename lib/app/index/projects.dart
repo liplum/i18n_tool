@@ -82,7 +82,10 @@ class _StartProjectsPageState extends ConsumerState<IndexProjectsPage> {
   Future<void> pickAndOpenFolder() async {
     final result = await FilePicker.platform.getDirectoryPath();
     if (result == null) return;
-    final project = Project.create(rootPath: result);
+    final project = Project.create(
+      rootPath: result,
+      fileType: L10nFileType.yaml,
+    );
     ref.read($projects.notifier).addProject(project);
   }
 }

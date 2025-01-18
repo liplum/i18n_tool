@@ -19,6 +19,7 @@ abstract class _$ProjectCWProxy {
     Color? color,
     String? shortName,
     String? rootPath,
+    L10nFileType? fileType,
   });
 }
 
@@ -42,6 +43,7 @@ class _$ProjectCWProxyImpl implements _$ProjectCWProxy {
     Object? color = const $CopyWithPlaceholder(),
     Object? shortName = const $CopyWithPlaceholder(),
     Object? rootPath = const $CopyWithPlaceholder(),
+    Object? fileType = const $CopyWithPlaceholder(),
   }) {
     return Project(
       uuid: uuid == const $CopyWithPlaceholder() || uuid == null
@@ -64,6 +66,10 @@ class _$ProjectCWProxyImpl implements _$ProjectCWProxy {
           ? _value.rootPath
           // ignore: cast_nullable_to_non_nullable
           : rootPath as String,
+      fileType: fileType == const $CopyWithPlaceholder() || fileType == null
+          ? _value.fileType
+          // ignore: cast_nullable_to_non_nullable
+          : fileType as L10nFileType,
     );
   }
 }
@@ -84,6 +90,7 @@ Project _$ProjectFromJson(Map<String, dynamic> json) => Project(
       color: colorFromJson((json['color'] as num).toInt()),
       shortName: json['shortName'] as String,
       rootPath: json['rootPath'] as String,
+      fileType: $enumDecode(_$L10nFileTypeEnumMap, json['fileType']),
     );
 
 Map<String, dynamic> _$ProjectToJson(Project instance) => <String, dynamic>{
@@ -92,7 +99,14 @@ Map<String, dynamic> _$ProjectToJson(Project instance) => <String, dynamic>{
       'color': colorToJson(instance.color),
       'shortName': instance.shortName,
       'rootPath': instance.rootPath,
+      'fileType': _$L10nFileTypeEnumMap[instance.fileType]!,
     };
+
+const _$L10nFileTypeEnumMap = {
+  L10nFileType.json: 'json',
+  L10nFileType.yaml: 'yaml',
+  L10nFileType.properties: 'properties',
+};
 
 const _$ProjectTypeEnumMap = {
   ProjectType.nestedObject: 'nestedObject',
