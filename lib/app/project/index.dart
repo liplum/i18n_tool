@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:collection/collection.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -129,6 +131,7 @@ class L10nFileEditorTab extends ConsumerStatefulWidget {
 class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
   L10nEditingDataSource? dataSource;
   final controller = DataGridController();
+  var loading = false;
 
   @override
   void dispose() {
@@ -151,8 +154,38 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
       }
     });
     final source = dataSource;
-    return Card(
-      child: source != null ? buildEditingField(source) : const Center(child: ProgressRing()),
+    return OnLoading(
+      loading: loading,
+      child: [
+        buildCommandBar().sized(h: 32).padAll(4),
+        (source != null ? buildEditingField(source) : ProgressRing().center()).expanded(),
+      ].column().padOnly(l: 16, r: 16),
+    );
+  }
+
+  Widget buildCommandBar() {
+    final dataSource = this.dataSource;
+    return CommandBar(
+      primaryItems: [
+        CommandBarButton(
+          icon: Icon(FluentIcons.save),
+          label: "Save".text(),
+          onPressed: dataSource == null
+              ? null
+              : () async {
+                  setState(() {
+                    loading = true;
+                  });
+                  final data = dataSource.editing.data;
+                  final serialized = widget.tab.project.serializer.serialize(data);
+                  final fi = File(widget.tab.file.path);
+                  await fi.writeAsString(serialized);
+                  setState(() {
+                    loading = false;
+                  });
+                },
+        )
+      ],
     );
   }
 
