@@ -312,7 +312,7 @@ class L10nEditingDataSource extends DataGridSource {
   /// Helps to hold the new value of all editable widgets.
   /// Based on the new value we will commit the new value into the corresponding
   /// DataGridCell on the onCellSubmit method.
-  dynamic newCellValue;
+  String? newCellValue;
 
   /// Helps to control the editable text in the [TextField] widget.
   final $editingText = TextEditingController();
@@ -323,18 +323,15 @@ class L10nEditingDataSource extends DataGridSource {
     RowColumnIndex rowColumnIndex,
     GridColumn column,
   ) async {
-    final dynamic oldValue = dataGridRow
-            .getCells()
-            .firstWhereOrNull((DataGridCell dataGridCell) => dataGridCell.columnName == column.columnName)
-            ?.value ??
-        '';
+    final cells = dataGridRow.getCells();
+    final cell = cells.firstWhereOrNull((DataGridCell dataGridCell) => dataGridCell.columnName == column.columnName);
+    final dynamic oldValue = cell?.value ?? '';
 
     final int dataRowIndex = _rows.indexOf(dataGridRow);
 
-    if (newCellValue == null || oldValue == newCellValue) {
-      return;
-    }
-
+    final newCellValue = $editingText.text;
+    if (oldValue == newCellValue) return;
+    debugPrint("Edited: $newCellValue");
     // if (column.columnName == 'key') {
     //   _rows[dataRowIndex].getCells()[rowColumnIndex.columnIndex] =
     //       DataGridCell<int>(columnName: 'id', value: newCellValue);
@@ -358,7 +355,7 @@ class L10nEditingDataSource extends DataGridSource {
         cells.firstWhereOrNull((DataGridCell dataGridCell) => dataGridCell.columnName == column.columnName);
     final keyCell = cells.firstWhereOrNull((DataGridCell dataGridCell) => dataGridCell.columnName == "key");
     // Text going to display on editable widget
-    final text = editingCell?.value?.toString() ?? "";
+    final initialText = editingCell?.value?.toString() ?? "";
 
     // The new cell value must be reset.
     // To avoid committing the [DataGridCell] value that was previously edited
@@ -367,8 +364,15 @@ class L10nEditingDataSource extends DataGridSource {
 
     return L10nEditingFieldFlyout(
       title: keyCell?.value.toString().text(),
-      $editingText: $editingText..text = text,
-      onSubmit: submitCell,
+      $editingText: $editingText..text = initialText,
+      onSubmit: () {
+        newCellValue = $editingText.text;
+        submitCell();
+      },
+      onCancel: () {
+        $editingText.text = initialText;
+        newCellValue = initialText;
+      },
     );
   }
 }
@@ -377,12 +381,14 @@ class L10nEditingFieldFlyout extends ConsumerStatefulWidget {
   final Widget? title;
   final TextEditingController $editingText;
   final VoidCallback onSubmit;
+  final VoidCallback onCancel;
 
   const L10nEditingFieldFlyout({
     super.key,
     this.title,
     required this.$editingText,
     required this.onSubmit,
+    required this.onCancel,
   });
 
   @override
@@ -456,6 +462,7 @@ class _L10nEditingFieldFlyoutState extends ConsumerState<L10nEditingFieldFlyout>
           child: "Cancel".text(),
           onPressed: () {
             context.pop();
+            widget.onCancel();
           },
         ).expanded(),
         FilledButton(
