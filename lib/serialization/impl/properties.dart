@@ -21,6 +21,11 @@ class PropertiesL10nSerializer implements L10nSerializer {
 
   @override
   String serialize(L10nData data) {
-    return "";
+    final buff = StringBuffer();
+    for (final (:key, :value) in data) {
+      buff.write("$key = $value");
+      buff.write('\n');
+    }
+    return buff.toString();
   }
 }

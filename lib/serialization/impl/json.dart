@@ -15,7 +15,9 @@ class JsonL10nSerializer implements L10nSerializer {
 
   @override
   String serialize(L10nData data) {
-    final map = data.toNestedMap();
-    return jsonEncode(map);
+    final object = data.toNestedObject();
+    final encoder = JsonEncoder.withIndent(" " * 2);
+    final encoded = encoder.convert(object);
+    return encoded;
   }
 }

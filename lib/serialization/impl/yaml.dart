@@ -1,4 +1,5 @@
 import 'package:yaml/yaml.dart';
+import 'package:yaml_writer/yaml_writer.dart';
 
 import '../data.dart';
 import '../serializer.dart';
@@ -15,6 +16,9 @@ class YamlL10nSerializer implements L10nSerializer {
 
   @override
   String serialize(L10nData data) {
-    return "";
+    final object = data.toNestedObject();
+    final encoder = YamlWriter();
+    final encoded = encoder.write(object);
+    return encoded;
   }
 }

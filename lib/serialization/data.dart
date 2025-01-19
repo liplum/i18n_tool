@@ -15,7 +15,9 @@ abstract class L10nData implements Iterable<L10nPair> {
 
   L10nData set(String key, String? value);
 
-  Map<String, dynamic> toNestedMap();
+  Map<String, dynamic> toNestedObject();
+
+  Map<String, String> toFlattenObject();
 
   factory L10nData.create({
     required List<({String key, String value})> pairs,
@@ -82,7 +84,7 @@ class _FlatL10nList with Iterable<L10nPair> implements L10nData {
   }
 
   @override
-  Map<String, dynamic> toNestedMap() {
+  Map<String, dynamic> toNestedObject() {
     final result = <String, dynamic>{};
     for (final (:key, :value) in this) {
       final keys = key.split(keyPathSeparator);
@@ -95,6 +97,12 @@ class _FlatL10nList with Iterable<L10nPair> implements L10nData {
       }
       cur[keys.last] = value;
     }
+    return result;
+  }
+
+  @override
+  Map<String, String> toFlattenObject() {
+    final result = Map.fromEntries(map((it)=>MapEntry(it.key, it.value)));
     return result;
   }
 }
