@@ -296,14 +296,21 @@ class L10nEditingDataSource extends DataGridSource {
       return Builder(
         builder: (context) {
           final text = cell.columnName == "index" ? "${index + 1}" : cell.value.toString();
-          return text
-              .text(
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: textStyle,
-              )
-              .padOnly(l: 12)
-              .align(at: Alignment.centerLeft);
+          return Tooltip(
+            message: text,
+            style: TooltipThemeData(
+              textStyle: textStyle,
+              maxWidth: 480,
+            ),
+            child: text
+                .text(
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: textStyle,
+                )
+                .padOnly(l: 12)
+                .align(at: Alignment.centerLeft),
+          );
         },
       );
     }).toList(growable: false));
@@ -332,15 +339,14 @@ class L10nEditingDataSource extends DataGridSource {
     final newCellValue = $editingText.text;
     if (oldValue == newCellValue) return;
     debugPrint("Edited: $newCellValue");
-    // if (column.columnName == 'key') {
-    //   _rows[dataRowIndex].getCells()[rowColumnIndex.columnIndex] =
-    //       DataGridCell<int>(columnName: 'id', value: newCellValue);
-    //   _rows[dataRowIndex].id = newCellValue as int;
-    // } else if (column.columnName == 'value') {
-    //   _rows[dataRowIndex].getCells()[rowColumnIndex.columnIndex] =
-    //       DataGridCell<String>(columnName: 'name', value: newCellValue);
-    //   _rows[dataRowIndex].name = newCellValue.toString();
-    // }
+
+    if (column.columnName == 'key') {
+      _rows[dataRowIndex].getCells()[rowColumnIndex.columnIndex] =
+          DataGridCell<String>(columnName: 'key', value: newCellValue);
+    } else if (column.columnName == 'value') {
+      _rows[dataRowIndex].getCells()[rowColumnIndex.columnIndex] =
+          DataGridCell<String>(columnName: 'value', value: newCellValue);
+    }
   }
 
   @override
@@ -468,6 +474,7 @@ class _L10nEditingFieldFlyoutState extends ConsumerState<L10nEditingFieldFlyout>
         FilledButton(
           child: "Submit".text(),
           onPressed: () {
+            context.pop();
             widget.onSubmit();
           },
         ).expanded(),
