@@ -1,12 +1,17 @@
+import 'package:data_table_2/data_table_2.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/material.dart' show DataCell, Material;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n_tool/app/project/model/working_project.dart';
+import 'package:i18n_tool/app/project/state/editing.dart';
 import 'package:i18n_tool/app/project/state/file.dart';
 import 'package:i18n_tool/app/project/state/working_project.dart';
+import 'package:i18n_tool/serialization/collection.dart';
 import 'package:i18n_tool/widget/loading.dart';
 import 'package:rettulf/rettulf.dart';
 
 import '../state/project.dart';
+import 'model/editing.dart';
 
 class ProjectIndexPage extends ConsumerStatefulWidget {
   final String uuid;
@@ -114,13 +119,43 @@ class L10nFileEditorTab extends ConsumerStatefulWidget {
 class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
   @override
   Widget build(BuildContext context) {
-    final content = ref.watch($fileContent(widget.tab.file.path));
+    final editing = ref.watch($l10nEditing(widget.tab));
     return Card(
-      child: switch (content) {
-        AsyncData(:final value) => value.content.text().scrolled(),
+      child: switch (editing) {
+        AsyncData(:final value) => buildEditingField(value),
         AsyncError(:final error) => Text('Error: $error'),
         _ => const Center(child: ProgressRing()),
       },
+    );
+  }
+
+  Widget buildEditingField(L10nEditing editing) {
+    return Material(
+      child: DataTable2(
+        columns: [
+          DataColumn2(
+            label: Text('Key'),
+            size: ColumnSize.L,
+          ),
+          DataColumn2(
+            label: Text('Value'),
+            size: ColumnSize.L,
+          ),
+        ],
+        rows: editing.data.map((pair) {
+          final (:key, :value) = pair;
+          return DataRow2(
+            cells: [
+              DataCell(
+                "${key}".text(style: context.textTheme.bodyLarge),
+              ),
+              DataCell(
+                "${value}".text(style: context.textTheme.bodyLarge),
+              ),
+            ],
+          );
+        }).toList(growable: false),
+      ),
     );
   }
 }

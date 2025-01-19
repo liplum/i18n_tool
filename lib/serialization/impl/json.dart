@@ -10,6 +10,6 @@ class JsonL10nParser implements L10nParser {
   L10nData parse(String content) {
     final json = jsonDecode(content);
     if (json is! Map) throw L10nFileParseException();
-    return L10nData.fromHierarchy(json.cast<String, dynamic>());
+    return L10nData.fromHierarchy(json);
   }
 }
