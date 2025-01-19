@@ -128,10 +128,12 @@ class L10nFileEditorTab extends ConsumerStatefulWidget {
 
 class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
   L10nEditingDataSource? dataSource;
+  final controller = DataGridController();
 
   @override
   void dispose() {
     dataSource?.dispose();
+    controller.dispose();
     super.dispose();
   }
 
@@ -141,7 +143,10 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
       if (next is AsyncData<L10nEditing>) {
         dataSource?.dispose();
         setState(() {
-          dataSource = L10nEditingDataSource(editing: next.value);
+          dataSource = L10nEditingDataSource(
+            controller: controller,
+            editing: next.value,
+          );
         });
       }
     });
@@ -154,6 +159,7 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
   Widget buildEditingField(L10nEditingDataSource dataSource) {
     final template = dataSource.editing.template;
     return SfDataGrid(
+      controller: controller,
       source: dataSource,
       gridLinesVisibility: GridLinesVisibility.both,
       headerGridLinesVisibility: GridLinesVisibility.both,
@@ -163,6 +169,19 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
       editingGestureType: EditingGestureType.tap,
       columnWidthMode: ColumnWidthMode.fill,
       columns: <GridColumn>[
+        GridColumn(
+          columnName: 'index',
+          allowEditing: false,
+          width: 64,
+          label: Container(
+            padding: const EdgeInsets.all(8.0),
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "#",
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
         GridColumn(
           columnName: 'key',
           width: double.nan,
@@ -207,14 +226,20 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
 
 class L10nEditingDataSource extends DataGridSource {
   final L10nEditing editing;
+  final DataGridController controller;
 
   L10nEditingDataSource({
+    required this.controller,
     required this.editing,
   }) {
     final template = editing.template;
     if (template != null) {
       _rows = template.data
-          .map<DataGridRow>((e) => DataGridRow(cells: [
+          .mapIndexed((i, e) => DataGridRow(cells: [
+                DataGridCell<int>(
+                  columnName: 'index',
+                  value: i,
+                ),
                 DataGridCell<String>(
                   columnName: 'key',
                   value: e.key,
@@ -231,7 +256,11 @@ class L10nEditingDataSource extends DataGridSource {
           .toList();
     } else {
       _rows = editing.data
-          .map<DataGridRow>((e) => DataGridRow(cells: [
+          .mapIndexed((i, e) => DataGridRow(cells: [
+                DataGridCell<int>(
+                  columnName: 'index',
+                  value: i,
+                ),
                 DataGridCell<String>(
                   columnName: 'key',
                   value: e.key,
@@ -258,24 +287,26 @@ class L10nEditingDataSource extends DataGridSource {
 
   @override
   DataGridRowAdapter? buildRow(DataGridRow row) {
+    final cells = row.getCells();
+    final indexCell = cells.firstWhere((it) => it.columnName == "index");
+    final index = indexCell.value as int? ?? 0;
+    final textStyle = GoogleFonts.jetBrainsMono();
     return DataGridRowAdapter(
-        cells: row.getCells().map<Widget>((dataGridCell) {
-      return Builder(builder: (context) {
-        return buildCell(context, dataGridCell.value);
-      });
-    }).toList());
-  }
-
-  Widget buildCell(BuildContext context, dynamic value) {
-    return value
-        .toString()
-        .text(
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: GoogleFonts.jetBrainsMono(),
-        )
-        .padOnly(l: 12)
-        .align(at: Alignment.centerLeft);
+        cells: cells.mapIndexed((i, cell) {
+      return Builder(
+        builder: (context) {
+          final text = cell.columnName == "index" ? "${index + 1}" : cell.value.toString();
+          return text
+              .text(
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: textStyle,
+              )
+              .padOnly(l: 12)
+              .align(at: Alignment.centerLeft);
+        },
+      );
+    }).toList(growable: false));
   }
 
   /// Helps to hold the new value of all editable widgets.
