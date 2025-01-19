@@ -1,14 +1,12 @@
 import 'package:collection/collection.dart';
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter/material.dart' show Material, DataCell;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:i18n_tool/app/project/model/working_project.dart';
 import 'package:i18n_tool/app/project/state/editing.dart';
-import 'package:i18n_tool/app/project/state/file.dart';
 import 'package:i18n_tool/app/project/state/working_project.dart';
-import 'package:i18n_tool/serialization/data.dart';
 import 'package:i18n_tool/widget/loading.dart';
+import 'package:locale_names/locale_names.dart';
 import 'package:rettulf/rettulf.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
@@ -144,6 +142,7 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
   }
 
   Widget buildEditingField(L10nEditingDataSource dataSource) {
+    final template = dataSource.editing.template;
     return SfDataGrid(
       source: dataSource,
       gridLinesVisibility: GridLinesVisibility.both,
@@ -152,7 +151,7 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
       navigationMode: GridNavigationMode.cell,
       selectionMode: SelectionMode.single,
       editingGestureType: EditingGestureType.tap,
-      columnWidthMode: ColumnWidthMode.lastColumnFill,
+      columnWidthMode: ColumnWidthMode.fill,
       columns: <GridColumn>[
         GridColumn(
           columnName: 'key',
@@ -160,21 +159,21 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
           label: Container(
             padding: const EdgeInsets.all(8.0),
             alignment: Alignment.centerLeft,
-            child: const Text(
-              'Key',
+            child:  Text(
+              dataSource.editing.locale.defaultDisplayLanguageScript,
               overflow: TextOverflow.ellipsis,
             ),
           ),
         ),
-        if (dataSource.editing.template != null)
+        if (template != null)
           GridColumn(
             columnName: 'template',
-            width: 180,
+            width: double.nan,
             label: Container(
               padding: const EdgeInsets.all(8.0),
               alignment: Alignment.centerLeft,
-              child: const Text(
-                'Template',
+              child: Text(
+                template.locale.defaultDisplayLanguageScript,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -239,7 +238,6 @@ class L10nEditingDataSource extends DataGridSource {
   @override
   void dispose() {
     $editingText.dispose();
-    $actions.dispose();
     super.dispose();
   }
 
@@ -257,10 +255,7 @@ class L10nEditingDataSource extends DataGridSource {
   }
 
   Widget buildCell(dynamic value) {
-    return Container(
-      padding: EdgeInsets.all(16.0),
-      child: value.toString().text(overflow: TextOverflow.ellipsis),
-    );
+    return value.toString().text(overflow: TextOverflow.ellipsis).padAll(12).align(at: Alignment.centerLeft);
   }
 
   /// Helps to hold the new value of all editable widgets.
@@ -270,7 +265,6 @@ class L10nEditingDataSource extends DataGridSource {
 
   /// Helps to control the editable text in the [TextField] widget.
   final $editingText = TextEditingController();
-  final $actions = FlyoutController();
 
   @override
   Future<void> onCellSubmit(
@@ -308,37 +302,27 @@ class L10nEditingDataSource extends DataGridSource {
     GridColumn column,
     CellSubmit submitCell,
   ) {
-    final cell = dataGridRow
-        .getCells()
-        .firstWhereOrNull((DataGridCell dataGridCell) => dataGridCell.columnName == column.columnName);
+    final cells = dataGridRow.getCells();
+    final editingCell =
+        cells.firstWhereOrNull((DataGridCell dataGridCell) => dataGridCell.columnName == column.columnName);
+    final keyCell = cells.firstWhereOrNull((DataGridCell dataGridCell) => dataGridCell.columnName == "key");
     // Text going to display on editable widget
-    final String displayText = cell?.value?.toString() ?? '';
+    final text = editingCell?.value?.toString() ?? "";
 
     // The new cell value must be reset.
     // To avoid committing the [DataGridCell] value that was previously edited
     // into the current non-modified [DataGridCell].
     newCellValue = null;
-    Future.delayed(Duration(milliseconds: 100)).then((_) {
-      $actions.showFlyout(
-        builder: (ctx) {
-          return FlyoutContent(
-            child: L10nEditingFieldFlyout(
-              title: cell?.columnName.text(),
-              $editingText: $editingText..text = displayText,
-              onSubmit: submitCell,
-            ),
-          );
-        },
-      );
-    });
-    return FlyoutTarget(
-      controller: $actions,
-      child: buildCell(displayText),
+
+    return L10nEditingFieldFlyout(
+      title: keyCell?.value.toString().text(),
+      $editingText: $editingText..text = text,
+      onSubmit: submitCell,
     );
   }
 }
 
-class L10nEditingFieldFlyout extends ConsumerWidget {
+class L10nEditingFieldFlyout extends ConsumerStatefulWidget {
   final Widget? title;
   final TextEditingController $editingText;
   final VoidCallback onSubmit;
@@ -351,36 +335,82 @@ class L10nEditingFieldFlyout extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState createState() => _L10nEditingFieldFlyoutState();
+}
+
+class _L10nEditingFieldFlyoutState extends ConsumerState<L10nEditingFieldFlyout> {
+  final $actions = FlyoutController();
+
+  @override
+  void dispose() {
+    $actions.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FlyoutTarget(
+      controller: $actions,
+      child: GestureDetector(
+        onDoubleTap: openFlyoutEditing,
+        child: TextBox(
+          autofocus: true,
+          maxLines: null,
+          controller: widget.$editingText,
+          onSubmitted: (_) {
+            widget.onSubmit();
+          },
+          // onTap: openFlyoutEditing,
+          suffix: IconButton(
+            icon: Icon(FluentIcons.chevron_down),
+            iconButtonMode: IconButtonMode.large,
+            onPressed: openFlyoutEditing,
+          ),
+        ),
+      ),
+    );
+  }
+  Future<void> openFlyoutEditing() async {
+    await $actions.showFlyout(
+      builder: (ctx) {
+        return FlyoutContent(
+          child: buildFlyoutContent(ctx),
+        );
+      },
+    );
+  }
+
+  Widget buildFlyoutContent(BuildContext context) {
     return [
-      // ListTile(
-      //   title: title,
-      // ),
+      ListTile(
+        title: widget.title,
+      ),
       TextBox(
         autofocus: true,
         maxLines: null,
-        controller: $editingText,
+        minLines: 10,
+        controller: widget.$editingText,
         onSubmitted: (String value) {
           // In Mobile Platform.
           // Call [CellSubmit] callback to fire the canSubmitCell and
           // onCellSubmit to commit the new value in single place.
-          onSubmit();
+          widget.onSubmit();
         },
-      ).sized(w: 480, h: 240),
+      ),
       [
         Button(
           child: "Cancel".text(),
           onPressed: () {
             context.pop();
           },
-        ),
+        ).expanded(),
         FilledButton(
           child: "Submit".text(),
           onPressed: () {
-            onSubmit();
+            widget.onSubmit();
           },
-        ),
-      ].row(mas: MainAxisSize.min, spacing: 16),
-    ].column(mas: MainAxisSize.min, spacing: 8);
+        ).expanded(),
+      ].row(spacing: 32),
+    ].column(mas: MainAxisSize.min, spacing: 8).constrained(maxW: 480);
   }
 }
