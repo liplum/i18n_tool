@@ -42,7 +42,7 @@ class WorkingProjectNotifier extends AutoDisposeFamilyAsyncNotifier<WorkingProje
         ) ??
         WorkingProject(
           project: arg,
-          parser: arg.createParser(),
+          serializer: arg.createParser(),
           templateLocale: templateLocale?.locale,
           l10nFiles: l10nFiles,
         );

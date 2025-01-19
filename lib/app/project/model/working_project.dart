@@ -15,7 +15,7 @@ part "working_project.g.dart";
 @CopyWith(skipFields: true)
 class WorkingProject {
   final Project project;
-  final L10nSerializer parser;
+  final L10nSerializer serializer;
   final Locale? templateLocale;
   final List<L10nFile> l10nFiles;
   final List<L10nFileTab> openTabs;
@@ -23,7 +23,7 @@ class WorkingProject {
 
   const WorkingProject({
     required this.project,
-    required this.parser,
+    required this.serializer,
     this.templateLocale,
     this.l10nFiles = const [],
     this.openTabs = const [],

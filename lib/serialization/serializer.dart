@@ -11,5 +11,7 @@ class L10nSerializationException implements Exception {
 abstract class L10nSerializer {
   const L10nSerializer();
 
-  L10nData parse(String content);
+  L10nData deserialize(String content);
+
+  String serialize(L10nData data);
 }

@@ -7,9 +7,14 @@ class YamlL10nSerializer implements L10nSerializer {
   const YamlL10nSerializer();
 
   @override
-  L10nData parse(String content) {
+  L10nData deserialize(String content) {
     final yaml = loadYaml(content);
     if (yaml is! Map) throw L10nSerializationException();
     return L10nData.fromHierarchy(yaml);
+  }
+
+  @override
+  String serialize(L10nData data) {
+    return "";
   }
 }
