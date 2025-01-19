@@ -1,6 +1,6 @@
 import 'package:properties/properties.dart';
 
-import '../collection.dart';
+import '../data.dart';
 import '../parser.dart';
 
 class PropertiesL10nParser implements L10nParser {

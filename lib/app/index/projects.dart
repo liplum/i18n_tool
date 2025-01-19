@@ -119,7 +119,7 @@ class _ProjectTileState extends ConsumerState<ProjectTile> {
   }
 
   Future<void> checkProjectExisting() async {
-    final file = File(widget.project.rootPath);
+    final file = Directory(widget.project.rootPath);
     final existing = await file.exists();
     if (!mounted) return;
     setState(() {
@@ -137,12 +137,13 @@ class _ProjectTileState extends ConsumerState<ProjectTile> {
           );
     final project = widget.project;
     return ListTile(
-      leading: existing
-          ? CircleAvatar(
-              backgroundColor: project.color.withValues(alpha: 0.8),
-              child: project.shortName.text(),
-            )
-          : Icon(FluentIcons.page_remove),
+      leading: Opacity(
+        opacity: existing ? 1 : 0.5,
+        child: CircleAvatar(
+          backgroundColor: project.color.withValues(alpha: 0.8),
+          child: project.shortName.text(),
+        ),
+      ),
       title: project.name.text(style: style),
       subtitle: project.rootPath.text(style: style),
       trailing: buildActions(),

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import '../collection.dart';
+import '../data.dart';
 import '../parser.dart';
 
 class JsonL10nParser implements L10nParser {

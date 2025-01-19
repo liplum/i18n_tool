@@ -1,6 +1,6 @@
 import 'package:yaml/yaml.dart';
 
-import '../collection.dart';
+import '../data.dart';
 import '../parser.dart';
 
 class YamlL10nParser implements L10nParser {

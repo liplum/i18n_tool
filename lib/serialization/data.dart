@@ -25,10 +25,11 @@ abstract class L10nData implements Iterable<L10nPair> {
     final pairs = <({String key, String value})>[];
     void visit(String? parent, Map tree) {
       for (final MapEntry(:key, :value) in tree.entries) {
+        final curKey = parent == null ? "$key" : "$parent$keyPathSeparator$key";
         if (value is String) {
-          pairs.add((key: "$key", value: value));
+          pairs.add((key: curKey, value: value));
         } else if (value is Map) {
-          visit(parent == null ? "$key" : "$parent$keyPathSeparator$key", value);
+          visit(curKey, value);
         }
       }
     }

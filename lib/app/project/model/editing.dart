@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:i18n_tool/serialization/collection.dart';
+import 'package:i18n_tool/serialization/data.dart';
 import 'package:meta/meta.dart';
 
 part "editing.g.dart";

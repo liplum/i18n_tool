@@ -1,4 +1,4 @@
-import 'collection.dart';
+import 'data.dart';
 
 class L10nFileParseException implements Exception {
   final Exception? cause;

@@ -1,12 +1,12 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter/material.dart' show DataCell, Material;
+import 'package:flutter/material.dart' show Material, DataCell;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n_tool/app/project/model/working_project.dart';
 import 'package:i18n_tool/app/project/state/editing.dart';
 import 'package:i18n_tool/app/project/state/file.dart';
 import 'package:i18n_tool/app/project/state/working_project.dart';
-import 'package:i18n_tool/serialization/collection.dart';
+import 'package:i18n_tool/serialization/data.dart';
 import 'package:i18n_tool/widget/loading.dart';
 import 'package:rettulf/rettulf.dart';
 

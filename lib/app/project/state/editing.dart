@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n_tool/app/project/state/file.dart';
-import 'package:i18n_tool/serialization/collection.dart';
+import 'package:i18n_tool/serialization/data.dart';
 
 import '../model/editing.dart';
 import '../model/working_project.dart';
