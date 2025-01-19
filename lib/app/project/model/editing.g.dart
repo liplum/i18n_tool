@@ -48,10 +48,10 @@ class _$L10nEditingCWProxyImpl implements _$L10nEditingCWProxy {
           ? _value.data
           // ignore: cast_nullable_to_non_nullable
           : data as L10nData,
-      template: template == const $CopyWithPlaceholder() || template == null
+      template: template == const $CopyWithPlaceholder()
           ? _value.template
           // ignore: cast_nullable_to_non_nullable
-          : template as ({L10nData data, Locale locale}),
+          : template as ({L10nData data, Locale locale})?,
     );
   }
 }

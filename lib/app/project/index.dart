@@ -146,6 +146,8 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
   Widget buildEditingField(L10nEditingDataSource dataSource) {
     return SfDataGrid(
       source: dataSource,
+      gridLinesVisibility: GridLinesVisibility.both,
+      headerGridLinesVisibility: GridLinesVisibility.both,
       allowEditing: true,
       navigationMode: GridNavigationMode.cell,
       selectionMode: SelectionMode.single,
@@ -164,6 +166,19 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
             ),
           ),
         ),
+        if (dataSource.editing.template != null)
+          GridColumn(
+            columnName: 'template',
+            width: 180,
+            label: Container(
+              padding: const EdgeInsets.all(8.0),
+              alignment: Alignment.centerLeft,
+              child: const Text(
+                'Template',
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
         GridColumn(
           columnName: 'value',
           width: double.nan,
@@ -182,15 +197,43 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
 }
 
 class L10nEditingDataSource extends DataGridSource {
+  final L10nEditing editing;
+
   L10nEditingDataSource({
-    required L10nEditing editing,
+    required this.editing,
   }) {
-    _rows = editing.data
-        .map<DataGridRow>((e) => DataGridRow(cells: [
-              DataGridCell<String>(columnName: 'key', value: e.key),
-              DataGridCell<String>(columnName: 'value', value: e.value),
-            ]))
-        .toList();
+    final template = editing.template;
+    if (template != null) {
+      _rows = template.data
+          .map<DataGridRow>((e) => DataGridRow(cells: [
+                DataGridCell<String>(
+                  columnName: 'key',
+                  value: e.key,
+                ),
+                DataGridCell<String>(
+                  columnName: 'template',
+                  value: e.value,
+                ),
+                DataGridCell<String>(
+                  columnName: 'value',
+                  value: editing.data.get(e.key) ?? "",
+                ),
+              ]))
+          .toList();
+    } else {
+      _rows = editing.data
+          .map<DataGridRow>((e) => DataGridRow(cells: [
+                DataGridCell<String>(
+                  columnName: 'key',
+                  value: e.key,
+                ),
+                DataGridCell<String>(
+                  columnName: 'value',
+                  value: e.value,
+                ),
+              ]))
+          .toList();
+    }
   }
 
   @override
@@ -216,7 +259,7 @@ class L10nEditingDataSource extends DataGridSource {
   Widget buildCell(dynamic value) {
     return Container(
       padding: EdgeInsets.all(16.0),
-      child:value.toString().text(overflow: TextOverflow.ellipsis),
+      child: value.toString().text(overflow: TextOverflow.ellipsis),
     );
   }
 

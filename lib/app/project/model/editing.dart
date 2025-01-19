@@ -12,7 +12,7 @@ class L10nEditing {
   final Locale locale;
   final L10nData data;
 
-  final ({Locale locale, L10nData data}) template;
+  final ({Locale locale, L10nData data})? template;
 
   const L10nEditing({
     required this.locale,

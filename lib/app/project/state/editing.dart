@@ -31,18 +31,22 @@ class L10nEditingNotifier extends AutoDisposeFamilyAsyncNotifier<L10nEditing, L1
   Future<L10nEditing> build(L10nFileTab arg) async {
     final data = await ref.watch($l10nData((project: arg.project, file: arg.file)).future);
     final templateFile = arg.project.templateL10nFile;
-    var template = (locale: arg.file.locale, data: data);
-    if (templateFile != null) {
+    if (templateFile != null && templateFile.locale != arg.file.locale) {
       final templateData = await ref.watch($l10nData((project: arg.project, file: templateFile)).future);
-      template = (
-        locale: templateFile.locale,
-        data: templateData,
+      return L10nEditing(
+        locale: arg.file.locale,
+        data: data,
+        template: (
+          locale: templateFile.locale,
+          data: templateData,
+        ),
+      );
+    } else {
+      return L10nEditing(
+        locale: arg.file.locale,
+        data: data,
+        template: null,
       );
     }
-    return L10nEditing(
-      locale: arg.file.locale,
-      data: data,
-      template: template,
-    );
   }
 }
