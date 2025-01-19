@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:i18n_tool/app/project/model/working_project.dart';
 import 'package:i18n_tool/app/project/state/editing.dart';
 import 'package:i18n_tool/app/project/state/working_project.dart';
@@ -65,6 +66,15 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
                     onTap: () {},
                   ),
                 ],
+          footerItems: [
+            PaneItemAction(
+              icon: const Icon(FluentIcons.settings),
+              title: const Text('Settings'),
+              onTap: () {
+                context.push("/settings");
+              },
+            ),
+          ],
         ),
         paneBodyBuilder: (item, child) {
           return buildEditingPanel(workingProject);
@@ -159,7 +169,7 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
           label: Container(
             padding: const EdgeInsets.all(8.0),
             alignment: Alignment.centerLeft,
-            child:  Text(
+            child: Text(
               dataSource.editing.locale.defaultDisplayLanguageScript,
               overflow: TextOverflow.ellipsis,
             ),
@@ -184,7 +194,7 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
           label: Container(
             padding: const EdgeInsets.all(8.0),
             alignment: Alignment.centerLeft,
-            child: const Text(
+            child: Text(
               'Value',
               overflow: TextOverflow.ellipsis,
             ),
@@ -250,12 +260,22 @@ class L10nEditingDataSource extends DataGridSource {
   DataGridRowAdapter? buildRow(DataGridRow row) {
     return DataGridRowAdapter(
         cells: row.getCells().map<Widget>((dataGridCell) {
-      return buildCell(dataGridCell.value);
+      return Builder(builder: (context) {
+        return buildCell(context, dataGridCell.value);
+      });
     }).toList());
   }
 
-  Widget buildCell(dynamic value) {
-    return value.toString().text(overflow: TextOverflow.ellipsis).padAll(12).align(at: Alignment.centerLeft);
+  Widget buildCell(BuildContext context, dynamic value) {
+    return value
+        .toString()
+        .text(
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: GoogleFonts.jetBrainsMono(),
+        )
+        .padOnly(l: 12)
+        .align(at: Alignment.centerLeft);
   }
 
   /// Helps to hold the new value of all editable widgets.
@@ -355,8 +375,9 @@ class _L10nEditingFieldFlyoutState extends ConsumerState<L10nEditingFieldFlyout>
         onDoubleTap: openFlyoutEditing,
         child: TextBox(
           autofocus: true,
-          maxLines: null,
+          maxLines: 1,
           controller: widget.$editingText,
+          style: GoogleFonts.jetBrainsMono(),
           onSubmitted: (_) {
             widget.onSubmit();
           },
@@ -370,6 +391,7 @@ class _L10nEditingFieldFlyoutState extends ConsumerState<L10nEditingFieldFlyout>
       ),
     );
   }
+
   Future<void> openFlyoutEditing() async {
     await $actions.showFlyout(
       builder: (ctx) {
@@ -389,6 +411,7 @@ class _L10nEditingFieldFlyoutState extends ConsumerState<L10nEditingFieldFlyout>
         autofocus: true,
         maxLines: null,
         minLines: 10,
+        style: GoogleFonts.jetBrainsMono(),
         controller: widget.$editingText,
         onSubmitted: (String value) {
           // In Mobile Platform.
