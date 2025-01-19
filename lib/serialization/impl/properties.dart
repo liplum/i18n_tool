@@ -1,10 +1,10 @@
 import 'package:properties/properties.dart';
 
 import '../data.dart';
-import '../parser.dart';
+import '../serializer.dart';
 
-class PropertiesL10nParser implements L10nParser {
-  const PropertiesL10nParser();
+class PropertiesL10nSerializer implements L10nSerializer {
+  const PropertiesL10nSerializer();
 
   @override
   L10nData parse(String content) {

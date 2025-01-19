@@ -1,15 +1,15 @@
 import 'package:yaml/yaml.dart';
 
 import '../data.dart';
-import '../parser.dart';
+import '../serializer.dart';
 
-class YamlL10nParser implements L10nParser {
-  const YamlL10nParser();
+class YamlL10nSerializer implements L10nSerializer {
+  const YamlL10nSerializer();
 
   @override
   L10nData parse(String content) {
     final yaml = loadYaml(content);
-    if (yaml is! Map) throw L10nFileParseException();
+    if (yaml is! Map) throw L10nSerializationException();
     return L10nData.fromHierarchy(yaml);
   }
 }

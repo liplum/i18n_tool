@@ -15,7 +15,7 @@ abstract class _$WorkingProjectCWProxy {
   /// ````
   WorkingProject call({
     Project? project,
-    L10nParser? parser,
+    L10nSerializer? parser,
     Locale? templateLocale,
     List<L10nFile>? l10nFiles,
     List<L10nFileTab>? openTabs,
@@ -53,7 +53,7 @@ class _$WorkingProjectCWProxyImpl implements _$WorkingProjectCWProxy {
       parser: parser == const $CopyWithPlaceholder() || parser == null
           ? _value.parser
           // ignore: cast_nullable_to_non_nullable
-          : parser as L10nParser,
+          : parser as L10nSerializer,
       templateLocale: templateLocale == const $CopyWithPlaceholder()
           ? _value.templateLocale
           // ignore: cast_nullable_to_non_nullable

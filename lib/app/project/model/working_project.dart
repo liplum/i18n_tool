@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:i18n_tool/serialization/parser.dart';
+import 'package:i18n_tool/serialization/serializer.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:locale_names/locale_names.dart';
 import 'package:meta/meta.dart';
@@ -15,7 +15,7 @@ part "working_project.g.dart";
 @CopyWith(skipFields: true)
 class WorkingProject {
   final Project project;
-  final L10nParser parser;
+  final L10nSerializer parser;
   final Locale? templateLocale;
   final List<L10nFile> l10nFiles;
   final List<L10nFileTab> openTabs;

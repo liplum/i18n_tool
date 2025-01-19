@@ -189,7 +189,7 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
             padding: const EdgeInsets.all(8.0),
             alignment: Alignment.centerLeft,
             child: Text(
-              dataSource.editing.locale.defaultDisplayLanguageScript,
+              "Key",
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -214,7 +214,7 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
             padding: const EdgeInsets.all(8.0),
             alignment: Alignment.centerLeft,
             child: Text(
-              'Value',
+              dataSource.editing.locale.defaultDisplayLanguageScript,
               overflow: TextOverflow.ellipsis,
             ),
           ),
