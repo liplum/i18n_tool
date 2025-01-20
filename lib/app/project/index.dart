@@ -4,14 +4,12 @@ import 'package:collection/collection.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:i18n_tool/app/project/model/working_project.dart';
 import 'package:i18n_tool/app/project/state/editing.dart';
 import 'package:i18n_tool/app/project/state/working_project.dart';
 import 'package:i18n_tool/app/utils/locale.dart';
 import 'package:i18n_tool/serialization/data.dart';
 import 'package:i18n_tool/widget/loading.dart';
-import 'package:locale_names/locale_names.dart';
 import 'package:rettulf/rettulf.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
@@ -220,13 +218,15 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> with Auto
         editingGestureType: EditingGestureType.tap,
         columnWidthMode: ColumnWidthMode.fill,
         onQueryRowHeight: (details) {
-          return 48;
+          if (details.rowIndex == 0) return 42;
+          return details.getIntrinsicRowHeight(details.rowIndex);
         },
         columns: <GridColumn>[
           GridColumn(
             columnName: 'index',
             allowEditing: false,
             width: 64,
+            visible: false,
             label: "#".text(overflow: TextOverflow.ellipsis).padAll(8).align(at: Alignment.centerLeft),
           ),
           GridColumn(
@@ -339,7 +339,6 @@ class L10nEditingDataSource extends DataGridSource {
     final cells = row.getCells();
     final indexCell = cells.firstWhere((it) => it.columnName == "index");
     final index = indexCell.value as int? ?? 0;
-    final textStyle = GoogleFonts.jetBrainsMono();
     return DataGridRowAdapter(
         cells: cells.mapIndexed((i, cell) {
       return Builder(
@@ -348,17 +347,9 @@ class L10nEditingDataSource extends DataGridSource {
           return Tooltip(
             message: text,
             style: TooltipThemeData(
-              textStyle: textStyle,
               maxWidth: 480,
             ),
-            child: text
-                .text(
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: textStyle,
-                )
-                .padOnly(l: 12)
-                .align(at: Alignment.centerLeft),
+            child: text.text().align(at: Alignment.topLeft).padAll(8),
           );
         },
       );
@@ -463,18 +454,12 @@ class _L10nEditingFieldFlyoutState extends ConsumerState<L10nEditingFieldFlyout>
         onDoubleTap: openFlyoutEditing,
         child: TextBox(
           autofocus: true,
-          maxLines: 1,
+          maxLines: null,
+          textAlignVertical: TextAlignVertical.top,
           controller: widget.$editingText,
-          style: GoogleFonts.jetBrainsMono(),
           onSubmitted: (_) {
             widget.onSubmit();
           },
-          // onTap: openFlyoutEditing,
-          suffix: IconButton(
-            icon: Icon(FluentIcons.chevron_down),
-            iconButtonMode: IconButtonMode.large,
-            onPressed: openFlyoutEditing,
-          ),
         ),
       ),
     );
@@ -499,7 +484,6 @@ class _L10nEditingFieldFlyoutState extends ConsumerState<L10nEditingFieldFlyout>
         autofocus: true,
         maxLines: null,
         minLines: 10,
-        style: GoogleFonts.jetBrainsMono(),
         controller: widget.$editingText,
         onSubmitted: (String value) {
           // In Mobile Platform.
