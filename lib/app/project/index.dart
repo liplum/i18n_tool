@@ -128,7 +128,7 @@ class L10nFileEditorTab extends ConsumerStatefulWidget {
   ConsumerState createState() => _L10nFileEditorTabState();
 }
 
-class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
+class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> with AutomaticKeepAliveClientMixin {
   L10nEditingDataSource? dataSource;
   final controller = DataGridController();
   var loading = false;
@@ -141,7 +141,11 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     ref.listen($l10nEditing(widget.tab), (pre, next) {
       if (next is AsyncData<L10nEditing>) {
         dataSource?.dispose();
@@ -168,6 +172,11 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
     return CommandBar(
       primaryItems: [
         CommandBarButton(
+          icon: Icon(FluentIcons.add),
+          label: "Add".text(),
+          onPressed: dataSource == null ? null : () async {},
+        ),
+        CommandBarButton(
           icon: Icon(FluentIcons.save),
           label: "Save".text(),
           onPressed: dataSource == null
@@ -184,7 +193,7 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
                     loading = false;
                   });
                 },
-        )
+        ),
       ],
     );
   }
@@ -231,6 +240,7 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
           GridColumn(
             columnName: 'template',
             width: double.nan,
+            allowEditing: false,
             label: Container(
               padding: const EdgeInsets.all(8.0),
               alignment: Alignment.centerLeft,
@@ -260,6 +270,7 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> {
 class L10nEditingDataSource extends DataGridSource {
   final L10nEditing editing;
   final DataGridController controller;
+  var _rows = <DataGridRow>[];
 
   L10nEditingDataSource({
     required this.controller,
@@ -313,10 +324,12 @@ class L10nEditingDataSource extends DataGridSource {
     super.dispose();
   }
 
-  List<DataGridRow> _rows = [];
-
   @override
   List<DataGridRow> get rows => _rows;
+
+  void addRow() {
+
+  }
 
   @override
   DataGridRowAdapter? buildRow(DataGridRow row) {
@@ -365,20 +378,16 @@ class L10nEditingDataSource extends DataGridSource {
   ) async {
     final cells = dataGridRow.getCells();
     final cell = cells.firstWhereOrNull((DataGridCell dataGridCell) => dataGridCell.columnName == column.columnName);
-    final dynamic oldValue = cell?.value ?? '';
-
-    final int dataRowIndex = _rows.indexOf(dataGridRow);
+    final oldValue = cell?.value;
 
     final newCellValue = $editingText.text;
     if (oldValue == newCellValue) return;
     debugPrint("Edited: $newCellValue");
 
     if (column.columnName == 'key') {
-      _rows[dataRowIndex].getCells()[rowColumnIndex.columnIndex] =
-          DataGridCell<String>(columnName: 'key', value: newCellValue);
+      cells[rowColumnIndex.columnIndex] = DataGridCell<String>(columnName: 'key', value: newCellValue);
     } else if (column.columnName == 'value') {
-      _rows[dataRowIndex].getCells()[rowColumnIndex.columnIndex] =
-          DataGridCell<String>(columnName: 'value', value: newCellValue);
+      cells[rowColumnIndex.columnIndex] = DataGridCell<String>(columnName: 'value', value: newCellValue);
     }
   }
 

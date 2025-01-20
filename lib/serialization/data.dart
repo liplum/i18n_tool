@@ -22,7 +22,7 @@ abstract class L10nData implements Iterable<L10nPair> {
   factory L10nData.create({
     required List<({String key, String value})> pairs,
   }) {
-    return _FlatL10nList(pairs: pairs);
+    return _FlatL10nDataList(pairs: pairs);
   }
 
   factory L10nData.fromHierarchy(Map hierarchy) {
@@ -39,15 +39,15 @@ abstract class L10nData implements Iterable<L10nPair> {
     }
 
     visit(null, hierarchy);
-    return _FlatL10nList(pairs: pairs);
+    return _FlatL10nDataList(pairs: pairs);
   }
 }
 
 @immutable
-class _FlatL10nList with Iterable<L10nPair> implements L10nData {
+class _FlatL10nDataList with Iterable<L10nPair> implements L10nData {
   final List<L10nPair> pairs;
 
-  const _FlatL10nList({
+  const _FlatL10nDataList({
     required this.pairs,
   });
 
@@ -71,13 +71,13 @@ class _FlatL10nList with Iterable<L10nPair> implements L10nData {
     final index = pairs.indexWhere((it) => it.key == key);
     if (index < 0) {
       if (value != null) {
-        return _FlatL10nList(pairs: [...pairs, (key: key, value: value)]);
+        return _FlatL10nDataList(pairs: [...pairs, (key: key, value: value)]);
       }
     } else {
       if (value == null) {
-        return _FlatL10nList(pairs: [...pairs]..removeAt(index));
+        return _FlatL10nDataList(pairs: [...pairs]..removeAt(index));
       } else {
-        return _FlatL10nList(pairs: [...pairs]..[index] = (key: key, value: value));
+        return _FlatL10nDataList(pairs: [...pairs]..[index] = (key: key, value: value));
       }
     }
     return this;
@@ -102,7 +102,7 @@ class _FlatL10nList with Iterable<L10nPair> implements L10nData {
 
   @override
   Map<String, String> toFlattenObject() {
-    final result = Map.fromEntries(map((it)=>MapEntry(it.key, it.value)));
+    final result = Map.fromEntries(map((it) => MapEntry(it.key, it.value)));
     return result;
   }
 }
