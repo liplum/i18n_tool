@@ -54,6 +54,7 @@ dependencies:
   syncfusion_flutter_datagrid: ^28.1.39
   google_fonts: ^6.2.1
   yaml_writer: ^2.0.1
+  syncfusion_flutter_core: ^28.1.39
 
 dev_dependencies:
   flutter_test:

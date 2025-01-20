@@ -8,10 +8,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:i18n_tool/app/project/model/working_project.dart';
 import 'package:i18n_tool/app/project/state/editing.dart';
 import 'package:i18n_tool/app/project/state/working_project.dart';
+import 'package:i18n_tool/app/utils/locale.dart';
 import 'package:i18n_tool/serialization/data.dart';
 import 'package:i18n_tool/widget/loading.dart';
 import 'package:locale_names/locale_names.dart';
 import 'package:rettulf/rettulf.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../state/project.dart';
@@ -201,48 +203,59 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> with Auto
 
   Widget buildEditingField(L10nEditingDataSource dataSource) {
     final template = dataSource.editing.template;
-    return SfDataGrid(
-      controller: controller,
-      source: dataSource,
-      gridLinesVisibility: GridLinesVisibility.both,
-      headerGridLinesVisibility: GridLinesVisibility.both,
-      allowEditing: true,
-      allowSorting: true,
-      navigationMode: GridNavigationMode.cell,
-      selectionMode: SelectionMode.single,
-      editingGestureType: EditingGestureType.tap,
-      columnWidthMode: ColumnWidthMode.fill,
-      columns: <GridColumn>[
-        GridColumn(
-          columnName: 'index',
-          allowEditing: false,
-          width: 64,
-          label: "#".text(overflow: TextOverflow.ellipsis).padAll(8).align(at: Alignment.centerLeft),
-        ),
-        GridColumn(
-          columnName: 'key',
-          width: double.nan,
-          label: "Key".text(overflow: TextOverflow.ellipsis).padAll(8).align(at: Alignment.centerLeft),
-        ),
-        if (template != null)
+    return SfDataGridTheme(
+      data: SfDataGridThemeData(
+        gridLineColor: FluentTheme.of(context).inactiveColor.withValues(alpha: 0.2),
+        gridLineStrokeWidth: 1.0,
+      ),
+      child: SfDataGrid(
+        controller: controller,
+        source: dataSource,
+        gridLinesVisibility: GridLinesVisibility.horizontal,
+        headerGridLinesVisibility: GridLinesVisibility.horizontal,
+        allowEditing: true,
+        allowSorting: true,
+        navigationMode: GridNavigationMode.cell,
+        selectionMode: SelectionMode.single,
+        editingGestureType: EditingGestureType.tap,
+        columnWidthMode: ColumnWidthMode.fill,
+        onQueryRowHeight: (details) {
+          return 48;
+        },
+        columns: <GridColumn>[
           GridColumn(
-            columnName: 'template',
-            width: double.nan,
+            columnName: 'index',
             allowEditing: false,
-            label: template.locale.defaultDisplayLanguageScript
+            width: 64,
+            label: "#".text(overflow: TextOverflow.ellipsis).padAll(8).align(at: Alignment.centerLeft),
+          ),
+          GridColumn(
+            columnName: 'key',
+            width: double.nan,
+            label: "Key".text(overflow: TextOverflow.ellipsis).padAll(8).align(at: Alignment.centerLeft),
+          ),
+          if (template != null)
+            GridColumn(
+              columnName: 'template',
+              width: double.nan,
+              allowEditing: false,
+              label: template.locale
+                  .l10n()
+                  .text(overflow: TextOverflow.ellipsis)
+                  .padAll(8)
+                  .align(at: Alignment.centerLeft),
+            ),
+          GridColumn(
+            columnName: 'value',
+            width: double.nan,
+            label: dataSource.editing.locale
+                .l10n()
                 .text(overflow: TextOverflow.ellipsis)
                 .padAll(8)
                 .align(at: Alignment.centerLeft),
           ),
-        GridColumn(
-          columnName: 'value',
-          width: double.nan,
-          label: dataSource.editing.locale.defaultDisplayLanguageScript
-              .text(overflow: TextOverflow.ellipsis)
-              .padAll(8)
-              .align(at: Alignment.centerLeft),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
