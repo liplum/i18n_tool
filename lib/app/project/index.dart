@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:i18n_tool/app/project/model/working_project.dart';
 import 'package:i18n_tool/app/project/state/editing.dart';
 import 'package:i18n_tool/app/project/state/working_project.dart';
+import 'package:i18n_tool/serialization/data.dart';
 import 'package:i18n_tool/widget/loading.dart';
 import 'package:locale_names/locale_names.dart';
 import 'package:rettulf/rettulf.dart';
@@ -185,7 +186,7 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> with Auto
                   setState(() {
                     loading = true;
                   });
-                  final data = dataSource.editing.data;
+                  final data = dataSource.buildL10nData();
                   final serialized = widget.tab.project.serializer.serialize(data);
                   final fi = File(widget.tab.file.path);
                   await fi.writeAsString(serialized);
@@ -206,6 +207,7 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> with Auto
       gridLinesVisibility: GridLinesVisibility.both,
       headerGridLinesVisibility: GridLinesVisibility.both,
       allowEditing: true,
+      allowSorting: true,
       navigationMode: GridNavigationMode.cell,
       selectionMode: SelectionMode.single,
       editingGestureType: EditingGestureType.tap,
@@ -215,52 +217,30 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> with Auto
           columnName: 'index',
           allowEditing: false,
           width: 64,
-          label: Container(
-            padding: const EdgeInsets.all(8.0),
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "#",
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
+          label: "#".text(overflow: TextOverflow.ellipsis).padAll(8).align(at: Alignment.centerLeft),
         ),
         GridColumn(
           columnName: 'key',
           width: double.nan,
-          label: Container(
-            padding: const EdgeInsets.all(8.0),
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "Key",
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
+          label: "Key".text(overflow: TextOverflow.ellipsis).padAll(8).align(at: Alignment.centerLeft),
         ),
         if (template != null)
           GridColumn(
             columnName: 'template',
             width: double.nan,
             allowEditing: false,
-            label: Container(
-              padding: const EdgeInsets.all(8.0),
-              alignment: Alignment.centerLeft,
-              child: Text(
-                template.locale.defaultDisplayLanguageScript,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
+            label: template.locale.defaultDisplayLanguageScript
+                .text(overflow: TextOverflow.ellipsis)
+                .padAll(8)
+                .align(at: Alignment.centerLeft),
           ),
         GridColumn(
           columnName: 'value',
           width: double.nan,
-          label: Container(
-            padding: const EdgeInsets.all(8.0),
-            alignment: Alignment.centerLeft,
-            child: Text(
-              dataSource.editing.locale.defaultDisplayLanguageScript,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
+          label: dataSource.editing.locale.defaultDisplayLanguageScript
+              .text(overflow: TextOverflow.ellipsis)
+              .padAll(8)
+              .align(at: Alignment.centerLeft),
         ),
       ],
     );
@@ -327,9 +307,19 @@ class L10nEditingDataSource extends DataGridSource {
   @override
   List<DataGridRow> get rows => _rows;
 
-  void addRow() {
-
+  L10nData buildL10nData() {
+    final pairs = <L10nPair>[];
+    for (final cellsInRow in _rows.map((row) => row.getCells())) {
+      final key = cellsInRow.firstWhereOrNull((cell) => cell.columnName == "key")?.value;
+      final value = cellsInRow.firstWhereOrNull((cell) => cell.columnName == "value")?.value;
+      if (key != null && value != null) {
+        pairs.add((key: key, value: value));
+      }
+    }
+    return L10nData.create(pairs: pairs);
   }
+
+  void addRow() {}
 
   @override
   DataGridRowAdapter? buildRow(DataGridRow row) {

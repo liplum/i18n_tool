@@ -18,7 +18,7 @@ class YamlL10nSerializer implements L10nSerializer {
   String serialize(L10nData data) {
     final object = data.toNestedObject();
     final encoder = YamlWriter(
-      allowUnquotedStrings: true,
+      allowUnquotedStrings: false,
     );
     final encoded = encoder.write(object);
     return encoded;

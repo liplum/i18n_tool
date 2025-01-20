@@ -20,7 +20,7 @@ abstract class L10nData implements Iterable<L10nPair> {
   Map<String, String> toFlattenObject();
 
   factory L10nData.create({
-    required List<({String key, String value})> pairs,
+    required List<L10nPair> pairs,
   }) {
     return _FlatL10nDataList(pairs: pairs);
   }
