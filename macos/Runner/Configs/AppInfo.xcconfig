@@ -5,10 +5,10 @@
 // 'flutter create' template.
 
 // The application's name. By default this is also the title of the Flutter window.
-PRODUCT_NAME = i18n_tool
+PRODUCT_NAME = I18n Tool
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = net.liplum.i18nTool
+PRODUCT_BUNDLE_IDENTIFIER = net.liplum.I18nTool
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2025 net.liplum. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2024-2025 Plum Techonology Ltd. All rights reserved.
