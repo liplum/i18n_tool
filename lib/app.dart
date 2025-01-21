@@ -1,7 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
-import 'package:i18n_tool/app/routes.dart';
+import 'package:i18n_tool/app/route.dart';
 import 'package:i18n_tool/lifecycle.dart';
 import 'package:i18n_tool/r.dart';
 
