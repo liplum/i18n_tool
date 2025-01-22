@@ -9,6 +9,7 @@ import 'package:i18n_tool/app/project/state/editing.dart';
 import 'package:i18n_tool/app/project/state/working_project.dart';
 import 'package:i18n_tool/app/utils/locale.dart';
 import 'package:i18n_tool/serialization/data.dart';
+import 'package:i18n_tool/widget/fluent_ui.dart';
 import 'package:i18n_tool/widget/loading.dart';
 import 'package:rettulf/rettulf.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
@@ -172,28 +173,24 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> with Auto
     final dataSource = this.dataSource;
     return CommandBar(
       primaryItems: [
-        CommandBarBuilderItem(
-          builder: (context, displayMode, child) => Tooltip(message: "Add", child: child),
-          wrappedItem: CommandBarButton(
-            icon: Icon(FluentIcons.add),
-            onPressed: dataSource == null ? null : () async {},
-          ),
+        CommandBarItemWithTooltip(
+          tooltip: "Add",
+          icon: Icon(FluentIcons.add),
+          onPressed: dataSource == null ? null : () async {},
         ),
-        CommandBarBuilderItem(
-          builder: (context, displayMode, child) => Tooltip(message: "Remove", child: child),
-          wrappedItem: CommandBarButton(
-            icon: Icon(FluentIcons.remove),
-            onPressed: dataSource == null
-                ? null
-                : () async {
-                    final selectedRow = controller.selectedRow;
-                    if (selectedRow == null) return;
-                    final cells = selectedRow.getCells();
-                    final key = cells.firstWhereOrNull((it) => it.columnName == "key")?.value as String?;
-                    if (key == null) return;
-                    dataSource.removeRow(key);
-                  },
-          ),
+        CommandBarItemWithTooltip(
+          tooltip: "Remove",
+          icon: Icon(FluentIcons.remove),
+          onPressed: dataSource == null
+              ? null
+              : () async {
+                  final selectedRow = controller.selectedRow;
+                  if (selectedRow == null) return;
+                  final cells = selectedRow.getCells();
+                  final key = cells.firstWhereOrNull((it) => it.columnName == "key")?.value as String?;
+                  if (key == null) return;
+                  dataSource.removeRow(key);
+                },
         ),
         CommandBarSeparator(),
         CommandBarButton(

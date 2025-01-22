@@ -28,7 +28,7 @@ RoutingConfig buildRoutingConfig() {
         routes: [
           GoRoute(
             path: "/index",
-            redirect: (ctx, state) => "/index/projects",
+            redirect: (ctx, state) => state.fullPath == "/index" ? "/index/projects" : null,
             routes: [
               GoRoute(
                 path: "/projects",
@@ -53,7 +53,7 @@ RoutingConfig buildRoutingConfig() {
         routes: [
           GoRoute(
             path: "/settings",
-            redirect: (ctx, state) => "/settings/general",
+            redirect: (ctx, state) => state.fullPath == "/settings" ? "/settings/general" : null,
             routes: [
               GoRoute(
                 path: "/general",

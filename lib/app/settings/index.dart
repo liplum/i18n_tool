@@ -23,15 +23,21 @@ class _SettingsIndexPageState extends ConsumerState<SettingsIndexPage> {
         title: "App Settings".text(),
       ),
       pane: NavigationPane(items: [
-        PaneItem(
+        PaneItemAction(
           icon: Icon(FluentIcons.settings),
           title: "General".text(),
           body: const SizedBox.shrink(),
+          onTap: () {
+            context.push("/settings/general");
+          },
         ),
-        PaneItem(
+        PaneItemAction(
           icon: Icon(FluentIcons.new_team_project),
           title: "For New Projects".text(),
           body: const SizedBox.shrink(),
+          onTap: () {
+            context.push("/settings/for-new-projects");
+          },
         ),
       ]),
       paneBodyBuilder: (item, child) {
