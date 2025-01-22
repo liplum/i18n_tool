@@ -85,4 +85,27 @@ class WorkingProjectNotifier extends AutoDisposeFamilyAsyncNotifier<WorkingProje
       selectedTab: state.openTabs.firstWhereOrNull((it) => it.file.isTheSameLocale(file)),
     ));
   }
+
+  void recordTab(int oldIndex, int newIndex) {
+    // TODO: buggy
+    final state = this.state.value;
+    if (state == null) return;
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
+    }
+    final newTabs = [...state.openTabs];
+    var currentIndex = newTabs.indexWhere((it) => it.file.locale == state.selectedTab?.file.locale);
+    final item = newTabs.removeAt(oldIndex);
+    newTabs.insert(newIndex, item);
+
+    if (currentIndex == newIndex) {
+      currentIndex = oldIndex;
+    } else if (currentIndex == oldIndex) {
+      currentIndex = newIndex;
+    }
+    this.state = AsyncValue.data(state.copyWith(
+      openTabs: newTabs,
+      selectedTab: newTabs[currentIndex],
+    ));
+  }
 }

@@ -97,6 +97,10 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
           : (index) {
               ref.read($workingProject(project).notifier).selectTab(workingProject.openTabs[index].file);
             },
+      // TODO: support reordering
+      // onReorder: (oldIndex, newIndex) {
+      //   ref.read($workingProject(project).notifier).recordTab(oldIndex,newIndex);
+      // },
       tabWidthBehavior: TabWidthBehavior.sizeToContent,
       closeButtonVisibility: CloseButtonVisibilityMode.always,
       showScrollButtons: true,
