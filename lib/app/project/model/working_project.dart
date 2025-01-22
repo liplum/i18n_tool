@@ -5,7 +5,6 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:i18n_tool/app/utils/locale.dart';
 import 'package:i18n_tool/serialization/serializer.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:locale_names/locale_names.dart';
 import 'package:meta/meta.dart';
 
 import '../../model/project.dart';

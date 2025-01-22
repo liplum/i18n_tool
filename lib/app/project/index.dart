@@ -176,9 +176,7 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> with Auto
           builder: (context, displayMode, child) => Tooltip(message: "Add", child: child),
           wrappedItem: CommandBarButton(
             icon: Icon(FluentIcons.add),
-            onPressed: dataSource == null ? null : () async {
-
-            },
+            onPressed: dataSource == null ? null : () async {},
           ),
         ),
         CommandBarBuilderItem(
@@ -208,7 +206,11 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> with Auto
                     loading = true;
                   });
                   final data = dataSource.buildL10nData();
-                  final serialized = widget.tab.project.serializer.serialize(data);
+                  final workingProject = widget.tab.project;
+                  final serialized = workingProject.serializer.serialize(
+                    data,
+                    workingProject.project.settings.toSerializationSettings(),
+                  );
                   final fi = File(widget.tab.file.path);
                   await fi.writeAsString(serialized);
                   setState(() {

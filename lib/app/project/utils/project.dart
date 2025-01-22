@@ -11,7 +11,10 @@ Locale? tryParseLocale(final String rawLocale) {
   final intlLocale = intl.Locale.tryParse(rawLocale);
   if (intlLocale != null) {
     return Locale.fromSubtags(
-        languageCode: intlLocale.languageCode, countryCode: intlLocale.countryCode, scriptCode: intlLocale.scriptCode);
+      languageCode: intlLocale.languageCode,
+      countryCode: intlLocale.countryCode,
+      scriptCode: intlLocale.scriptCode,
+    );
   }
   return null;
 }

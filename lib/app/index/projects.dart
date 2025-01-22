@@ -144,8 +144,8 @@ class _ProjectTileState extends ConsumerState<ProjectTile> {
           child: project.shortName.text(),
         ),
       ),
-      title: project.name.text(style: style),
-      subtitle: project.rootPath.text(style: style),
+      title: Opacity(opacity: existing ? 1 : 0.8, child: project.name.text(style: style)),
+      subtitle: Opacity(opacity: existing ? 1 : 0.8, child: project.rootPath.text(style: style)),
       trailing: buildActions(),
       onPressed: existing
           ? () {

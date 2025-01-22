@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:i18n_tool/serialization/impl/yaml.dart';
+import 'package:i18n_tool/serialization/serializer.dart';
 
 void main() {
   group("YAML serialization", () {
@@ -13,9 +14,10 @@ about:
   title: 'About My App'
   content: 'This is a simple app'
 """;
+    final settings = const SerializationSettings();
     final serializer = YamlL10nSerializer();
     test("deserialization", () {
-      final data = serializer.deserialize(raw);
+      final data = serializer.deserialize(raw, settings);
       assert(data.get("author") == "Liplum");
       assert(data.get("description") == "This is a simple app");
       assert(data.get("index.title") == "Welcome to My App");
@@ -25,8 +27,8 @@ about:
     });
 
     test("serialization", () {
-      final data = serializer.deserialize(raw);
-      final serialized = serializer.serialize(data);
+      final data = serializer.deserialize(raw, settings);
+      final serialized = serializer.serialize(data, settings);
       assert(serialized == raw);
     });
   });

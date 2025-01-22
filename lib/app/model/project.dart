@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:i18n_tool/serialization/serializer.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 import 'package:uuid/uuid.dart';
@@ -68,6 +69,26 @@ class ProjectType {
   Map<String, dynamic> toJson() => _$ProjectTypeToJson(this);
 }
 
+@CopyWith(skipFields: true)
+@JsonSerializable()
+class ProjectSettings {
+  final bool forceQuotedString;
+
+  const ProjectSettings({
+    this.forceQuotedString = false,
+  });
+
+  factory ProjectSettings.fromJson(Map<String, dynamic> json) => _$ProjectSettingsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ProjectSettingsToJson(this);
+
+  SerializationSettings toSerializationSettings() {
+    return SerializationSettings(
+      forceQuotedString: forceQuotedString,
+    );
+  }
+}
+
 @immutable
 @CopyWith(skipFields: true)
 @JsonSerializable()
@@ -83,6 +104,7 @@ class Project {
   final String shortName;
   final String rootPath;
   final ProjectType type;
+  final ProjectSettings settings;
 
   const Project({
     this.version = Project.latestVersion,
@@ -92,6 +114,7 @@ class Project {
     required this.shortName,
     required this.rootPath,
     required this.type,
+    this.settings = const ProjectSettings(),
   });
 
   factory Project.create({

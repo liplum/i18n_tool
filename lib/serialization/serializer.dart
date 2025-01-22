@@ -8,10 +8,18 @@ class L10nSerializationException implements Exception {
   });
 }
 
+class SerializationSettings {
+  final bool forceQuotedString;
+
+  const SerializationSettings({
+    this.forceQuotedString = false,
+  });
+}
+
 abstract class L10nSerializer {
   const L10nSerializer();
 
-  L10nData deserialize(String content);
+  L10nData deserialize(String content, SerializationSettings settings);
 
-  String serialize(L10nData data);
+  String serialize(L10nData data, SerializationSettings settings);
 }

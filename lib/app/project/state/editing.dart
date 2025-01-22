@@ -17,7 +17,11 @@ class L10nDataNotifier extends AutoDisposeFamilyAsyncNotifier<L10nData, L10nFile
   @override
   Future<L10nData> build(L10nFileWithProject arg) async {
     final fileContent = await ref.watch($fileContent(arg.file.path).future);
-    final data = arg.project.serializer.deserialize(fileContent.content);
+    final workingProject = arg.project;
+    final data = workingProject.serializer.deserialize(
+      fileContent.content,
+      workingProject.project.settings.toSerializationSettings(),
+    );
     return data;
   }
 }

@@ -7,7 +7,7 @@ class PropertiesL10nSerializer implements L10nSerializer {
   const PropertiesL10nSerializer();
 
   @override
-  L10nData deserialize(String content) {
+  L10nData deserialize(String content, SerializationSettings settings) {
     final pairs = <({String key, String value})>[];
     final properties = Properties.fromString(content);
     for (final key in properties.keys) {
@@ -20,7 +20,7 @@ class PropertiesL10nSerializer implements L10nSerializer {
   }
 
   @override
-  String serialize(L10nData data) {
+  String serialize(L10nData data, SerializationSettings settings) {
     final buff = StringBuffer();
     for (final (:key, :value) in data) {
       buff.write("$key = $value");

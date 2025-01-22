@@ -50,6 +50,50 @@ extension $ProjectTypeCopyWith on ProjectType {
   _$ProjectTypeCWProxy get copyWith => _$ProjectTypeCWProxyImpl(this);
 }
 
+abstract class _$ProjectSettingsCWProxy {
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored.
+  ///
+  /// Usage
+  /// ```dart
+  /// ProjectSettings(...).copyWith(id: 12, name: "My name")
+  /// ````
+  ProjectSettings call({
+    bool? forceQuotedString,
+  });
+}
+
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfProjectSettings.copyWith(...)`.
+class _$ProjectSettingsCWProxyImpl implements _$ProjectSettingsCWProxy {
+  const _$ProjectSettingsCWProxyImpl(this._value);
+
+  final ProjectSettings _value;
+
+  @override
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored.
+  ///
+  /// Usage
+  /// ```dart
+  /// ProjectSettings(...).copyWith(id: 12, name: "My name")
+  /// ````
+  ProjectSettings call({
+    Object? forceQuotedString = const $CopyWithPlaceholder(),
+  }) {
+    return ProjectSettings(
+      forceQuotedString: forceQuotedString == const $CopyWithPlaceholder() || forceQuotedString == null
+          ? _value.forceQuotedString
+          // ignore: cast_nullable_to_non_nullable
+          : forceQuotedString as bool,
+    );
+  }
+}
+
+extension $ProjectSettingsCopyWith on ProjectSettings {
+  /// Returns a callable class that can be used as follows: `instanceOfProjectSettings.copyWith(...)`.
+  // ignore: library_private_types_in_public_api
+  _$ProjectSettingsCWProxy get copyWith => _$ProjectSettingsCWProxyImpl(this);
+}
+
 abstract class _$ProjectCWProxy {
   /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored.
   ///
@@ -65,6 +109,7 @@ abstract class _$ProjectCWProxy {
     String? shortName,
     String? rootPath,
     ProjectType? type,
+    ProjectSettings? settings,
   });
 }
 
@@ -90,6 +135,7 @@ class _$ProjectCWProxyImpl implements _$ProjectCWProxy {
     Object? shortName = const $CopyWithPlaceholder(),
     Object? rootPath = const $CopyWithPlaceholder(),
     Object? type = const $CopyWithPlaceholder(),
+    Object? settings = const $CopyWithPlaceholder(),
   }) {
     return Project(
       version: version == const $CopyWithPlaceholder() || version == null
@@ -120,6 +166,10 @@ class _$ProjectCWProxyImpl implements _$ProjectCWProxy {
           ? _value.type
           // ignore: cast_nullable_to_non_nullable
           : type as ProjectType,
+      settings: settings == const $CopyWithPlaceholder() || settings == null
+          ? _value.settings
+          // ignore: cast_nullable_to_non_nullable
+          : settings as ProjectSettings,
     );
   }
 }
@@ -148,6 +198,14 @@ const _$ProjectFileTypeEnumMap = {
   ProjectFileType.properties: 'properties',
 };
 
+ProjectSettings _$ProjectSettingsFromJson(Map<String, dynamic> json) => ProjectSettings(
+      forceQuotedString: json['forceQuotedString'] as bool? ?? false,
+    );
+
+Map<String, dynamic> _$ProjectSettingsToJson(ProjectSettings instance) => <String, dynamic>{
+      'forceQuotedString': instance.forceQuotedString,
+    };
+
 Project _$ProjectFromJson(Map<String, dynamic> json) => Project(
       version: (json['version'] as num?)?.toInt() ?? Project.latestVersion,
       uuid: json['uuid'] as String,
@@ -156,6 +214,9 @@ Project _$ProjectFromJson(Map<String, dynamic> json) => Project(
       shortName: json['shortName'] as String,
       rootPath: json['rootPath'] as String,
       type: ProjectType.fromJson(json['type'] as Map<String, dynamic>),
+      settings: json['settings'] == null
+          ? const ProjectSettings()
+          : ProjectSettings.fromJson(json['settings'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$ProjectToJson(Project instance) => <String, dynamic>{
@@ -166,4 +227,5 @@ Map<String, dynamic> _$ProjectToJson(Project instance) => <String, dynamic>{
       'shortName': instance.shortName,
       'rootPath': instance.rootPath,
       'type': instance.type,
+      'settings': instance.settings,
     };
