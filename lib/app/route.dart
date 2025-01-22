@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'index/index.dart';
 import 'index/projects.dart';
 import 'project/index.dart';
+import 'settings/for_new_projects.dart';
 import 'settings/general.dart';
 import 'settings/index.dart';
 
@@ -57,6 +58,10 @@ RoutingConfig buildRoutingConfig() {
               GoRoute(
                 path: "/general",
                 builder: (ctx, state) => const GeneralSettingsPage(),
+              ),
+              GoRoute(
+                path: "/for-new-projects",
+                builder: (ctx, state) => const ForNewProjectsSettingsPage(),
               ),
             ],
           ),

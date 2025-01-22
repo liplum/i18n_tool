@@ -20,12 +20,17 @@ class _SettingsIndexPageState extends ConsumerState<SettingsIndexPage> {
   Widget build(BuildContext context) {
     return NavigationView(
       appBar: NavigationAppBar(
-        title: "App settings".text(),
+        title: "App Settings".text(),
       ),
       pane: NavigationPane(items: [
         PaneItem(
           icon: Icon(FluentIcons.settings),
           title: "General".text(),
+          body: const SizedBox.shrink(),
+        ),
+        PaneItem(
+          icon: Icon(FluentIcons.new_team_project),
+          title: "For New Projects".text(),
           body: const SizedBox.shrink(),
         ),
       ]),
