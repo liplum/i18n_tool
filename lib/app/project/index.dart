@@ -219,7 +219,7 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> with Auto
         columnWidthMode: ColumnWidthMode.fill,
         onQueryRowHeight: (details) {
           if (details.rowIndex == 0) return 42;
-          return details.getIntrinsicRowHeight(details.rowIndex);
+          return details.getIntrinsicRowHeight(details.rowIndex) * 0.8;
         },
         columns: <GridColumn>[
           GridColumn(
@@ -260,6 +260,42 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> with Auto
   }
 }
 
+class _L10nCell extends StatelessWidget {
+  final int index;
+  final String columnName;
+  final dynamic value;
+
+  const _L10nCell({
+    required this.index,
+    required this.columnName,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (columnName == "index") {
+      return "${index + 1}".text().align(at: Alignment.topLeft).padAll(12);
+    } else if (value == null) {
+      return Opacity(
+        opacity: 0.8,
+        child: "(Missing)".text(
+            style: TextStyle(
+          fontStyle: FontStyle.italic,
+        )),
+      ).align(at: Alignment.topLeft).padAll(12);
+    } else {
+      final text = value.toString();
+      return Tooltip(
+        message: text,
+        style: TooltipThemeData(
+          maxWidth: 480,
+        ),
+        child: text.text().align(at: Alignment.topLeft).padAll(12),
+      );
+    }
+  }
+}
+
 class L10nEditingDataSource extends DataGridSource {
   final L10nEditing editing;
   final DataGridController controller;
@@ -271,40 +307,40 @@ class L10nEditingDataSource extends DataGridSource {
   }) {
     final template = editing.template;
     if (template != null) {
-      _rows = template.data
-          .mapIndexed((i, e) => DataGridRow(cells: [
+      _rows = template.rows
+          .mapIndexed((i, row) => DataGridRow(cells: [
                 DataGridCell<int>(
                   columnName: 'index',
                   value: i,
                 ),
                 DataGridCell<String>(
                   columnName: 'key',
-                  value: e.key,
+                  value: row.key,
                 ),
                 DataGridCell<String>(
                   columnName: 'template',
-                  value: e.value,
+                  value: row.template,
                 ),
                 DataGridCell<String>(
                   columnName: 'value',
-                  value: editing.data.get(e.key) ?? "",
+                  value: row.value,
                 ),
               ]))
           .toList();
     } else {
       _rows = editing.data
-          .mapIndexed((i, e) => DataGridRow(cells: [
+          .mapIndexed((i, row) => DataGridRow(cells: [
                 DataGridCell<int>(
                   columnName: 'index',
                   value: i,
                 ),
                 DataGridCell<String>(
                   columnName: 'key',
-                  value: e.key,
+                  value: row.key,
                 ),
                 DataGridCell<String>(
                   columnName: 'value',
-                  value: e.value,
+                  value: row.value,
                 ),
               ]))
           .toList();
@@ -340,20 +376,18 @@ class L10nEditingDataSource extends DataGridSource {
     final indexCell = cells.firstWhere((it) => it.columnName == "index");
     final index = indexCell.value as int? ?? 0;
     return DataGridRowAdapter(
-        cells: cells.mapIndexed((i, cell) {
-      return Builder(
-        builder: (context) {
-          final text = cell.columnName == "index" ? "${index + 1}" : cell.value.toString();
-          return Tooltip(
-            message: text,
-            style: TooltipThemeData(
-              maxWidth: 480,
-            ),
-            child: text.text().align(at: Alignment.topLeft).padAll(8),
-          );
-        },
-      );
-    }).toList(growable: false));
+      cells: cells
+          .mapIndexed((i, cell) => Builder(
+                builder: (context) {
+                  return _L10nCell(
+                    index: index,
+                    columnName: cell.columnName,
+                    value: cell.value,
+                  );
+                },
+              ))
+          .toList(growable: false),
+    );
   }
 
   /// Helps to hold the new value of all editable widgets.
@@ -462,7 +496,7 @@ class _L10nEditingFieldFlyoutState extends ConsumerState<L10nEditingFieldFlyout>
           },
         ),
       ),
-    );
+    ).padAll(4);
   }
 
   Future<void> openFlyoutEditing() async {

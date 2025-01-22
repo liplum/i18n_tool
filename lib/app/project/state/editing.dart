@@ -33,7 +33,7 @@ class L10nEditingNotifier extends AutoDisposeFamilyAsyncNotifier<L10nEditing, L1
     final templateFile = arg.project.templateL10nFile;
     if (templateFile != null && templateFile.locale != arg.file.locale) {
       final templateData = await ref.watch($l10nData((project: arg.project, file: templateFile)).future);
-      return L10nEditing(
+      return L10nEditing.create(
         locale: arg.file.locale,
         data: data,
         template: (
@@ -42,7 +42,7 @@ class L10nEditingNotifier extends AutoDisposeFamilyAsyncNotifier<L10nEditing, L1
         ),
       );
     } else {
-      return L10nEditing(
+      return L10nEditing.create(
         locale: arg.file.locale,
         data: data,
         template: null,

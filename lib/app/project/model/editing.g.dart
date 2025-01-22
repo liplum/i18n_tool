@@ -16,7 +16,7 @@ abstract class _$L10nEditingCWProxy {
   L10nEditing call({
     Locale? locale,
     L10nData? data,
-    ({L10nData data, Locale locale})? template,
+    ({L10nData data, Locale locale, List<L10nDataRow> rows})? template,
   });
 }
 
@@ -51,7 +51,7 @@ class _$L10nEditingCWProxyImpl implements _$L10nEditingCWProxy {
       template: template == const $CopyWithPlaceholder()
           ? _value.template
           // ignore: cast_nullable_to_non_nullable
-          : template as ({L10nData data, Locale locale})?,
+          : template as ({L10nData data, Locale locale, List<L10nDataRow> rows})?,
     );
   }
 }
