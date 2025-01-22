@@ -172,11 +172,32 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> with Auto
     final dataSource = this.dataSource;
     return CommandBar(
       primaryItems: [
-        CommandBarButton(
-          icon: Icon(FluentIcons.add),
-          label: "Add".text(),
-          onPressed: dataSource == null ? null : () async {},
+        CommandBarBuilderItem(
+          builder: (context, displayMode, child) => Tooltip(message: "Add", child: child),
+          wrappedItem: CommandBarButton(
+            icon: Icon(FluentIcons.add),
+            onPressed: dataSource == null ? null : () async {
+
+            },
+          ),
         ),
+        CommandBarBuilderItem(
+          builder: (context, displayMode, child) => Tooltip(message: "Remove", child: child),
+          wrappedItem: CommandBarButton(
+            icon: Icon(FluentIcons.remove),
+            onPressed: dataSource == null
+                ? null
+                : () async {
+                    final selectedRow = controller.selectedRow;
+                    if (selectedRow == null) return;
+                    final cells = selectedRow.getCells();
+                    final key = cells.firstWhereOrNull((it) => it.columnName == "key")?.value as String?;
+                    if (key == null) return;
+                    dataSource.removeRow(key);
+                  },
+          ),
+        ),
+        CommandBarSeparator(),
         CommandBarButton(
           icon: Icon(FluentIcons.save),
           label: "Save".text(),
@@ -274,23 +295,23 @@ class _L10nCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (columnName == "index") {
-      return "${index + 1}".text().align(at: Alignment.topLeft).padAll(12);
+      return "${index + 1}".text().align(at: Alignment.topLeft).padAll(8);
     } else if (value == null) {
       return Opacity(
         opacity: 0.8,
-        child: "(Missing)".text(
+        child: "<Missing>".text(
             style: TextStyle(
           fontStyle: FontStyle.italic,
         )),
-      ).align(at: Alignment.topLeft).padAll(12);
+      ).align(at: Alignment.topLeft).padAll(8);
     } else {
       final text = value.toString();
       return Tooltip(
         message: text,
         style: TooltipThemeData(
-          maxWidth: 480,
+          maxWidth: 520,
         ),
-        child: text.text().align(at: Alignment.topLeft).padAll(12),
+        child: text.text().align(at: Alignment.topLeft).padAll(8),
       );
     }
   }
@@ -369,6 +390,14 @@ class L10nEditingDataSource extends DataGridSource {
   }
 
   void addRow() {}
+
+  void removeRow(String key) {
+    final rowIndex =
+        _rows.indexWhere((it) => it.getCells().firstWhereOrNull((it) => it.columnName == "key")?.value == key);
+    if (rowIndex < 0) return;
+    _rows.removeAt(rowIndex);
+    notifyListeners();
+  }
 
   @override
   DataGridRowAdapter? buildRow(DataGridRow row) {
