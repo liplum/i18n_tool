@@ -74,8 +74,12 @@ class ProjectType {
 class ProjectSettings {
   final bool forceQuotedString;
 
+  /// if the project file type is capable
+  final bool nestedByDot;
+
   const ProjectSettings({
     this.forceQuotedString = false,
+    this.nestedByDot = true,
   });
 
   factory ProjectSettings.fromJson(Map<String, dynamic> json) => _$ProjectSettingsFromJson(json);

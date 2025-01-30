@@ -66,8 +66,8 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
                   PaneItemSeparator(),
                   PaneItemAction(
                     icon: const Icon(FluentIcons.add),
-                    title: const Text('Add new language'),
-                    onTap: () {},
+                    title: const Text('Add language target'),
+                    onTap: addNewLanguage,
                   ),
                 ],
           footerItems: [
@@ -84,6 +84,13 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
           return buildEditingPanel(workingProject);
         },
       ),
+    );
+  }
+
+  Future<void> addNewLanguage() async {
+    await showDialog(
+      context: context,
+      builder: (ctx) => CreateLanguageForm(),
     );
   }
 
@@ -119,6 +126,50 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
           ),
       ],
     );
+  }
+}
+
+class CreateLanguageForm extends ConsumerStatefulWidget {
+  const CreateLanguageForm({super.key});
+
+  @override
+  ConsumerState createState() => _CreateLanguageFormState();
+}
+
+class _CreateLanguageFormState extends ConsumerState<CreateLanguageForm> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: FluentTheme.of(context).micaBackgroundColor,
+      child: ScaffoldPage(
+        header: PageHeader(
+          title: "Add a language target".text(),
+        ),
+        bottomBar: [
+          FilledButton(
+            onPressed: () {},
+            child: "Add Language".text(),
+          ),
+        ].row(maa: MainAxisAlignment.end).padAll(8),
+        content: buildBody().padSymmetric(h: 32),
+      ),
+    );
+  }
+
+  Widget buildBody() {
+    return [
+      "".text(),
+    ].column(spacing: 8);
   }
 }
 

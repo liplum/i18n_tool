@@ -59,6 +59,7 @@ abstract class _$ProjectSettingsCWProxy {
   /// ````
   ProjectSettings call({
     bool? forceQuotedString,
+    bool? nestedByDot,
   });
 }
 
@@ -78,12 +79,17 @@ class _$ProjectSettingsCWProxyImpl implements _$ProjectSettingsCWProxy {
   /// ````
   ProjectSettings call({
     Object? forceQuotedString = const $CopyWithPlaceholder(),
+    Object? nestedByDot = const $CopyWithPlaceholder(),
   }) {
     return ProjectSettings(
       forceQuotedString: forceQuotedString == const $CopyWithPlaceholder() || forceQuotedString == null
           ? _value.forceQuotedString
           // ignore: cast_nullable_to_non_nullable
           : forceQuotedString as bool,
+      nestedByDot: nestedByDot == const $CopyWithPlaceholder() || nestedByDot == null
+          ? _value.nestedByDot
+          // ignore: cast_nullable_to_non_nullable
+          : nestedByDot as bool,
     );
   }
 }
@@ -200,10 +206,12 @@ const _$ProjectFileTypeEnumMap = {
 
 ProjectSettings _$ProjectSettingsFromJson(Map<String, dynamic> json) => ProjectSettings(
       forceQuotedString: json['forceQuotedString'] as bool? ?? false,
+      nestedByDot: json['nestedByDot'] as bool? ?? true,
     );
 
 Map<String, dynamic> _$ProjectSettingsToJson(ProjectSettings instance) => <String, dynamic>{
       'forceQuotedString': instance.forceQuotedString,
+      'nestedByDot': instance.nestedByDot,
     };
 
 Project _$ProjectFromJson(Map<String, dynamic> json) => Project(

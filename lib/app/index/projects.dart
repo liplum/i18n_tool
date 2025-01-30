@@ -210,7 +210,7 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
       color: FluentTheme.of(context).micaBackgroundColor,
       child: ScaffoldPage(
         header: PageHeader(
-          title: "Create project".text(),
+          title: "Create a project".text(),
         ),
         bottomBar: [
           FilledButton(
@@ -221,7 +221,7 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
                     );
                   }
                 : null,
-            child: "Create".text(),
+            child: "Create Project".text(),
           ),
         ].row(maa: MainAxisAlignment.end).padAll(8),
         content: buildBody().padSymmetric(h: 32),
