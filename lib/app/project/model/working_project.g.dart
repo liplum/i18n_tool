@@ -14,11 +14,11 @@ abstract class _$WorkingProjectCWProxy {
   /// WorkingProject(...).copyWith(id: 12, name: "My name")
   /// ````
   WorkingProject call({
-    Project? project,
-    L10nSerializer? serializer,
+    Project project,
+    L10nSerializer serializer,
     Locale? templateLocale,
-    List<L10nFile>? l10nFiles,
-    List<L10nFileTab>? openTabs,
+    List<L10nFile> l10nFiles,
+    List<L10nFileTab> openTabs,
     L10nFileTab? selectedTab,
   });
 }
@@ -46,11 +46,11 @@ class _$WorkingProjectCWProxyImpl implements _$WorkingProjectCWProxy {
     Object? selectedTab = const $CopyWithPlaceholder(),
   }) {
     return WorkingProject(
-      project: project == const $CopyWithPlaceholder() || project == null
+      project: project == const $CopyWithPlaceholder()
           ? _value.project
           // ignore: cast_nullable_to_non_nullable
           : project as Project,
-      serializer: serializer == const $CopyWithPlaceholder() || serializer == null
+      serializer: serializer == const $CopyWithPlaceholder()
           ? _value.serializer
           // ignore: cast_nullable_to_non_nullable
           : serializer as L10nSerializer,
@@ -58,11 +58,11 @@ class _$WorkingProjectCWProxyImpl implements _$WorkingProjectCWProxy {
           ? _value.templateLocale
           // ignore: cast_nullable_to_non_nullable
           : templateLocale as Locale?,
-      l10nFiles: l10nFiles == const $CopyWithPlaceholder() || l10nFiles == null
+      l10nFiles: l10nFiles == const $CopyWithPlaceholder()
           ? _value.l10nFiles
           // ignore: cast_nullable_to_non_nullable
           : l10nFiles as List<L10nFile>,
-      openTabs: openTabs == const $CopyWithPlaceholder() || openTabs == null
+      openTabs: openTabs == const $CopyWithPlaceholder()
           ? _value.openTabs
           // ignore: cast_nullable_to_non_nullable
           : openTabs as List<L10nFileTab>,
@@ -88,8 +88,8 @@ abstract class _$L10nFileTabCWProxy {
   /// L10nFileTab(...).copyWith(id: 12, name: "My name")
   /// ````
   L10nFileTab call({
-    WorkingProject? project,
-    L10nFile? file,
+    WorkingProject project,
+    L10nFile file,
   });
 }
 
@@ -112,11 +112,11 @@ class _$L10nFileTabCWProxyImpl implements _$L10nFileTabCWProxy {
     Object? file = const $CopyWithPlaceholder(),
   }) {
     return L10nFileTab(
-      project: project == const $CopyWithPlaceholder() || project == null
+      project: project == const $CopyWithPlaceholder()
           ? _value.project
           // ignore: cast_nullable_to_non_nullable
           : project as WorkingProject,
-      file: file == const $CopyWithPlaceholder() || file == null
+      file: file == const $CopyWithPlaceholder()
           ? _value.file
           // ignore: cast_nullable_to_non_nullable
           : file as L10nFile,
@@ -138,8 +138,8 @@ abstract class _$L10nFileCWProxy {
   /// L10nFile(...).copyWith(id: 12, name: "My name")
   /// ````
   L10nFile call({
-    String? path,
-    Locale? locale,
+    String path,
+    Locale locale,
   });
 }
 
@@ -162,11 +162,11 @@ class _$L10nFileCWProxyImpl implements _$L10nFileCWProxy {
     Object? locale = const $CopyWithPlaceholder(),
   }) {
     return L10nFile(
-      path: path == const $CopyWithPlaceholder() || path == null
+      path: path == const $CopyWithPlaceholder()
           ? _value.path
           // ignore: cast_nullable_to_non_nullable
           : path as String,
-      locale: locale == const $CopyWithPlaceholder() || locale == null
+      locale: locale == const $CopyWithPlaceholder()
           ? _value.locale
           // ignore: cast_nullable_to_non_nullable
           : locale as Locale,

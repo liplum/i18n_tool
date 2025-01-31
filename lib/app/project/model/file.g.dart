@@ -14,7 +14,7 @@ abstract class _$FileContentCWProxy {
   /// FileContent(...).copyWith(id: 12, name: "My name")
   /// ````
   FileContent call({
-    String? content,
+    String content,
   });
 }
 
@@ -36,7 +36,7 @@ class _$FileContentCWProxyImpl implements _$FileContentCWProxy {
     Object? content = const $CopyWithPlaceholder(),
   }) {
     return FileContent(
-      content: content == const $CopyWithPlaceholder() || content == null
+      content: content == const $CopyWithPlaceholder()
           ? _value.content
           // ignore: cast_nullable_to_non_nullable
           : content as String,

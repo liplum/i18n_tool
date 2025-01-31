@@ -14,7 +14,7 @@ abstract class _$ProjectTypeCWProxy {
   /// ProjectType(...).copyWith(id: 12, name: "My name")
   /// ````
   ProjectType call({
-    ProjectFileType? fileType,
+    ProjectFileType fileType,
   });
 }
 
@@ -36,7 +36,7 @@ class _$ProjectTypeCWProxyImpl implements _$ProjectTypeCWProxy {
     Object? fileType = const $CopyWithPlaceholder(),
   }) {
     return ProjectType(
-      fileType: fileType == const $CopyWithPlaceholder() || fileType == null
+      fileType: fileType == const $CopyWithPlaceholder()
           ? _value.fileType
           // ignore: cast_nullable_to_non_nullable
           : fileType as ProjectFileType,
@@ -58,8 +58,8 @@ abstract class _$ProjectSettingsCWProxy {
   /// ProjectSettings(...).copyWith(id: 12, name: "My name")
   /// ````
   ProjectSettings call({
-    bool? forceQuotedString,
-    bool? nestedByDot,
+    bool forceQuotedString,
+    bool nestedByDot,
   });
 }
 
@@ -82,11 +82,11 @@ class _$ProjectSettingsCWProxyImpl implements _$ProjectSettingsCWProxy {
     Object? nestedByDot = const $CopyWithPlaceholder(),
   }) {
     return ProjectSettings(
-      forceQuotedString: forceQuotedString == const $CopyWithPlaceholder() || forceQuotedString == null
+      forceQuotedString: forceQuotedString == const $CopyWithPlaceholder()
           ? _value.forceQuotedString
           // ignore: cast_nullable_to_non_nullable
           : forceQuotedString as bool,
-      nestedByDot: nestedByDot == const $CopyWithPlaceholder() || nestedByDot == null
+      nestedByDot: nestedByDot == const $CopyWithPlaceholder()
           ? _value.nestedByDot
           // ignore: cast_nullable_to_non_nullable
           : nestedByDot as bool,
@@ -108,14 +108,14 @@ abstract class _$ProjectCWProxy {
   /// Project(...).copyWith(id: 12, name: "My name")
   /// ````
   Project call({
-    int? version,
-    String? uuid,
-    String? name,
-    Color? color,
-    String? shortName,
-    String? rootPath,
-    ProjectType? type,
-    ProjectSettings? settings,
+    int version,
+    String uuid,
+    String name,
+    Color color,
+    String shortName,
+    String rootPath,
+    ProjectType type,
+    ProjectSettings settings,
   });
 }
 
@@ -144,35 +144,35 @@ class _$ProjectCWProxyImpl implements _$ProjectCWProxy {
     Object? settings = const $CopyWithPlaceholder(),
   }) {
     return Project(
-      version: version == const $CopyWithPlaceholder() || version == null
+      version: version == const $CopyWithPlaceholder()
           ? _value.version
           // ignore: cast_nullable_to_non_nullable
           : version as int,
-      uuid: uuid == const $CopyWithPlaceholder() || uuid == null
+      uuid: uuid == const $CopyWithPlaceholder()
           ? _value.uuid
           // ignore: cast_nullable_to_non_nullable
           : uuid as String,
-      name: name == const $CopyWithPlaceholder() || name == null
+      name: name == const $CopyWithPlaceholder()
           ? _value.name
           // ignore: cast_nullable_to_non_nullable
           : name as String,
-      color: color == const $CopyWithPlaceholder() || color == null
+      color: color == const $CopyWithPlaceholder()
           ? _value.color
           // ignore: cast_nullable_to_non_nullable
           : color as Color,
-      shortName: shortName == const $CopyWithPlaceholder() || shortName == null
+      shortName: shortName == const $CopyWithPlaceholder()
           ? _value.shortName
           // ignore: cast_nullable_to_non_nullable
           : shortName as String,
-      rootPath: rootPath == const $CopyWithPlaceholder() || rootPath == null
+      rootPath: rootPath == const $CopyWithPlaceholder()
           ? _value.rootPath
           // ignore: cast_nullable_to_non_nullable
           : rootPath as String,
-      type: type == const $CopyWithPlaceholder() || type == null
+      type: type == const $CopyWithPlaceholder()
           ? _value.type
           // ignore: cast_nullable_to_non_nullable
           : type as ProjectType,
-      settings: settings == const $CopyWithPlaceholder() || settings == null
+      settings: settings == const $CopyWithPlaceholder()
           ? _value.settings
           // ignore: cast_nullable_to_non_nullable
           : settings as ProjectSettings,
