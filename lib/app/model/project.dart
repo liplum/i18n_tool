@@ -168,8 +168,8 @@ class Project {
 
 String _getShortName(String name) {
   final parts = name.split(_shortNameReg).where((it) => it.isNotEmpty).toList(growable: false);
-  if (parts.length <= 1) return name.padLeft(2).substring(0, 2);
-  return "${parts[0][0]}${parts[1][0]}".toUpperCase();
+  final result = parts.length <= 1 ? name.padLeft(2).substring(0, 2) : "${parts[0][0]}${parts[1][0]}";
+  return result.toUpperCase();
 }
 
 Color _generateColorFromSeed(int seed) {

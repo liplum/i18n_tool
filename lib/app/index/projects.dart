@@ -248,6 +248,8 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
                               rootPath: rootPath.text,
                               projectName: $projectName.text,
                               fileType: fileType,
+                              templateLocale: templateLocale,
+                              fileNameMatcher: $fileNameMatcher.text,
                             );
                           }
                         : null,
@@ -432,13 +434,19 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
   Future<void> createProject({
     required String rootPath,
     required String projectName,
+    String fileNameMatcher = "",
+    Locale? templateLocale,
     required ProjectFileType fileType,
   }) async {
     final project = Project.create(
       rootPath: rootPath,
       name: projectName,
+      settings: ProjectSettings(
+        templateLocale: templateLocale,
+      ),
       type: ProjectType(
         fileType: fileType,
+        fileNameMatcher: fileNameMatcher,
       ),
     );
     ref.read($projects.notifier).addProject(project);

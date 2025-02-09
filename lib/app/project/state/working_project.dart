@@ -34,16 +34,16 @@ class WorkingProjectNotifier extends AutoDisposeFamilyAsyncNotifier<WorkingProje
 
   Future<WorkingProject> _rebuild([WorkingProject? prev]) async {
     final l10nFiles = await arg.loadL10nFiles();
-    final templateLocale = l10nFiles.firstWhereOrNull((it) => it.locale.languageCode == "en") ?? l10nFiles.firstOrNull;
+    final templateLocale = arg.settings.templateLocale ?? (l10nFiles.firstWhereOrNull((it) => it.locale.languageCode == "en") ?? l10nFiles.firstOrNull)?.locale;
     return prev?.copyWith(
           project: arg,
-          templateLocale: templateLocale?.locale,
+          templateLocale: templateLocale,
           l10nFiles: l10nFiles,
         ) ??
         WorkingProject(
           project: arg,
           serializer: arg.createParser(),
-          templateLocale: templateLocale?.locale,
+          templateLocale: templateLocale,
           l10nFiles: l10nFiles,
         );
   }

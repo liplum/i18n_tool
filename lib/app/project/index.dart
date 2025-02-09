@@ -11,6 +11,7 @@ import 'package:i18n_tool/app/utils/locale.dart';
 import 'package:i18n_tool/serialization/data.dart';
 import 'package:i18n_tool/widget/fluent_ui.dart';
 import 'package:i18n_tool/widget/loading.dart';
+import 'package:locale_names/locale_names.dart';
 import 'package:rettulf/rettulf.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
@@ -54,7 +55,10 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
           items: workingProject == null
               ? []
               : [
-                  ...workingProject.l10nFiles.map((file) {
+                  ...workingProject.l10nFiles
+                      // keep the template at the top
+                      .sortedBy((it) => workingProject.isTemplate(it) ? "" : it.locale.nativeDisplayLanguageScript)
+                      .map((file) {
                     return PaneItemAction(
                       icon: Icon(workingProject.isTemplate(file) ? FluentIcons.file_template : FluentIcons.file_code),
                       title: file.title().text(),
