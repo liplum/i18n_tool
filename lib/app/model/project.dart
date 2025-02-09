@@ -126,14 +126,14 @@ class Project {
     required String rootPath,
     required ProjectType type,
   }) {
-    final name = p.basenameWithoutExtension(rootPath);
+    final projectName = name ?? p.basenameWithoutExtension(rootPath);
     final uuid = const Uuid().v4();
     final color = _generateColorFromSeed(uuid.hashCode);
     return Project(
       uuid: uuid,
-      name: name,
+      name: projectName,
       color: color,
-      shortName: _getShortName(name),
+      shortName: _getShortName(projectName),
       rootPath: rootPath,
       type: type,
     );
@@ -154,7 +154,7 @@ class Project {
 String _getShortName(String name) {
   final parts = name.split(_shortNameReg).where((it) => it.isNotEmpty).toList(growable: false);
   if (parts.length <= 1) return name.padLeft(2).substring(0, 2);
-  return "${parts[0][0]}${parts[1][0]}";
+  return "${parts[0][0]}${parts[1][0]}".toUpperCase();
 }
 
 Color _generateColorFromSeed(int seed) {

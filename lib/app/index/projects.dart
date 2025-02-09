@@ -189,17 +189,13 @@ class CreateProjectForm extends ConsumerStatefulWidget {
 
 class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
   final $rootPath = TextEditingController();
+  final $projectName = TextEditingController();
   ProjectFileType? fileType;
-
-  @override
-  void initState() {
-    super.initState();
-    $rootPath.addListener(() => setState(() {}));
-  }
 
   @override
   void dispose() {
     $rootPath.dispose();
+    $projectName.dispose();
     super.dispose();
   }
 
@@ -213,16 +209,19 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
           title: "Create a project".text(),
         ),
         bottomBar: [
-          FilledButton(
-            onPressed: $rootPath.text.isNotEmpty && fileType != null
-                ? () {
-                    createProject(
-                      fileType: fileType,
-                    );
-                  }
-                : null,
-            child: "Create Project".text(),
-          ),
+          $rootPath >>
+              (ctx, rootPath) => FilledButton(
+                    onPressed: rootPath.text.isNotEmpty && fileType != null
+                        ? () {
+                            createProject(
+                              rootPath: rootPath.text,
+                              projectName: $projectName.text,
+                              fileType: fileType,
+                            );
+                          }
+                        : null,
+                    child: "Create Project".text(),
+                  ),
         ].row(maa: MainAxisAlignment.end).padAll(8),
         content: buildBody().padSymmetric(h: 32),
       ),
@@ -232,13 +231,14 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
   Widget buildBody() {
     return [
       buildRootPath(),
+      buildProjectName(),
       buildFileType(),
     ].column(spacing: 8);
   }
 
   Widget buildRootPath() {
     return [
-      "Project root path".text(),
+      "Project Root Path".text(),
       [
         TextBox(
           controller: $rootPath,
@@ -248,9 +248,18 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
     ].row(spacing: 8);
   }
 
+  Widget buildProjectName() {
+    return [
+      "Project Name".text(),
+      TextBox(
+        controller: $projectName,
+      ).expanded(),
+    ].row(spacing: 8);
+  }
+
   Widget buildFileType() {
     return [
-      "File type".text(),
+      "File Type".text(),
       ComboBox<ProjectFileType>(
         value: fileType,
         items: [
@@ -276,6 +285,7 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
     );
     if (result == null) return;
     $rootPath.text = result;
+    $projectName.text =  p.basenameWithoutExtension(result);
     final estimated = await estimateFileType(result);
     if (estimated == null) return;
     if (!mounted) return;
@@ -304,10 +314,13 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
   }
 
   Future<void> createProject({
+    required String rootPath,
+    required String projectName,
     required ProjectFileType fileType,
   }) async {
     final project = Project.create(
-      rootPath: $rootPath.text,
+      rootPath: rootPath,
+      name: projectName,
       type: ProjectType(
         fileType: fileType,
       ),
