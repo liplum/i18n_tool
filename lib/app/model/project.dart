@@ -87,11 +87,11 @@ class ProjectSettings {
   final bool forceQuotedString;
 
   @localeNullableJsonKey
-  final Locale? defaultLocale;
+  final Locale? templateLocale;
 
   const ProjectSettings({
     this.forceQuotedString = false,
-    this.defaultLocale,
+    this.templateLocale,
   });
 
   factory ProjectSettings.fromJson(Map<String, dynamic> json) => _$ProjectSettingsFromJson(json);

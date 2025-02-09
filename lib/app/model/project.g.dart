@@ -71,7 +71,7 @@ abstract class _$ProjectSettingsCWProxy {
   /// ````
   ProjectSettings call({
     bool forceQuotedString,
-    Locale? defaultLocale,
+    Locale? templateLocale,
   });
 }
 
@@ -91,17 +91,17 @@ class _$ProjectSettingsCWProxyImpl implements _$ProjectSettingsCWProxy {
   /// ````
   ProjectSettings call({
     Object? forceQuotedString = const $CopyWithPlaceholder(),
-    Object? defaultLocale = const $CopyWithPlaceholder(),
+    Object? templateLocale = const $CopyWithPlaceholder(),
   }) {
     return ProjectSettings(
       forceQuotedString: forceQuotedString == const $CopyWithPlaceholder()
           ? _value.forceQuotedString
           // ignore: cast_nullable_to_non_nullable
           : forceQuotedString as bool,
-      defaultLocale: defaultLocale == const $CopyWithPlaceholder()
-          ? _value.defaultLocale
+      templateLocale: templateLocale == const $CopyWithPlaceholder()
+          ? _value.templateLocale
           // ignore: cast_nullable_to_non_nullable
-          : defaultLocale as Locale?,
+          : templateLocale as Locale?,
     );
   }
 }
@@ -222,12 +222,12 @@ const _$ProjectFileTypeEnumMap = {
 
 ProjectSettings _$ProjectSettingsFromJson(Map<String, dynamic> json) => ProjectSettings(
       forceQuotedString: json['forceQuotedString'] as bool? ?? false,
-      defaultLocale: localeNullableFromJson(json['defaultLocale'] as Map<String, dynamic>?),
+      templateLocale: localeNullableFromJson(json['templateLocale'] as Map<String, dynamic>?),
     );
 
 Map<String, dynamic> _$ProjectSettingsToJson(ProjectSettings instance) => <String, dynamic>{
       'forceQuotedString': instance.forceQuotedString,
-      'defaultLocale': localeNullableToJson(instance.defaultLocale),
+      'templateLocale': localeNullableToJson(instance.templateLocale),
     };
 
 Project _$ProjectFromJson(Map<String, dynamic> json) => Project(

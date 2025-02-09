@@ -23,7 +23,7 @@ extension ProjectEx on Project {
   Future<List<L10nFile>> loadL10nFiles() async {
     return loadL10nFilesAtRootPath(
       rootPath: rootPath,
-      defaultLocale: settings.defaultLocale,
+      templateLocale: settings.templateLocale,
     );
   }
 }
@@ -31,7 +31,7 @@ extension ProjectEx on Project {
 Future<List<L10nFile>> loadL10nFilesAtRootPath({
   required String rootPath,
   String filePrefix = "",
-  Locale? defaultLocale,
+  Locale? templateLocale,
 }) async {
   final rootDir = Directory(rootPath);
   final subFiles = await rootDir.list().toList();
@@ -41,10 +41,10 @@ Future<List<L10nFile>> loadL10nFilesAtRootPath({
     var fileName = p.basenameWithoutExtension(file.path);
     fileName = fileName.startsWith(filePrefix) ? fileName.substring(filePrefix.length) : fileName;
     // fileName = fileName.replaceAll("_", "-");
-    if (defaultLocale != null && fileName.isEmpty) {
+    if (templateLocale != null && fileName.isEmpty) {
       l10nFiles.add(L10nFile(
         path: file.absolute.path,
-        locale: defaultLocale,
+        locale: templateLocale,
       ));
     } else {
       final locale = tryParseLocale(fileName);

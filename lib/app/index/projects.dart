@@ -192,9 +192,9 @@ class CreateProjectForm extends ConsumerStatefulWidget {
 class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
   final $rootPath = TextEditingController();
   final $projectName = TextEditingController();
-  var defaultLocale = Locale("en");
-  final $customDefaultLocale = TextEditingController(text: "en");
-  var useCustomDefaultLocale = false;
+  var templateLocale = Locale("en");
+  final $customTemplateLocale = TextEditingController(text: "en");
+  var useCustomTemplateLocale = false;
   var l10nFiles = <L10nFile>[];
   final $filePrefix = TextEditingController();
   ProjectFileType? fileType;
@@ -208,13 +208,13 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
         await rebuildProjectDetails(rootPath: rootPath, filePrefix: $filePrefix.text);
       }
     });
-    $customDefaultLocale.addListener(() async {
-      final customDefaultLocale = $customDefaultLocale.text;
+    $customTemplateLocale.addListener(() async {
+      final customDefaultLocale = $customTemplateLocale.text;
       if (customDefaultLocale.isNotEmpty) {
         final locale = tryParseLocale(customDefaultLocale);
         if (locale != null) {
           setState(() {
-            defaultLocale = locale;
+            templateLocale = locale;
           });
         }
       }
@@ -226,7 +226,7 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
     $rootPath.dispose();
     $projectName.dispose();
     $filePrefix.dispose();
-    $customDefaultLocale.dispose();
+    $customTemplateLocale.dispose();
     super.dispose();
   }
 
@@ -264,7 +264,7 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
       buildRootPath(),
       buildProjectName(),
       buildFileType(),
-      buildDefaultLocale(),
+      buildTemplateLocale(),
       buildFilePrefix(),
       buildFilePreview(),
     ].column(spacing: 8);
@@ -322,15 +322,15 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
     ].row(spacing: 8);
   }
 
-  Widget buildDefaultLocale() {
+  Widget buildTemplateLocale() {
     final locales = l10nFiles.map((it) => it.locale).toList();
     return [
-      "Default Locale".text(),
+      "Template Locale".text(),
       ComboBox<Locale>(
-        value: defaultLocale,
+        value: templateLocale,
         items: [
           ...[
-            if (locales.contains(defaultLocale)) ...locales else defaultLocale,
+            if (locales.contains(templateLocale)) ...locales else templateLocale,
           ].map((it) {
             return ComboBoxItem(
               value: it,
@@ -340,28 +340,28 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
         ],
         onChanged: (newValue) {
           setState(() {
-            defaultLocale = newValue!;
+            templateLocale = newValue!;
           });
         },
       ),
       Checkbox(
-        checked: useCustomDefaultLocale,
+        checked: useCustomTemplateLocale,
         onChanged: (newValue) {
           setState(() {
-            useCustomDefaultLocale = newValue ?? false;
+            useCustomTemplateLocale = newValue ?? false;
           });
         },
         content: "Custom".text(),
       ),
-      if (useCustomDefaultLocale)
+      if (useCustomTemplateLocale)
         AutoSuggestBox<String>(
-          controller: $customDefaultLocale,
+          controller: $customTemplateLocale,
           placeholder: 'Type a locale in ISO-639 format',
           items: _defaultLocalesAutoSuggestionItems,
           onSelected: (item) {
             final newValue = item.value;
             if (newValue != null) {
-              $customDefaultLocale.text = newValue;
+              $customTemplateLocale.text = newValue;
             }
           },
         ).sized(w: 256),
@@ -388,7 +388,7 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
     final l10nFiles = await loadL10nFilesAtRootPath(
       rootPath: rootPath,
       filePrefix: filePrefix,
-      defaultLocale: defaultLocale,
+      templateLocale: templateLocale,
     );
     final estimated = await _estimateProjectFileType(l10nFiles);
     if (!mounted) return;
