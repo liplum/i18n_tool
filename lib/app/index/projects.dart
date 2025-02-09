@@ -5,11 +5,13 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:i18n_tool/app/project/utils/project.dart';
+import 'package:locale_names/locale_names.dart';
 import 'package:rettulf/rettulf.dart';
 import "package:file_picker/file_picker.dart";
 import "package:path/path.dart" as p;
 
 import '../model/project.dart';
+import '../project/model/working_project.dart';
 import '../state/project.dart';
 
 class IndexProjectsPage extends ConsumerStatefulWidget {
@@ -190,6 +192,8 @@ class CreateProjectForm extends ConsumerStatefulWidget {
 class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
   final $rootPath = TextEditingController();
   final $projectName = TextEditingController();
+  var defaultLocale = Locale("en");
+  var l10nFiles = <L10nFile>[];
   ProjectFileType? fileType;
 
   @override
@@ -233,6 +237,8 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
       buildRootPath(),
       buildProjectName(),
       buildFileType(),
+      buildDefaultLocale(),
+      buildFilePreview(),
     ].column(spacing: 8);
   }
 
@@ -279,31 +285,70 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
     ].row(spacing: 8);
   }
 
+  Widget buildDefaultLocale() {
+    final locales = l10nFiles.map((it) => it.locale).toList();
+    return [
+      "Default Locale".text(),
+      ComboBox<Locale>(
+        value: defaultLocale,
+        items: [
+          ...[
+            if (locales.isNotEmpty) ...locales else defaultLocale,
+          ].map((it) {
+            return ComboBoxItem(
+              value: it,
+              child: it.defaultDisplayLanguageScript.text(),
+            );
+          })
+        ],
+        onChanged: (newValue) {
+          setState(() {
+            defaultLocale = newValue!;
+          });
+        },
+      ),
+    ].row(spacing: 8);
+  }
+
   Future<void> pickAndOpenFolder() async {
     final result = await FilePicker.platform.getDirectoryPath(
       lockParentWindow: true,
     );
     if (result == null) return;
     $rootPath.text = result;
-    $projectName.text =  p.basenameWithoutExtension(result);
-    final estimated = await estimateFileType(result);
+    $projectName.text = p.basenameWithoutExtension(result);
+    final l10nFiles = await loadL10nFilesAtRootPath(result);
+    final estimated = await estimateFileType(l10nFiles);
     if (estimated == null) return;
     if (!mounted) return;
     setState(() {
+      this.l10nFiles = l10nFiles;
       fileType = estimated;
     });
   }
 
-  Future<ProjectFileType?> estimateFileType(String rootPath) async {
-    final rootDir = Directory(rootPath);
-    final subFiles = await rootDir.list().toList();
-    final files =
-        subFiles.whereType<File>().where((it) => tryParseLocale(p.basenameWithoutExtension(it.path)) != null).toList();
-    final ext2Count = files.groupFoldBy<String, int>((it) => p.extension(it.path), (pre, next) => (pre ?? 0) + 1);
+  Future<ProjectFileType?> estimateFileType(List<L10nFile> l10nFiles) async {
+    final ext2Count = l10nFiles.groupFoldBy<String, int>((it) => p.extension(it.path), (pre, next) => (pre ?? 0) + 1);
     final ascendingByCount = ext2Count.entries.sortedBy<num>((it) => it.value);
     final mostCommonExt = ascendingByCount.lastOrNull;
     if (mostCommonExt == null) return null;
     return ProjectFileType.tryParseExtension(mostCommonExt.key);
+  }
+
+  Widget buildFilePreview() {
+    return Card(
+      child: [
+        ListView.builder(
+          itemCount: l10nFiles.length,
+          itemBuilder: (ctx, i) {
+            final file = l10nFiles[i];
+            return ListTile(
+              title: file.locale.defaultDisplayLanguageScript.text(),
+            );
+          },
+        ).expanded(),
+      ].column(mas: MainAxisSize.min).sized(h: 240),
+    );
   }
 
   Widget buildOpenButton() {

@@ -21,18 +21,22 @@ Locale? tryParseLocale(final String rawLocale) {
 
 extension ProjectEx on Project {
   Future<List<L10nFile>> loadL10nFiles() async {
-    final rootDir = Directory(rootPath);
-    final subFiles = await rootDir.list().toList();
-    final files = subFiles.whereType<File>().toList();
-    final l10nFiles = <L10nFile>[];
-    for (final file in files) {
-      final locale = tryParseLocale(p.basenameWithoutExtension(file.path));
-      if (locale == null) continue;
-      l10nFiles.add(L10nFile(
-        path: file.absolute.path,
-        locale: locale,
-      ));
-    }
-    return l10nFiles;
+    return loadL10nFilesAtRootPath(rootPath);
   }
+}
+
+Future<List<L10nFile>> loadL10nFilesAtRootPath(String rootPath) async {
+  final rootDir = Directory(rootPath);
+  final subFiles = await rootDir.list().toList();
+  final files = subFiles.whereType<File>().toList();
+  final l10nFiles = <L10nFile>[];
+  for (final file in files) {
+    final locale = tryParseLocale(p.basenameWithoutExtension(file.path));
+    if (locale == null) continue;
+    l10nFiles.add(L10nFile(
+      path: file.absolute.path,
+      locale: locale,
+    ));
+  }
+  return l10nFiles;
 }
