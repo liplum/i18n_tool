@@ -193,13 +193,40 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
   final $rootPath = TextEditingController();
   final $projectName = TextEditingController();
   var defaultLocale = Locale("en");
+  final $customDefaultLocale = TextEditingController(text: "en");
+  var useCustomDefaultLocale = false;
   var l10nFiles = <L10nFile>[];
+  final $filePrefix = TextEditingController();
   ProjectFileType? fileType;
+
+  @override
+  void initState() {
+    super.initState();
+    $filePrefix.addListener(() async {
+      final rootPath = $rootPath.text;
+      if (rootPath.isNotEmpty) {
+        await rebuildProjectDetails(rootPath: rootPath, filePrefix: $filePrefix.text);
+      }
+    });
+    $customDefaultLocale.addListener(() async {
+      final customDefaultLocale = $customDefaultLocale.text;
+      if (customDefaultLocale.isNotEmpty) {
+        final locale = tryParseLocale(customDefaultLocale);
+        if (locale != null) {
+          setState(() {
+            defaultLocale = locale;
+          });
+        }
+      }
+    });
+  }
 
   @override
   void dispose() {
     $rootPath.dispose();
     $projectName.dispose();
+    $filePrefix.dispose();
+    $customDefaultLocale.dispose();
     super.dispose();
   }
 
@@ -238,6 +265,7 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
       buildProjectName(),
       buildFileType(),
       buildDefaultLocale(),
+      buildFilePrefix(),
       buildFilePreview(),
     ].column(spacing: 8);
   }
@@ -259,6 +287,15 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
       "Project Name".text(),
       TextBox(
         controller: $projectName,
+      ).expanded(),
+    ].row(spacing: 8);
+  }
+
+  Widget buildFilePrefix() {
+    return [
+      "File Prefix".text(),
+      TextBox(
+        controller: $filePrefix,
       ).expanded(),
     ].row(spacing: 8);
   }
@@ -293,7 +330,7 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
         value: defaultLocale,
         items: [
           ...[
-            if (locales.isNotEmpty) ...locales else defaultLocale,
+            if (locales.contains(defaultLocale)) ...locales else defaultLocale,
           ].map((it) {
             return ComboBoxItem(
               value: it,
@@ -307,6 +344,27 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
           });
         },
       ),
+      Checkbox(
+        checked: useCustomDefaultLocale,
+        onChanged: (newValue) {
+          setState(() {
+            useCustomDefaultLocale = newValue ?? false;
+          });
+        },
+        content: "Custom".text(),
+      ),
+      if (useCustomDefaultLocale)
+        AutoSuggestBox<String>(
+          controller: $customDefaultLocale,
+          placeholder: 'Type a locale in ISO-639 format',
+          items: _defaultLocalesAutoSuggestionItems,
+          onSelected: (item) {
+            final newValue = item.value;
+            if (newValue != null) {
+              $customDefaultLocale.text = newValue;
+            }
+          },
+        ).sized(w: 256),
     ].row(spacing: 8);
   }
 
@@ -317,22 +375,27 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
     if (result == null) return;
     $rootPath.text = result;
     $projectName.text = p.basenameWithoutExtension(result);
-    final l10nFiles = await loadL10nFilesAtRootPath(result);
-    final estimated = await estimateFileType(l10nFiles);
-    if (estimated == null) return;
+    await rebuildProjectDetails(
+      rootPath: result,
+      filePrefix: $filePrefix.text,
+    );
+  }
+
+  Future<void> rebuildProjectDetails({
+    required String rootPath,
+    required String filePrefix,
+  }) async {
+    final l10nFiles = await loadL10nFilesAtRootPath(
+      rootPath: rootPath,
+      filePrefix: filePrefix,
+      defaultLocale: defaultLocale,
+    );
+    final estimated = await _estimateProjectFileType(l10nFiles);
     if (!mounted) return;
     setState(() {
       this.l10nFiles = l10nFiles;
       fileType = estimated;
     });
-  }
-
-  Future<ProjectFileType?> estimateFileType(List<L10nFile> l10nFiles) async {
-    final ext2Count = l10nFiles.groupFoldBy<String, int>((it) => p.extension(it.path), (pre, next) => (pre ?? 0) + 1);
-    final ascendingByCount = ext2Count.entries.sortedBy<num>((it) => it.value);
-    final mostCommonExt = ascendingByCount.lastOrNull;
-    if (mostCommonExt == null) return null;
-    return ProjectFileType.tryParseExtension(mostCommonExt.key);
   }
 
   Widget buildFilePreview() {
@@ -344,6 +407,7 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
             final file = l10nFiles[i];
             return ListTile(
               title: file.locale.defaultDisplayLanguageScript.text(),
+              subtitle: p.basename(file.path).text(),
             );
           },
         ).expanded(),
@@ -374,3 +438,18 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
     context.pop(project);
   }
 }
+
+Future<ProjectFileType?> _estimateProjectFileType(List<L10nFile> l10nFiles) async {
+  final ext2Count = l10nFiles.groupFoldBy<String, int>((it) => p.extension(it.path), (pre, next) => (pre ?? 0) + 1);
+  final ascendingByCount = ext2Count.entries.sortedBy<num>((it) => it.value);
+  final mostCommonExt = ascendingByCount.lastOrNull;
+  if (mostCommonExt == null) return null;
+  return ProjectFileType.tryParseExtension(mostCommonExt.key);
+}
+
+final _defaultLocalesAutoSuggestionItems = DisplayNames.tables.keys.map((code) {
+  return AutoSuggestBoxItem<String>(
+    value: code,
+    label: code,
+  );
+}).toList(growable: false);

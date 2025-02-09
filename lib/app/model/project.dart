@@ -30,6 +30,12 @@ Locale localeFromJson(Map<String, dynamic> json) => Locale.fromSubtags(
 
 const localeJsonKey = JsonKey(toJson: localeToJson, fromJson: localeFromJson);
 
+Map<String, dynamic>? localeNullableToJson(Locale? locale) => locale == null ? null : localeToJson(locale);
+
+Locale? localeNullableFromJson(Map<String, dynamic>? json) => json == null ? null : localeFromJson(json);
+
+const localeNullableJsonKey = JsonKey(toJson: localeNullableToJson, fromJson: localeNullableFromJson);
+
 final _shortNameReg = RegExp(r'\s+|-|_');
 
 @JsonEnum(alwaysCreate: true)
@@ -59,9 +65,15 @@ enum ProjectFileType {
 @JsonSerializable()
 class ProjectType {
   final ProjectFileType fileType;
+  final String filePrefix;
+
+  /// if the project file type is capable
+  final bool nestedByDot;
 
   const ProjectType({
     required this.fileType,
+    this.nestedByDot = true,
+    this.filePrefix = "",
   });
 
   factory ProjectType.fromJson(Map<String, dynamic> json) => _$ProjectTypeFromJson(json);
@@ -74,12 +86,12 @@ class ProjectType {
 class ProjectSettings {
   final bool forceQuotedString;
 
-  /// if the project file type is capable
-  final bool nestedByDot;
+  @localeNullableJsonKey
+  final Locale? defaultLocale;
 
   const ProjectSettings({
     this.forceQuotedString = false,
-    this.nestedByDot = true,
+    this.defaultLocale,
   });
 
   factory ProjectSettings.fromJson(Map<String, dynamic> json) => _$ProjectSettingsFromJson(json);
@@ -107,6 +119,7 @@ class Project {
   /// limit to 2
   final String shortName;
   final String rootPath;
+
   final ProjectType type;
   final ProjectSettings settings;
 
@@ -125,6 +138,7 @@ class Project {
     String? name,
     required String rootPath,
     required ProjectType type,
+    ProjectSettings settings = const ProjectSettings(),
   }) {
     final projectName = name ?? p.basenameWithoutExtension(rootPath);
     final uuid = const Uuid().v4();
@@ -136,6 +150,7 @@ class Project {
       shortName: _getShortName(projectName),
       rootPath: rootPath,
       type: type,
+      settings: settings,
     );
   }
 

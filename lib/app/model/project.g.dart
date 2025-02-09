@@ -15,6 +15,8 @@ abstract class _$ProjectTypeCWProxy {
   /// ````
   ProjectType call({
     ProjectFileType fileType,
+    bool nestedByDot,
+    String filePrefix,
   });
 }
 
@@ -34,12 +36,22 @@ class _$ProjectTypeCWProxyImpl implements _$ProjectTypeCWProxy {
   /// ````
   ProjectType call({
     Object? fileType = const $CopyWithPlaceholder(),
+    Object? nestedByDot = const $CopyWithPlaceholder(),
+    Object? filePrefix = const $CopyWithPlaceholder(),
   }) {
     return ProjectType(
       fileType: fileType == const $CopyWithPlaceholder()
           ? _value.fileType
           // ignore: cast_nullable_to_non_nullable
           : fileType as ProjectFileType,
+      nestedByDot: nestedByDot == const $CopyWithPlaceholder()
+          ? _value.nestedByDot
+          // ignore: cast_nullable_to_non_nullable
+          : nestedByDot as bool,
+      filePrefix: filePrefix == const $CopyWithPlaceholder()
+          ? _value.filePrefix
+          // ignore: cast_nullable_to_non_nullable
+          : filePrefix as String,
     );
   }
 }
@@ -59,7 +71,7 @@ abstract class _$ProjectSettingsCWProxy {
   /// ````
   ProjectSettings call({
     bool forceQuotedString,
-    bool nestedByDot,
+    Locale? defaultLocale,
   });
 }
 
@@ -79,17 +91,17 @@ class _$ProjectSettingsCWProxyImpl implements _$ProjectSettingsCWProxy {
   /// ````
   ProjectSettings call({
     Object? forceQuotedString = const $CopyWithPlaceholder(),
-    Object? nestedByDot = const $CopyWithPlaceholder(),
+    Object? defaultLocale = const $CopyWithPlaceholder(),
   }) {
     return ProjectSettings(
       forceQuotedString: forceQuotedString == const $CopyWithPlaceholder()
           ? _value.forceQuotedString
           // ignore: cast_nullable_to_non_nullable
           : forceQuotedString as bool,
-      nestedByDot: nestedByDot == const $CopyWithPlaceholder()
-          ? _value.nestedByDot
+      defaultLocale: defaultLocale == const $CopyWithPlaceholder()
+          ? _value.defaultLocale
           // ignore: cast_nullable_to_non_nullable
-          : nestedByDot as bool,
+          : defaultLocale as Locale?,
     );
   }
 }
@@ -192,10 +204,14 @@ extension $ProjectCopyWith on Project {
 
 ProjectType _$ProjectTypeFromJson(Map<String, dynamic> json) => ProjectType(
       fileType: $enumDecode(_$ProjectFileTypeEnumMap, json['fileType']),
+      nestedByDot: json['nestedByDot'] as bool? ?? true,
+      filePrefix: json['filePrefix'] as String? ?? "",
     );
 
 Map<String, dynamic> _$ProjectTypeToJson(ProjectType instance) => <String, dynamic>{
       'fileType': _$ProjectFileTypeEnumMap[instance.fileType]!,
+      'filePrefix': instance.filePrefix,
+      'nestedByDot': instance.nestedByDot,
     };
 
 const _$ProjectFileTypeEnumMap = {
@@ -206,12 +222,12 @@ const _$ProjectFileTypeEnumMap = {
 
 ProjectSettings _$ProjectSettingsFromJson(Map<String, dynamic> json) => ProjectSettings(
       forceQuotedString: json['forceQuotedString'] as bool? ?? false,
-      nestedByDot: json['nestedByDot'] as bool? ?? true,
+      defaultLocale: localeNullableFromJson(json['defaultLocale'] as Map<String, dynamic>?),
     );
 
 Map<String, dynamic> _$ProjectSettingsToJson(ProjectSettings instance) => <String, dynamic>{
       'forceQuotedString': instance.forceQuotedString,
-      'nestedByDot': instance.nestedByDot,
+      'defaultLocale': localeNullableToJson(instance.defaultLocale),
     };
 
 Project _$ProjectFromJson(Map<String, dynamic> json) => Project(
