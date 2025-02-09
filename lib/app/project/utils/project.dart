@@ -24,13 +24,14 @@ extension ProjectEx on Project {
     return loadL10nFilesAtRootPath(
       rootPath: rootPath,
       templateLocale: settings.templateLocale,
+      fileNameMatcher: type.fileNameMatcher,
     );
   }
 }
 
 Future<List<L10nFile>> loadL10nFilesAtRootPath({
   required String rootPath,
-  String filePrefix = "",
+  String fileNameMatcher = "",
   Locale? templateLocale,
 }) async {
   final rootDir = Directory(rootPath);
@@ -39,7 +40,8 @@ Future<List<L10nFile>> loadL10nFilesAtRootPath({
   final l10nFiles = <L10nFile>[];
   for (final file in files) {
     var fileName = p.basenameWithoutExtension(file.path);
-    fileName = fileName.startsWith(filePrefix) ? fileName.substring(filePrefix.length) : fileName;
+    final fileNameRegex = fileNameMatcher.isEmpty ? null : _tryCreateRegExp(fileNameMatcher);
+    fileName = fileNameRegex == null ? fileName : fileNameRegex.firstMatch(fileName)?.group(1) ?? fileName;
     // fileName = fileName.replaceAll("_", "-");
     if (templateLocale != null && fileName.isEmpty) {
       l10nFiles.add(L10nFile(
@@ -56,4 +58,13 @@ Future<List<L10nFile>> loadL10nFilesAtRootPath({
     }
   }
   return l10nFiles;
+}
+
+RegExp? _tryCreateRegExp(String pattern) {
+  try {
+    return RegExp(pattern);
+  } catch (e) {
+    // Handle the exception, e.g., log an error or return null
+    return null;
+  }
 }

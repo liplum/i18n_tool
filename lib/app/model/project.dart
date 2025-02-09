@@ -65,7 +65,7 @@ enum ProjectFileType {
 @JsonSerializable()
 class ProjectType {
   final ProjectFileType fileType;
-  final String filePrefix;
+  final String fileNameMatcher;
 
   /// if the project file type is capable
   final bool nestedByDot;
@@ -73,7 +73,7 @@ class ProjectType {
   const ProjectType({
     required this.fileType,
     this.nestedByDot = true,
-    this.filePrefix = "",
+    this.fileNameMatcher = "",
   });
 
   factory ProjectType.fromJson(Map<String, dynamic> json) => _$ProjectTypeFromJson(json);

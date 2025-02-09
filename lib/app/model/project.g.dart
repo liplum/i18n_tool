@@ -16,7 +16,7 @@ abstract class _$ProjectTypeCWProxy {
   ProjectType call({
     ProjectFileType fileType,
     bool nestedByDot,
-    String filePrefix,
+    String fileNameMatcher,
   });
 }
 
@@ -37,7 +37,7 @@ class _$ProjectTypeCWProxyImpl implements _$ProjectTypeCWProxy {
   ProjectType call({
     Object? fileType = const $CopyWithPlaceholder(),
     Object? nestedByDot = const $CopyWithPlaceholder(),
-    Object? filePrefix = const $CopyWithPlaceholder(),
+    Object? fileNameMatcher = const $CopyWithPlaceholder(),
   }) {
     return ProjectType(
       fileType: fileType == const $CopyWithPlaceholder()
@@ -48,10 +48,10 @@ class _$ProjectTypeCWProxyImpl implements _$ProjectTypeCWProxy {
           ? _value.nestedByDot
           // ignore: cast_nullable_to_non_nullable
           : nestedByDot as bool,
-      filePrefix: filePrefix == const $CopyWithPlaceholder()
-          ? _value.filePrefix
+      fileNameMatcher: fileNameMatcher == const $CopyWithPlaceholder()
+          ? _value.fileNameMatcher
           // ignore: cast_nullable_to_non_nullable
-          : filePrefix as String,
+          : fileNameMatcher as String,
     );
   }
 }
@@ -205,12 +205,12 @@ extension $ProjectCopyWith on Project {
 ProjectType _$ProjectTypeFromJson(Map<String, dynamic> json) => ProjectType(
       fileType: $enumDecode(_$ProjectFileTypeEnumMap, json['fileType']),
       nestedByDot: json['nestedByDot'] as bool? ?? true,
-      filePrefix: json['filePrefix'] as String? ?? "",
+      fileNameMatcher: json['fileNameMatcher'] as String? ?? "",
     );
 
 Map<String, dynamic> _$ProjectTypeToJson(ProjectType instance) => <String, dynamic>{
       'fileType': _$ProjectFileTypeEnumMap[instance.fileType]!,
-      'filePrefix': instance.filePrefix,
+      'fileNameMatcher': instance.fileNameMatcher,
       'nestedByDot': instance.nestedByDot,
     };
 

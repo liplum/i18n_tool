@@ -196,16 +196,16 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
   final $customTemplateLocale = TextEditingController(text: "en");
   var useCustomTemplateLocale = false;
   var l10nFiles = <L10nFile>[];
-  final $filePrefix = TextEditingController();
+  final $fileNameMatcher = TextEditingController();
   ProjectFileType? fileType;
 
   @override
   void initState() {
     super.initState();
-    $filePrefix.addListener(() async {
+    $fileNameMatcher.addListener(() async {
       final rootPath = $rootPath.text;
       if (rootPath.isNotEmpty) {
-        await rebuildProjectDetails(rootPath: rootPath, filePrefix: $filePrefix.text);
+        await rebuildProjectDetails(rootPath: rootPath, fileNameMatcher: $fileNameMatcher.text);
       }
     });
     $customTemplateLocale.addListener(() async {
@@ -225,7 +225,7 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
   void dispose() {
     $rootPath.dispose();
     $projectName.dispose();
-    $filePrefix.dispose();
+    $fileNameMatcher.dispose();
     $customTemplateLocale.dispose();
     super.dispose();
   }
@@ -260,14 +260,19 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
   }
 
   Widget buildBody() {
-    return [
+    final children = [
       buildRootPath(),
       buildProjectName(),
       buildFileType(),
       buildTemplateLocale(),
       buildFilePrefix(),
       buildFilePreview(),
-    ].column(spacing: 8);
+    ];
+    return ListView.separated(
+      itemCount: children.length,
+      itemBuilder: (ctx, i) => children[i],
+      separatorBuilder: (ctx, i) => SizedBox(height: 8),
+    );
   }
 
   Widget buildRootPath() {
@@ -293,9 +298,9 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
 
   Widget buildFilePrefix() {
     return [
-      "File Prefix".text(),
+      "File Name Matcher".text(),
       TextBox(
-        controller: $filePrefix,
+        controller: $fileNameMatcher,
       ).expanded(),
     ].row(spacing: 8);
   }
@@ -338,11 +343,13 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
             );
           })
         ],
-        onChanged: (newValue) {
-          setState(() {
-            templateLocale = newValue!;
-          });
-        },
+        onChanged: useCustomTemplateLocale
+            ? null
+            : (newValue) {
+                setState(() {
+                  templateLocale = newValue!;
+                });
+              },
       ),
       Checkbox(
         checked: useCustomTemplateLocale,
@@ -377,17 +384,17 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
     $projectName.text = p.basenameWithoutExtension(result);
     await rebuildProjectDetails(
       rootPath: result,
-      filePrefix: $filePrefix.text,
+      fileNameMatcher: $fileNameMatcher.text,
     );
   }
 
   Future<void> rebuildProjectDetails({
     required String rootPath,
-    required String filePrefix,
+    required String fileNameMatcher,
   }) async {
     final l10nFiles = await loadL10nFilesAtRootPath(
       rootPath: rootPath,
-      filePrefix: filePrefix,
+      fileNameMatcher: fileNameMatcher,
       templateLocale: templateLocale,
     );
     final estimated = await _estimateProjectFileType(l10nFiles);
@@ -411,7 +418,7 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
             );
           },
         ).expanded(),
-      ].column(mas: MainAxisSize.min).sized(h: 240),
+      ].column(mas: MainAxisSize.min).sized(h: 380),
     );
   }
 
