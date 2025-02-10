@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:i18n_tool/app/utils/locale.dart';
+import 'package:i18n_tool/app/utils/project.dart';
 import 'package:i18n_tool/serialization/serializer.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
@@ -15,19 +16,13 @@ part "working_project.g.dart";
 @CopyWith(skipFields: true)
 class WorkingProject {
   final Project project;
-  final L10nSerializer serializer;
   final Locale? templateLocale;
   final List<L10nFile> l10nFiles;
-  final List<L10nFileTab> openTabs;
-  final L10nFileTab? selectedTab;
 
   const WorkingProject({
     required this.project,
-    required this.serializer,
     this.templateLocale,
     this.l10nFiles = const [],
-    this.openTabs = const [],
-    this.selectedTab,
   });
 
   L10nFile? get templateL10nFile {
@@ -41,19 +36,6 @@ extension WorkingProjectEx on WorkingProject {
   bool isTemplate(L10nFile file) => file.locale == templateLocale;
 }
 
-@immutable
-@CopyWith(skipFields: true)
-class L10nFileTab {
-  final WorkingProject project;
-  final L10nFile file;
-
-  const L10nFileTab({
-    required this.project,
-    required this.file,
-  });
-}
-
-@immutable
 @JsonSerializable()
 @CopyWith(skipFields: true)
 class L10nFile {

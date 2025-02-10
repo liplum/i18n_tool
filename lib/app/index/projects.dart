@@ -384,6 +384,9 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
     if (result == null) return;
     $rootPath.text = result;
     $projectName.text = p.basenameWithoutExtension(result);
+    $fileNameMatcher.text = "";
+    useCustomTemplateLocale = false;
+    $customTemplateLocale.text = "";
     await rebuildProjectDetails(
       rootPath: result,
       fileNameMatcher: $fileNameMatcher.text,

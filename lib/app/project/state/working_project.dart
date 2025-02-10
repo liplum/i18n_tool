@@ -34,7 +34,8 @@ class WorkingProjectNotifier extends AutoDisposeFamilyAsyncNotifier<WorkingProje
 
   Future<WorkingProject> _rebuild([WorkingProject? prev]) async {
     final l10nFiles = await arg.loadL10nFiles();
-    final templateLocale = arg.settings.templateLocale ?? (l10nFiles.firstWhereOrNull((it) => it.locale.languageCode == "en") ?? l10nFiles.firstOrNull)?.locale;
+    final templateLocale = arg.settings.templateLocale ??
+        (l10nFiles.firstWhereOrNull((it) => it.locale.languageCode == "en") ?? l10nFiles.firstOrNull)?.locale;
     return prev?.copyWith(
           project: arg,
           templateLocale: templateLocale,
@@ -42,70 +43,8 @@ class WorkingProjectNotifier extends AutoDisposeFamilyAsyncNotifier<WorkingProje
         ) ??
         WorkingProject(
           project: arg,
-          serializer: arg.createParser(),
           templateLocale: templateLocale,
           l10nFiles: l10nFiles,
         );
-  }
-
-  void openTab(L10nFile file) {
-    final state = this.state.value;
-    if (state == null) return;
-    final existing = state.openTabs.firstWhereOrNull((it) => it.file.isTheSameLocale(file));
-    if (existing != null) {
-      if (state.selectedTab != existing) {
-        this.state = AsyncValue.data(state.copyWith(selectedTab: existing));
-      }
-      return;
-    }
-    final newTab = L10nFileTab(project: state, file: file);
-    this.state = AsyncValue.data(state.copyWith(
-      openTabs: [...state.openTabs, newTab],
-      selectedTab: newTab,
-    ));
-  }
-
-  void closeTab(L10nFile file) {
-    final state = this.state.value;
-    if (state == null) return;
-    final existing = state.openTabs.firstWhereOrNull((it) => it.file.isTheSameLocale(file));
-    if (existing == null) return;
-    final newOpenedTabs = [...state.openTabs.where((it) => !it.file.isTheSameLocale(file))];
-    this.state = AsyncValue.data(state.copyWith(
-      openTabs: newOpenedTabs,
-      selectedTab: file.isTheSameLocale(state.selectedTab?.file) ? newOpenedTabs.firstOrNull : state.selectedTab,
-    ));
-  }
-
-  void selectTab(L10nFile file) {
-    final state = this.state.value;
-    if (state == null) return;
-    if (file.isTheSameLocale(state.selectedTab?.file)) return;
-    this.state = AsyncValue.data(state.copyWith(
-      selectedTab: state.openTabs.firstWhereOrNull((it) => it.file.isTheSameLocale(file)),
-    ));
-  }
-
-  void recordTab(int oldIndex, int newIndex) {
-    // TODO: buggy
-    final state = this.state.value;
-    if (state == null) return;
-    if (oldIndex < newIndex) {
-      newIndex -= 1;
-    }
-    final newTabs = [...state.openTabs];
-    var currentIndex = newTabs.indexWhere((it) => it.file.locale == state.selectedTab?.file.locale);
-    final item = newTabs.removeAt(oldIndex);
-    newTabs.insert(newIndex, item);
-
-    if (currentIndex == newIndex) {
-      currentIndex = oldIndex;
-    } else if (currentIndex == oldIndex) {
-      currentIndex = newIndex;
-    }
-    this.state = AsyncValue.data(state.copyWith(
-      openTabs: newTabs,
-      selectedTab: newTabs[currentIndex],
-    ));
   }
 }

@@ -15,11 +15,8 @@ abstract class _$WorkingProjectCWProxy {
   /// ````
   WorkingProject call({
     Project project,
-    L10nSerializer serializer,
     Locale? templateLocale,
     List<L10nFile> l10nFiles,
-    List<L10nFileTab> openTabs,
-    L10nFileTab? selectedTab,
   });
 }
 
@@ -39,21 +36,14 @@ class _$WorkingProjectCWProxyImpl implements _$WorkingProjectCWProxy {
   /// ````
   WorkingProject call({
     Object? project = const $CopyWithPlaceholder(),
-    Object? serializer = const $CopyWithPlaceholder(),
     Object? templateLocale = const $CopyWithPlaceholder(),
     Object? l10nFiles = const $CopyWithPlaceholder(),
-    Object? openTabs = const $CopyWithPlaceholder(),
-    Object? selectedTab = const $CopyWithPlaceholder(),
   }) {
     return WorkingProject(
       project: project == const $CopyWithPlaceholder()
           ? _value.project
           // ignore: cast_nullable_to_non_nullable
           : project as Project,
-      serializer: serializer == const $CopyWithPlaceholder()
-          ? _value.serializer
-          // ignore: cast_nullable_to_non_nullable
-          : serializer as L10nSerializer,
       templateLocale: templateLocale == const $CopyWithPlaceholder()
           ? _value.templateLocale
           // ignore: cast_nullable_to_non_nullable
@@ -62,14 +52,6 @@ class _$WorkingProjectCWProxyImpl implements _$WorkingProjectCWProxy {
           ? _value.l10nFiles
           // ignore: cast_nullable_to_non_nullable
           : l10nFiles as List<L10nFile>,
-      openTabs: openTabs == const $CopyWithPlaceholder()
-          ? _value.openTabs
-          // ignore: cast_nullable_to_non_nullable
-          : openTabs as List<L10nFileTab>,
-      selectedTab: selectedTab == const $CopyWithPlaceholder()
-          ? _value.selectedTab
-          // ignore: cast_nullable_to_non_nullable
-          : selectedTab as L10nFileTab?,
     );
   }
 }
@@ -78,56 +60,6 @@ extension $WorkingProjectCopyWith on WorkingProject {
   /// Returns a callable class that can be used as follows: `instanceOfWorkingProject.copyWith(...)`.
   // ignore: library_private_types_in_public_api
   _$WorkingProjectCWProxy get copyWith => _$WorkingProjectCWProxyImpl(this);
-}
-
-abstract class _$L10nFileTabCWProxy {
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored.
-  ///
-  /// Usage
-  /// ```dart
-  /// L10nFileTab(...).copyWith(id: 12, name: "My name")
-  /// ````
-  L10nFileTab call({
-    WorkingProject project,
-    L10nFile file,
-  });
-}
-
-/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfL10nFileTab.copyWith(...)`.
-class _$L10nFileTabCWProxyImpl implements _$L10nFileTabCWProxy {
-  const _$L10nFileTabCWProxyImpl(this._value);
-
-  final L10nFileTab _value;
-
-  @override
-
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored.
-  ///
-  /// Usage
-  /// ```dart
-  /// L10nFileTab(...).copyWith(id: 12, name: "My name")
-  /// ````
-  L10nFileTab call({
-    Object? project = const $CopyWithPlaceholder(),
-    Object? file = const $CopyWithPlaceholder(),
-  }) {
-    return L10nFileTab(
-      project: project == const $CopyWithPlaceholder()
-          ? _value.project
-          // ignore: cast_nullable_to_non_nullable
-          : project as WorkingProject,
-      file: file == const $CopyWithPlaceholder()
-          ? _value.file
-          // ignore: cast_nullable_to_non_nullable
-          : file as L10nFile,
-    );
-  }
-}
-
-extension $L10nFileTabCopyWith on L10nFileTab {
-  /// Returns a callable class that can be used as follows: `instanceOfL10nFileTab.copyWith(...)`.
-  // ignore: library_private_types_in_public_api
-  _$L10nFileTabCWProxy get copyWith => _$L10nFileTabCWProxyImpl(this);
 }
 
 abstract class _$L10nFileCWProxy {

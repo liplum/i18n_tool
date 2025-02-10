@@ -41,7 +41,15 @@ Future<List<L10nFile>> loadL10nFilesAtRootPath({
   for (final file in files) {
     var fileName = p.basenameWithoutExtension(file.path);
     final fileNameRegex = fileNameMatcher.isEmpty ? null : _tryCreateRegExp(fileNameMatcher);
-    fileName = fileNameRegex == null ? fileName : fileNameRegex.firstMatch(fileName)?.group(1) ?? fileName;
+    if (fileNameRegex != null) {
+      final match = fileNameRegex.firstMatch(fileName);
+      if (match != null && match.groupCount > 0) {
+        final group = match.group(1);
+        if (group != null) {
+          fileName = group;
+        }
+      }
+    }
     // fileName = fileName.replaceAll("_", "-");
     if (templateLocale != null && fileName.isEmpty) {
       l10nFiles.add(L10nFile(

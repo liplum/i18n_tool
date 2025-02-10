@@ -6,7 +6,7 @@ import 'package:i18n_tool/serialization/serializer.dart';
 import '../model/project.dart';
 
 extension ProjectEx on Project {
-  L10nSerializer createParser() {
+  L10nSerializer createSerializer() {
     final fileType = type.fileType;
     return switch (fileType) {
       ProjectFileType.json => JsonL10nSerializer(),

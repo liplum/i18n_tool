@@ -4,10 +4,12 @@ import 'package:collection/collection.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:i18n_tool/app/model/tab_manager.dart';
 import 'package:i18n_tool/app/project/model/working_project.dart';
 import 'package:i18n_tool/app/project/state/editing.dart';
 import 'package:i18n_tool/app/project/state/working_project.dart';
 import 'package:i18n_tool/app/utils/locale.dart';
+import 'package:i18n_tool/app/utils/project.dart';
 import 'package:i18n_tool/serialization/data.dart';
 import 'package:i18n_tool/widget/fluent_ui.dart';
 import 'package:i18n_tool/widget/loading.dart';
@@ -18,6 +20,7 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../state/project.dart';
 import 'model/editing.dart';
+import 'state/tab_manager.dart';
 
 class ProjectIndexPage extends ConsumerStatefulWidget {
   final String uuid;
@@ -38,6 +41,7 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
   Widget build(BuildContext context) {
     final workingProjectAsync = ref.watch($workingProject(project));
     final workingProject = workingProjectAsync.value;
+    final tabManager = ref.watch($tabManager(project));
     return OnLoading(
       loading: workingProjectAsync.isLoading,
       child: NavigationView(
@@ -63,7 +67,7 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
                       icon: Icon(workingProject.isTemplate(file) ? FluentIcons.file_template : FluentIcons.file_code),
                       title: file.title().text(),
                       onTap: () {
-                        ref.read($workingProject(project).notifier).openTab(file);
+                        ref.read($tabManager(project).notifier).openTab(file);
                       },
                     );
                   }),
@@ -85,7 +89,10 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
           ],
         ),
         paneBodyBuilder: (item, child) {
-          return buildEditingPanel(workingProject);
+          return buildEditingPanel(
+            workingProject: workingProject,
+            manager: tabManager,
+          );
         },
       ),
     );
@@ -98,15 +105,17 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
     );
   }
 
-  Widget buildEditingPanel(WorkingProject? workingProject) {
+  Widget buildEditingPanel({
+    WorkingProject? workingProject,
+    TabManager? manager,
+  }) {
     return TabView(
-      currentIndex: workingProject == null
-          ? 0
-          : workingProject.openTabs.indexWhere((it) => it.file.isTheSameLocale(workingProject.selectedTab?.file)),
-      onChanged: workingProject == null
+      currentIndex:
+          manager == null ? 0 : manager.openTabs.indexWhere((it) => it.file.isTheSameLocale(manager.selectedTab?.file)),
+      onChanged: manager == null
           ? null
           : (index) {
-              ref.read($workingProject(project).notifier).selectTab(workingProject.openTabs[index].file);
+              ref.read($tabManager(project).notifier).selectTab(manager.openTabs[index].file);
             },
       // TODO: support reordering
       // onReorder: (oldIndex, newIndex) {
@@ -117,14 +126,14 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
       showScrollButtons: true,
       shortcutsEnabled: true,
       tabs: [
-        if (workingProject != null)
-          ...workingProject.openTabs.map(
+        if (manager != null && workingProject != null)
+          ...manager.openTabs.map(
             (it) => Tab(
               icon: Icon(workingProject.isTemplate(it.file) ? FluentIcons.file_template : FluentIcons.file_code),
               text: it.file.title().text(),
               body: L10nFileEditorTab(tab: it),
               onClosed: () {
-                ref.read($workingProject(workingProject.project).notifier).closeTab(it.file);
+                ref.read($tabManager(manager.project).notifier).closeTab(it.file);
               },
             ),
           ),
@@ -262,11 +271,11 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> with Auto
                     loading = true;
                   });
                   final data = dataSource.buildL10nData();
-                  final workingProject = widget.tab.project;
-                  final serialized = workingProject.serializer.serialize(
-                    data,
-                    workingProject.project.settings.toSerializationSettings(),
-                  );
+                  final project = widget.tab.manager.project;
+                  final serialized = project.createSerializer().serialize(
+                        data,
+                        project.settings.toSerializationSettings(),
+                      );
                   final fi = File(widget.tab.file.path);
                   await fi.writeAsString(serialized);
                   setState(() {
