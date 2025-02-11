@@ -35,7 +35,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
-  file_picker: ^8.3.3
+  file_picker: ^8.3.5
   json_annotation: ^4.9.0
   copy_with_extension: ^6.0.1
   go_router: ^14.8.0
@@ -52,8 +52,8 @@ dependencies:
   yaml: ^3.1.3
   properties: ^2.1.1
   meta: ^1.15.0
-  syncfusion_flutter_core: ^28.2.4
-  syncfusion_flutter_datagrid: ^28.2.4
+  syncfusion_flutter_core: ^28.2.5
+  syncfusion_flutter_datagrid: ^28.2.5
   yaml_writer: ^2.0.1
   path_provider: ^2.1.5
 
