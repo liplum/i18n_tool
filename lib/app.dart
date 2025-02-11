@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:i18n_tool/app/route.dart';
 import 'package:i18n_tool/lifecycle.dart';
 import 'package:i18n_tool/r.dart';
+import 'package:i18n_tool/widget/app_menu.dart';
 
 import 'app/error.dart';
 
@@ -39,7 +40,12 @@ class _I18nToolAppState extends State<I18nToolApp> {
       themeMode: ThemeMode.system,
       theme: buildTheme(FluentThemeData.light()),
       darkTheme: buildTheme(FluentThemeData.dark()),
-      builder: (ctx, child) => child ?? const SizedBox(),
+      builder: (ctx, child) => AppMenuHost(
+        defaultItems: [
+          MenuBarItem(title: "App", items: []),
+        ],
+        child: child ?? const SizedBox(),
+      ),
     );
   }
 
