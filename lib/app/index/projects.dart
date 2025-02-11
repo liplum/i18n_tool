@@ -5,6 +5,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:i18n_tool/app/project/utils/project.dart';
+import 'package:i18n_tool/widget/app_menu.dart';
 import 'package:locale_names/locale_names.dart';
 import 'package:rettulf/rettulf.dart';
 import "package:file_picker/file_picker.dart";
@@ -33,31 +34,44 @@ class _StartProjectsPageState extends ConsumerState<IndexProjectsPage> {
   @override
   Widget build(BuildContext context) {
     final projects = ref.watch($projects);
-    return ScaffoldPage(
-      header: PageHeader(
-        title: const Text('Projects'),
-      ),
-      content: [
-        [
-          TextBox(
-            controller: $search,
-            prefix: const Icon(FluentIcons.search).padAll(8),
-            suffix: IconButton(
-              icon: Icon(FluentIcons.clear),
-              onPressed: () {
-                $search.clear();
-              },
+    return AppMenu(
+      items: [
+        AppMenuCategory(
+          label: "File",
+          items: [
+            AppMenuItem(
+              label: "New Project",
+              onPressed: createProject,
             ),
-            suffixMode: OverlayVisibilityMode.editing,
-            placeholder: 'Search',
-          ).expanded(),
-          buildOpenButton(),
-        ].row(spacing: 8).padSymmetric(h: 16, v: 4),
-        $search >>
-            (ctx, search) => buildProjectList(
-                  projects.where((it) => it.match($search.text)).toList(growable: false),
-                ).expanded(),
-      ].column(),
+          ],
+        ),
+      ],
+      child: ScaffoldPage(
+        header: PageHeader(
+          title: const Text('Projects'),
+        ),
+        content: [
+          [
+            TextBox(
+              controller: $search,
+              prefix: const Icon(FluentIcons.search).padAll(8),
+              suffix: IconButton(
+                icon: Icon(FluentIcons.clear),
+                onPressed: () {
+                  $search.clear();
+                },
+              ),
+              suffixMode: OverlayVisibilityMode.editing,
+              placeholder: 'Search',
+            ).expanded(),
+            buildCreateButton(),
+          ].row(spacing: 8).padSymmetric(h: 16, v: 4),
+          $search >>
+              (ctx, search) => buildProjectList(
+                    projects.where((it) => it.match($search.text)).toList(growable: false),
+                  ).expanded(),
+        ].column(),
+      ),
     );
   }
 
@@ -73,7 +87,7 @@ class _StartProjectsPageState extends ConsumerState<IndexProjectsPage> {
     );
   }
 
-  Widget buildOpenButton() {
+  Widget buildCreateButton() {
     return Button(
       onPressed: createProject,
       child: "Create".text(),

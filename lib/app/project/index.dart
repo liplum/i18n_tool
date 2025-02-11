@@ -45,19 +45,19 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
     final tabManager = ref.watch($tabManager(project));
     return AppMenu(
       items: [
-        MenuBarItem(
-          title: "File",
+        AppMenuCategory(
+          label: "File",
           items: [
-            MenuFlyoutItem(
-              text: "New Language File".text(),
+            AppMenuItem(
+              label: "New Language File",
               onPressed: addNewLanguage,
             ),
-            MenuFlyoutItem(
-              text: "Remove File".text(),
+            AppMenuItem(
+              label: "Remove File",
               onPressed: () {},
             ),
-            MenuFlyoutItem(
-              text: "Save All".text(),
+            AppMenuItem(
+              label: "Save All",
               onPressed: () {},
             ),
           ],

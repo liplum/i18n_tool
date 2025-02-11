@@ -1,6 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:i18n_tool/r.dart';
 import 'package:i18n_tool/widget/app_menu.dart';
 import 'package:rettulf/rettulf.dart';
 
@@ -21,7 +22,10 @@ class _StartIndexPageState extends ConsumerState<IndexIndexPage> {
   Widget build(BuildContext context) {
     return AppMenu(
       items: [
-        MenuBarItem(title: "App", items: []),
+        AppMenuCategory(
+          label: R.appName,
+          items: [],
+        ),
       ],
       child: NavigationView(
         appBar: NavigationAppBar(
