@@ -56,6 +56,7 @@ dependencies:
   syncfusion_flutter_datagrid: ^28.2.5
   yaml_writer: ^2.0.1
   path_provider: ^2.1.5
+  visibility_detector: ^0.4.0+2
 
 dev_dependencies:
   flutter_test:

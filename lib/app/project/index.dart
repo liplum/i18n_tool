@@ -19,6 +19,7 @@ import 'package:rettulf/rettulf.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
+import '../menu_bar.dart';
 import '../state/project.dart';
 import 'model/editing.dart';
 import 'state/tab_manager.dart';
@@ -36,7 +37,36 @@ class ProjectIndexPage extends ConsumerStatefulWidget {
 }
 
 class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
+  late final appMenuController = buildAppMenuController(context);
   late var project = ref.read($projects).firstWhere((it) => it.uuid == widget.uuid);
+
+  @override
+  void dispose() {
+    appMenuController.dispose();
+    super.dispose();
+  }
+
+  void updateMenus() {
+    appMenuController.updateMenus([
+      AppMenuCategory(
+        label: "File",
+        items: [
+          AppMenuItem(
+            label: "New Language File",
+            onPressed: addNewLanguage,
+          ),
+          AppMenuItem(
+            label: "Remove File",
+            onPressed: () {},
+          ),
+          AppMenuItem(
+            label: "Save All",
+            onPressed: () {},
+          ),
+        ],
+      ),
+    ]);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,71 +74,49 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
     final workingProject = workingProjectAsync.value;
     final tabManager = ref.watch($tabManager(project));
     return AppMenu(
-      items: [
-        AppMenuCategory(
-          label: "File",
-          items: [
-            AppMenuItem(
-              label: "New Language File",
-              onPressed: addNewLanguage,
-            ),
-            AppMenuItem(
-              label: "Remove File",
-              onPressed: () {},
-            ),
-            AppMenuItem(
-              label: "Save All",
-              onPressed: () {},
-            ),
-          ],
-        ),
-      ],
-      child: OnLoading(
-        loading: workingProjectAsync.isLoading,
-        child: NavigationView(
-          appBar: NavigationAppBar(
-            title: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: project.color.withValues(alpha: 0.8),
-                child: project.shortName.text(),
+      controller: appMenuController,
+      child: AppMenuPage(
+        key: Key("Project/${project.uuid}"),
+        onRebuild: updateMenus,
+        child: OnLoading(
+          loading: workingProjectAsync.isLoading,
+          child: NavigationView(
+            appBar: NavigationAppBar(
+              title: ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: project.color.withValues(alpha: 0.8),
+                  child: project.shortName.text(),
+                ),
+                title: project.name.text(),
+                subtitle: project.rootPath.text(),
               ),
-              title: project.name.text(),
-              subtitle: project.rootPath.text(),
             ),
+            pane: NavigationPane(
+              items: workingProject == null
+                  ? []
+                  : [
+                      ...workingProject.l10nFiles
+                          // keep the template at the top
+                          .sortedBy((it) => workingProject.isTemplate(it) ? "" : it.locale.nativeDisplayLanguageScript)
+                          .map((file) {
+                        return PaneItemAction(
+                          icon:
+                              Icon(workingProject.isTemplate(file) ? FluentIcons.file_template : FluentIcons.file_code),
+                          title: file.title().text(),
+                          onTap: () {
+                            ref.read($tabManager(project).notifier).openTab(file);
+                          },
+                        );
+                      }),
+                    ],
+            ),
+            paneBodyBuilder: (item, child) {
+              return buildEditingPanel(
+                workingProject: workingProject,
+                manager: tabManager,
+              );
+            },
           ),
-          pane: NavigationPane(
-            items: workingProject == null
-                ? []
-                : [
-                    ...workingProject.l10nFiles
-                        // keep the template at the top
-                        .sortedBy((it) => workingProject.isTemplate(it) ? "" : it.locale.nativeDisplayLanguageScript)
-                        .map((file) {
-                      return PaneItemAction(
-                        icon: Icon(workingProject.isTemplate(file) ? FluentIcons.file_template : FluentIcons.file_code),
-                        title: file.title().text(),
-                        onTap: () {
-                          ref.read($tabManager(project).notifier).openTab(file);
-                        },
-                      );
-                    }),
-                  ],
-            footerItems: [
-              PaneItemAction(
-                icon: const Icon(FluentIcons.settings),
-                title: const Text('Settings'),
-                onTap: () {
-                  context.push("/settings");
-                },
-              ),
-            ],
-          ),
-          paneBodyBuilder: (item, child) {
-            return buildEditingPanel(
-              workingProject: workingProject,
-              manager: tabManager,
-            );
-          },
         ),
       ),
     );

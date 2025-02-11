@@ -1,9 +1,9 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:i18n_tool/r.dart';
 import 'package:i18n_tool/widget/app_menu.dart';
 import 'package:rettulf/rettulf.dart';
+
+import '../menu_bar.dart';
 
 class IndexIndexPage extends ConsumerStatefulWidget {
   final Widget child;
@@ -14,19 +14,16 @@ class IndexIndexPage extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState createState() => _StartIndexPageState();
+  ConsumerState createState() => _IndexIndexPageState();
 }
 
-class _StartIndexPageState extends ConsumerState<IndexIndexPage> {
+class _IndexIndexPageState extends ConsumerState<IndexIndexPage> {
+  late final appMenuController = buildAppMenuController(context);
+
   @override
   Widget build(BuildContext context) {
     return AppMenu(
-      items: [
-        AppMenuCategory(
-          label: R.appName,
-          items: [],
-        ),
-      ],
+      controller: appMenuController,
       child: NavigationView(
         appBar: NavigationAppBar(
           leading: Icon(FluentIcons.home_solid),
@@ -38,15 +35,6 @@ class _StartIndexPageState extends ConsumerState<IndexIndexPage> {
               icon: const Icon(FluentIcons.project_collection),
               title: const Text('Projects'),
               body: const SizedBox.shrink(),
-            ),
-          ],
-          footerItems: [
-            PaneItemAction(
-              icon: const Icon(FluentIcons.settings),
-              title: const Text('Settings'),
-              onTap: () {
-                context.push("/settings");
-              },
             ),
           ],
         ),

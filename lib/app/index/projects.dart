@@ -25,27 +25,28 @@ class IndexProjectsPage extends ConsumerStatefulWidget {
 class _StartProjectsPageState extends ConsumerState<IndexProjectsPage> {
   final $search = TextEditingController();
 
-  @override
-  void dispose() {
-    $search.dispose();
-    super.dispose();
+  void updateMenus() {
+    if (!mounted) return;
+    AppMenuController.of(context).updateMenus([
+      AppMenuCategory(
+        label: "File",
+        items: [
+          AppMenuItem(
+            label: "New Project",
+            shortcut: CharacterActivator("n", meta: true),
+            onPressed: createProject,
+          ),
+        ],
+      )
+    ]);
   }
 
   @override
   Widget build(BuildContext context) {
     final projects = ref.watch($projects);
-    return AppMenu(
-      items: [
-        AppMenuCategory(
-          label: "File",
-          items: [
-            AppMenuItem(
-              label: "New Project",
-              onPressed: createProject,
-            ),
-          ],
-        ),
-      ],
+    return AppMenuPage(
+      key: Key("Projects"),
+      onRebuild: updateMenus,
       child: ScaffoldPage(
         header: PageHeader(
           title: const Text('Projects'),
@@ -444,7 +445,7 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
   Widget buildOpenButton() {
     return Button(
       onPressed: pickAndOpenFolder,
-      child: Text('Open folder'),
+      child: Text('Open Folder'),
     );
   }
 
