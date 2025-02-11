@@ -11,6 +11,7 @@ import 'package:i18n_tool/app/project/state/working_project.dart';
 import 'package:i18n_tool/app/utils/locale.dart';
 import 'package:i18n_tool/app/utils/project.dart';
 import 'package:i18n_tool/serialization/data.dart';
+import 'package:i18n_tool/widget/app_menu.dart';
 import 'package:i18n_tool/widget/fluent_ui.dart';
 import 'package:i18n_tool/widget/loading.dart';
 import 'package:locale_names/locale_names.dart';
@@ -42,58 +43,79 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
     final workingProjectAsync = ref.watch($workingProject(project));
     final workingProject = workingProjectAsync.value;
     final tabManager = ref.watch($tabManager(project));
-    return OnLoading(
-      loading: workingProjectAsync.isLoading,
-      child: NavigationView(
-        appBar: NavigationAppBar(
-          title: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: project.color.withValues(alpha: 0.8),
-              child: project.shortName.text(),
+    return AppMenu(
+      items: [
+        MenuBarItem(
+          title: "New",
+          items: [
+            MenuFlyoutItem(
+              text: const Text('Plain Text Documents'),
+              onPressed: () {},
             ),
-            title: project.name.text(),
-            subtitle: project.rootPath.text(),
-          ),
-        ),
-        pane: NavigationPane(
-          items: workingProject == null
-              ? []
-              : [
-                  ...workingProject.l10nFiles
-                      // keep the template at the top
-                      .sortedBy((it) => workingProject.isTemplate(it) ? "" : it.locale.nativeDisplayLanguageScript)
-                      .map((file) {
-                    return PaneItemAction(
-                      icon: Icon(workingProject.isTemplate(file) ? FluentIcons.file_template : FluentIcons.file_code),
-                      title: file.title().text(),
-                      onTap: () {
-                        ref.read($tabManager(project).notifier).openTab(file);
-                      },
-                    );
-                  }),
-                  PaneItemSeparator(),
-                  PaneItemAction(
-                    icon: const Icon(FluentIcons.add),
-                    title: const Text('Add language target'),
-                    onTap: addNewLanguage,
-                  ),
-                ],
-          footerItems: [
-            PaneItemAction(
-              icon: const Icon(FluentIcons.settings),
-              title: const Text('Settings'),
-              onTap: () {
-                context.push("/settings");
-              },
+            MenuFlyoutItem(
+              text: const Text('Rich Text Documents'),
+              onPressed: () {},
+            ),
+            MenuFlyoutItem(
+              text: const Text('Other Formats'),
+              onPressed: () {},
             ),
           ],
         ),
-        paneBodyBuilder: (item, child) {
-          return buildEditingPanel(
-            workingProject: workingProject,
-            manager: tabManager,
-          );
-        },
+      ],
+      child: OnLoading(
+        loading: workingProjectAsync.isLoading,
+        child: NavigationView(
+          appBar: NavigationAppBar(
+            title: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: project.color.withValues(alpha: 0.8),
+                child: project.shortName.text(),
+              ),
+              title: project.name.text(),
+              subtitle: project.rootPath.text(),
+            ),
+          ),
+          pane: NavigationPane(
+            items: workingProject == null
+                ? []
+                : [
+                    ...workingProject.l10nFiles
+                        // keep the template at the top
+                        .sortedBy((it) => workingProject.isTemplate(it) ? "" : it.locale.nativeDisplayLanguageScript)
+                        .map((file) {
+                      return PaneItemAction(
+                        icon: Icon(workingProject.isTemplate(file) ? FluentIcons.file_template : FluentIcons.file_code),
+                        title: file.title().text(),
+                        onTap: () {
+                          ref.read($tabManager(project).notifier).openTab(file);
+                        },
+                      );
+                    }),
+                    PaneItemSeparator(),
+                    PaneItemAction(
+                      icon: const Icon(FluentIcons.add),
+                      title: const Text('Add language target'),
+                      onTap: addNewLanguage,
+                    ),
+                  ],
+            footerItems: [
+              PaneItemAction(
+                icon: const Icon(FluentIcons.settings),
+                title: const Text('Settings'),
+                onTap: () {
+                  context.push("/settings");
+                },
+              ),
+            ],
+          ),
+          paneBodyBuilder: (item, child) {
+            return buildEditingPanel(
+              workingProject: workingProject,
+              manager: tabManager,
+            );
+          },
+        ),
       ),
     );
   }
