@@ -46,18 +46,18 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
     return AppMenu(
       items: [
         MenuBarItem(
-          title: "New",
+          title: "File",
           items: [
             MenuFlyoutItem(
-              text: const Text('Plain Text Documents'),
+              text: "New Language File".text(),
+              onPressed: addNewLanguage,
+            ),
+            MenuFlyoutItem(
+              text: "Remove File".text(),
               onPressed: () {},
             ),
             MenuFlyoutItem(
-              text: const Text('Rich Text Documents'),
-              onPressed: () {},
-            ),
-            MenuFlyoutItem(
-              text: const Text('Other Formats'),
+              text: "Save All".text(),
               onPressed: () {},
             ),
           ],
@@ -92,12 +92,6 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
                         },
                       );
                     }),
-                    PaneItemSeparator(),
-                    PaneItemAction(
-                      icon: const Icon(FluentIcons.add),
-                      title: const Text('Add language target'),
-                      onTap: addNewLanguage,
-                    ),
                   ],
             footerItems: [
               PaneItemAction(
