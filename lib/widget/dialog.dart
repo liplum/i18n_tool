@@ -17,7 +17,7 @@ extension BuildContextDialogEx on BuildContext {
         actions: [
           Button(
             child: secondary.text(),
-            onPressed: () => context.pop(true),
+            onPressed: () => context.pop(false),
           ),
           FilledButton(
             child: primary.text(),

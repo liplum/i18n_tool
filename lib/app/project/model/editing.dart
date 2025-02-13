@@ -1,39 +1,37 @@
-import 'dart:ui';
-
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:i18n_tool/serialization/data.dart';
-import 'package:meta/meta.dart';
+
+import 'working_project.dart';
 
 part "editing.g.dart";
 
-@immutable
 @CopyWith(skipFields: true)
-class L10nEditing {
-  final Locale locale;
+class L10nFileAndData {
+  final L10nFile file;
   final L10nData data;
 
-  final ({Locale locale, L10nData data, List<L10nDataRow> rows})? template;
-
-  const L10nEditing({
-    required this.locale,
+  const L10nFileAndData({
+    required this.file,
     required this.data,
+  });
+}
+
+@CopyWith(skipFields: true)
+class L10nFileTabState {
+  final L10nFileAndData current;
+  final L10nFileAndData? template;
+
+  const L10nFileTabState({
+    required this.current,
     required this.template,
   });
 
-  L10nEditing.create({
-    required this.locale,
-    required this.data,
-    ({Locale locale, L10nData data})? template,
-  }) : template = template == null
-            ? null
-            : (
-                locale: template.locale,
-                data: template.data,
-                rows: _buildRows(
-                  data: data,
-                  template: template.data,
-                )
-              );
+  L10nDataRows buildRows() {
+    return _buildRows(
+      current: current.data,
+      template: template?.data,
+    );
+  }
 }
 
 class _RowInter {
@@ -41,18 +39,20 @@ class _RowInter {
   String? value;
 }
 
-List<L10nDataRow> _buildRows({
-  required L10nData data,
-  required L10nData template,
+L10nDataRows _buildRows({
+  required L10nData current,
+  required L10nData? template,
 }) {
-  final dataMap = data.toFlattenObject();
-  final templateMap = template.toFlattenObject();
+  final currentMap = current.toFlattenObject();
+  final templateMap = template?.toFlattenObject();
   final interMap = <String, _RowInter>{};
-  for (final MapEntry(:key, :value) in templateMap.entries) {
-    final inter = interMap[key] ??= _RowInter();
-    inter.template = value;
+  if (templateMap != null) {
+    for (final MapEntry(:key, :value) in templateMap.entries) {
+      final inter = interMap[key] ??= _RowInter();
+      inter.template = value;
+    }
   }
-  for (final MapEntry(:key, :value) in dataMap.entries) {
+  for (final MapEntry(:key, :value) in currentMap.entries) {
     final inter = interMap[key] ??= _RowInter();
     inter.value = value;
   }
@@ -60,7 +60,10 @@ List<L10nDataRow> _buildRows({
       .map((entry) => L10nDataRow(key: entry.key, template: entry.value.template, value: entry.value.value))
       .toList();
   result.sort((a, b) => a.key.compareTo(b.key));
-  return result;
+  return L10nDataRows(
+    rows: result,
+    hasTemplate: template != null,
+  );
 }
 
 class L10nDataRow {
@@ -72,5 +75,15 @@ class L10nDataRow {
     required this.key,
     required this.template,
     required this.value,
+  });
+}
+
+class L10nDataRows {
+  final List<L10nDataRow> rows;
+  final bool hasTemplate;
+
+  const L10nDataRows({
+    required this.rows,
+    required this.hasTemplate,
   });
 }

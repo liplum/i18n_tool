@@ -5,6 +5,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:i18n_tool/app/model/tab_manager.dart';
+import 'package:i18n_tool/app/project/model/file.dart';
 import 'package:i18n_tool/app/project/model/working_project.dart';
 import 'package:i18n_tool/app/project/state/editing.dart';
 import 'package:i18n_tool/app/project/state/working_project.dart';
@@ -177,7 +178,10 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
             (it) => Tab(
               icon: Icon(workingProject.isTemplate(it.file) ? FluentIcons.file_template : FluentIcons.file_code),
               text: it.file.title().text(),
-              body: L10nFileEditorTab(tab: it),
+              body: L10nFileEditorTab(
+                workingProject: workingProject,
+                tab: it,
+              ),
               onClosed: () {
                 ref.read($tabManager(manager.project).notifier).closeTab(it.file);
               },
@@ -233,10 +237,12 @@ class _CreateLanguageFormState extends ConsumerState<CreateLanguageForm> {
 }
 
 class L10nFileEditorTab extends ConsumerStatefulWidget {
+  final WorkingProject workingProject;
   final L10nFileTab tab;
 
   const L10nFileEditorTab({
     super.key,
+    required this.workingProject,
     required this.tab,
   });
 
@@ -245,7 +251,7 @@ class L10nFileEditorTab extends ConsumerStatefulWidget {
 }
 
 class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> with AutomaticKeepAliveClientMixin {
-  L10nEditingDataSource? dataSource;
+  _L10nEditingDataSource? dataSource;
   final controller = DataGridController();
   var loading = false;
 
@@ -262,17 +268,21 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> with Auto
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    ref.listen($l10nEditing(widget.tab), (pre, next) {
-      if (next is AsyncData<L10nEditing>) {
-        dataSource?.dispose();
-        setState(() {
-          dataSource = L10nEditingDataSource(
-            controller: controller,
-            editing: next.value,
-          );
-        });
+    final tab = widget.tab;
+    final templateL10nFile = widget.workingProject.templateL10nFile;
+    final templateFile =
+        templateL10nFile != null && templateL10nFile.locale != tab.file.locale ? templateL10nFile : null;
+    ref.listen(
+        $l10nFileTab((
+          project: widget.workingProject.project,
+          current: widget.tab.file,
+          template: templateFile,
+        )), (pre, next) {
+      if (next is AsyncData<L10nFileTabState>) {
+        onFileChangedOutside(next.value);
       }
     });
+
     final source = dataSource;
     return OnLoading(
       loading: loading,
@@ -281,6 +291,43 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> with Auto
         (source != null ? buildEditingField(source) : ProgressRing().center()).expanded(),
       ].column().padOnly(l: 16, r: 16),
     );
+  }
+
+  void updateDataSource(L10nFileTabState state) {
+    dataSource?.dispose();
+    setState(() {
+      dataSource = _L10nEditingDataSource(
+        controller: controller,
+        state: state,
+      );
+    });
+  }
+
+  Future<void> onFileChangedOutside(L10nFileTabState state) async {
+    if (dataSource == null) {
+      updateDataSource(state);
+      return;
+    }
+    final memoryContent = await context.showDialogRequest(
+      title: "File Changed",
+      desc:
+          'The local file "${state.current.file.locale.defaultDisplayLanguageScript}" was changed, do you want to reload from the file system or memory content?',
+      primary: "Keep Memory",
+      secondary: "Reload from File",
+    );
+    if (memoryContent == null) return;
+    if (!memoryContent) {
+      updateDataSource(state);
+    }
+  }
+
+  L10nData loadData(FileContent fileContent) {
+    final project = widget.workingProject.project;
+    final data = project.createSerializer().deserialize(
+          fileContent.content,
+          project.settings.toSerializationSettings(),
+        );
+    return data;
   }
 
   Widget buildCommandBar() {
@@ -331,8 +378,8 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> with Auto
     );
   }
 
-  Widget buildEditingField(L10nEditingDataSource dataSource) {
-    final template = dataSource.editing.template;
+  Widget buildEditingField(_L10nEditingDataSource dataSource) {
+    final template = dataSource.state.template;
     return SfDataGridTheme(
       data: SfDataGridThemeData(
         gridLineColor: FluentTheme.of(context).inactiveColor.withValues(alpha: 0.2),
@@ -371,7 +418,7 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> with Auto
               columnName: 'template',
               width: double.nan,
               allowEditing: false,
-              label: template.locale
+              label: template.file.locale
                   .l10n()
                   .text(overflow: TextOverflow.ellipsis)
                   .padAll(8)
@@ -380,7 +427,7 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> with Auto
           GridColumn(
             columnName: 'value',
             width: double.nan,
-            label: dataSource.editing.locale
+            label: dataSource.state.current.file.locale
                 .l10n()
                 .text(overflow: TextOverflow.ellipsis)
                 .padAll(8)
@@ -428,18 +475,18 @@ class _L10nCell extends StatelessWidget {
   }
 }
 
-class L10nEditingDataSource extends DataGridSource {
-  final L10nEditing editing;
+class _L10nEditingDataSource extends DataGridSource {
+  final L10nFileTabState state;
   final DataGridController controller;
   var _rows = <DataGridRow>[];
 
-  L10nEditingDataSource({
+  _L10nEditingDataSource({
     required this.controller,
-    required this.editing,
+    required this.state,
   }) {
-    final template = editing.template;
-    if (template != null) {
-      _rows = template.rows
+    final rows = state.buildRows();
+    if (rows.hasTemplate) {
+      _rows = rows.rows
           .mapIndexed((i, row) => DataGridRow(cells: [
                 DataGridCell<int>(
                   columnName: 'index',
@@ -460,7 +507,7 @@ class L10nEditingDataSource extends DataGridSource {
               ]))
           .toList();
     } else {
-      _rows = editing.data
+      _rows = rows.rows
           .mapIndexed((i, row) => DataGridRow(cells: [
                 DataGridCell<int>(
                   columnName: 'index',

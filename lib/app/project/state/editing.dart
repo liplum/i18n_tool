@@ -3,12 +3,11 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n_tool/app/model/project.dart';
 import 'package:i18n_tool/app/project/state/file.dart';
-import 'package:i18n_tool/app/project/state/working_project.dart';
 import 'package:i18n_tool/app/utils/project.dart';
 import 'package:i18n_tool/serialization/data.dart';
 
-import '../../model/tab_manager.dart';
 import '../model/editing.dart';
+import '../model/file.dart';
 import '../model/working_project.dart';
 
 typedef L10nFileWithProject = ({Project project, L10nFile file});
@@ -30,33 +29,40 @@ class L10nDataNotifier extends AutoDisposeFamilyAsyncNotifier<L10nData, L10nFile
   }
 }
 
-final $l10nEditing = AsyncNotifierProvider.family.autoDispose<L10nEditingNotifier, L10nEditing, L10nFileTab>(
-  L10nEditingNotifier.new,
+typedef L10nFileTabArg = ({Project project, L10nFile current, L10nFile? template});
+
+final $l10nFileTab = AsyncNotifierProvider.family.autoDispose<L10nFileTabNotifier, L10nFileTabState, L10nFileTabArg>(
+  L10nFileTabNotifier.new,
 );
 
-class L10nEditingNotifier extends AutoDisposeFamilyAsyncNotifier<L10nEditing, L10nFileTab> {
+class L10nFileTabNotifier extends AutoDisposeFamilyAsyncNotifier<L10nFileTabState, L10nFileTabArg> {
   @override
-  Future<L10nEditing> build(L10nFileTab arg) async {
-    final project = arg.manager.project;
-    final data = await ref.watch($l10nData((project: project, file: arg.file)).future);
-    final workingProject = await ref.watch($workingProject(project).future);
-    final templateFile = workingProject.templateL10nFile;
-    if (templateFile != null && templateFile.locale != arg.file.locale) {
-      final templateData = await ref.watch($l10nData((project: project, file: templateFile)).future);
-      return L10nEditing.create(
-        locale: arg.file.locale,
-        data: data,
-        template: (
-          locale: templateFile.locale,
-          data: templateData,
-        ),
+  Future<L10nFileTabState> build(L10nFileTabArg arg) async {
+    final project = arg.project;
+    final current = arg.current;
+    final currentContent = await ref.watch($fileContent(arg.current.path).future);
+    final currentData = loadData(project, currentContent);
+    final templateFile = arg.template;
+    if (templateFile != null) {
+      final templateContent = await ref.watch($fileContent(templateFile.path).future);
+      final templateData = loadData(project, templateContent);
+      return L10nFileTabState(
+        current: L10nFileAndData(file: current, data: currentData),
+        template: L10nFileAndData(file: templateFile, data: templateData),
       );
     } else {
-      return L10nEditing.create(
-        locale: arg.file.locale,
-        data: data,
+      return L10nFileTabState(
+        current: L10nFileAndData(file: current, data: currentData),
         template: null,
       );
     }
+  }
+
+  L10nData loadData(Project project, FileContent fileContent) {
+    final data = project.createSerializer().deserialize(
+          fileContent.content,
+          project.settings.toSerializationSettings(),
+        );
+    return data;
   }
 }
