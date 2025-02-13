@@ -94,7 +94,12 @@ class _FlatL10nDataList with Iterable<L10nPair> implements L10nData {
         if (!cur.containsKey(k)) {
           cur[k] = <String, dynamic>{};
         }
-        cur = cur[k] as Map<String, dynamic>;
+        final newCur = cur[k];
+        if (newCur is Map) {
+          cur = cur[k];
+        } else {
+          cur = (cur[k] = <String, dynamic>{});
+        }
       }
       cur[keys.last] = value;
     }
