@@ -12,6 +12,7 @@ import 'package:i18n_tool/app/utils/locale.dart';
 import 'package:i18n_tool/app/utils/project.dart';
 import 'package:i18n_tool/serialization/data.dart';
 import 'package:i18n_tool/widget/app_menu.dart';
+import 'package:i18n_tool/widget/dialog.dart';
 import 'package:i18n_tool/widget/fluent_ui.dart';
 import 'package:i18n_tool/widget/loading.dart';
 import 'package:locale_names/locale_names.dart';
@@ -46,7 +47,9 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
     super.dispose();
   }
 
-  void updateMenus() {
+  void updateMenus({
+    L10nFileTab? selectedTab,
+  }) {
     appMenuController.updateMenus([
       AppMenuCategory(
         label: "File",
@@ -55,14 +58,16 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
             label: "New Language File",
             onPressed: addNewLanguage,
           ),
-          AppMenuItem(
-            label: "Remove File",
-            onPressed: () {},
-          ),
-          AppMenuItem(
-            label: "Save All",
-            onPressed: () {},
-          ),
+          // AppMenuItem(
+          //   label: "Save",
+          //   shortcut: CharacterActivator("s", meta: true),
+          //   onPressed: selectedTab == null ? null : ()async  {
+          //     final serialized =
+          //     project.createSerializer().serialize(data, project.settings.toSerializationSettings());
+          //     final fi = File(widget.tab.file.path);
+          //     await fi.writeAsString(serialized);
+          //   },
+          // ),
         ],
       ),
     ]);
@@ -73,6 +78,11 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
     final workingProjectAsync = ref.watch($workingProject(project));
     final workingProject = workingProjectAsync.value;
     final tabManager = ref.watch($tabManager(project));
+    ref.listen($tabManager(project).select((it) => it.selectedTab), (pre, next) {
+      updateMenus(
+        selectedTab: next,
+      );
+    });
     return AppMenu(
       controller: appMenuController,
       child: AppMenuPage(
@@ -106,6 +116,18 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
                           onTap: () {
                             ref.read($tabManager(project).notifier).openTab(file);
                           },
+                          trailing: IconButton(
+                            icon: Icon(FluentIcons.delete, size: 12),
+                            onPressed: () async {
+                              await context.showDialogRequest(
+                                title: 'Delete File?',
+                                desc:
+                                    """Confirm to delete "${file.locale.defaultDisplayLanguageScript}" file? It's not recoverable.""",
+                                primary: "Delete",
+                                secondary: "Cancel",
+                              );
+                            },
+                          ),
                         );
                       }),
                     ],
@@ -296,10 +318,8 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> with Auto
                   });
                   final data = dataSource.buildL10nData();
                   final project = widget.tab.manager.project;
-                  final serialized = project.createSerializer().serialize(
-                        data,
-                        project.settings.toSerializationSettings(),
-                      );
+                  final serialized =
+                      project.createSerializer().serialize(data, project.settings.toSerializationSettings());
                   final fi = File(widget.tab.file.path);
                   await fi.writeAsString(serialized);
                   setState(() {

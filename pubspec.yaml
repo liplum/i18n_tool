@@ -54,7 +54,10 @@ dependencies:
   meta: ^1.15.0
   syncfusion_flutter_core: ^28.2.5
   syncfusion_flutter_datagrid: ^28.2.5
-  yaml_writer: ^2.0.1
+  yaml_writer:
+    git:
+      url: https://github.com/liplum/yaml_writer_x.git
+      ref: master
   path_provider: ^2.1.5
   visibility_detector: ^0.4.0+2
 
@@ -68,7 +71,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
-  build_runner: ^2.4.14
+  build_runner: ^2.4.15
   json_serializable: ^6.9.3
   copy_with_extension_gen: ^6.0.1
 
