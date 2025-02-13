@@ -303,11 +303,21 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> with Auto
     });
   }
 
+  var showingFileChangesDialog = false;
+
   Future<void> onFileChangedOutside(L10nFileTabState state) async {
     if (dataSource == null) {
       updateDataSource(state);
       return;
     }
+    if (!showingFileChangesDialog) {
+      showingFileChangesDialog = true;
+      await showFileChangesDialog(state);
+      showingFileChangesDialog = false;
+    }
+  }
+
+  Future<void> showFileChangesDialog(L10nFileTabState state) async {
     final memoryContent = await context.showDialogRequest(
       title: "File Changed",
       desc:
