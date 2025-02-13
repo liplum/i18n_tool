@@ -15,6 +15,7 @@ abstract class _$FileContentCWProxy {
   /// ````
   FileContent call({
     String content,
+    DateTime lastModifiedAt,
   });
 }
 
@@ -34,12 +35,17 @@ class _$FileContentCWProxyImpl implements _$FileContentCWProxy {
   /// ````
   FileContent call({
     Object? content = const $CopyWithPlaceholder(),
+    Object? lastModifiedAt = const $CopyWithPlaceholder(),
   }) {
     return FileContent(
       content: content == const $CopyWithPlaceholder()
           ? _value.content
           // ignore: cast_nullable_to_non_nullable
           : content as String,
+      lastModifiedAt: lastModifiedAt == const $CopyWithPlaceholder()
+          ? _value.lastModifiedAt
+          // ignore: cast_nullable_to_non_nullable
+          : lastModifiedAt as DateTime,
     );
   }
 }

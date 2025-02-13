@@ -927,7 +927,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "5f8da2f253feeae6f2feb78e35caf16995a29ba8"
+      resolved-ref: "59eeefad4029b3727e6ae065a1f8b9f1a3f35f54"
       url: "https://github.com/liplum/yaml_writer_x.git"
     source: git
     version: "2.1.0"

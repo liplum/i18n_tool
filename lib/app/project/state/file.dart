@@ -29,11 +29,14 @@ class FileContentNotifier extends AutoDisposeFamilyAsyncNotifier<FileContent, St
 
   Future<FileContent> _rebuild([FileContent? prev]) async {
     final file = File(arg);
+    final modified = await file.lastModified();
     final initialContent = await file.readAsString();
     return prev?.copyWith(
+          lastModifiedAt: modified,
           content: initialContent,
         ) ??
         FileContent(
+          lastModifiedAt: modified,
           content: initialContent,
         );
   }

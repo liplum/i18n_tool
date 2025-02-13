@@ -86,7 +86,7 @@ class _FlatL10nDataList with Iterable<L10nPair> implements L10nData {
   @override
   Map<String, dynamic> toNestedObject() {
     final result = <String, dynamic>{};
-    final sortedResult =  toList().sortedBy((it)=>it.key);
+    final sortedResult = toList().sortedBy((it) => it.key);
     for (final (:key, :value) in sortedResult) {
       final keys = key.split(keyPathSeparator);
       Map<String, dynamic> cur = result;
@@ -103,7 +103,7 @@ class _FlatL10nDataList with Iterable<L10nPair> implements L10nData {
 
   @override
   Map<String, String> toFlattenObject() {
-    final sortedResult =  toList().sortedBy((it)=>it.key);
+    final sortedResult = toList().sortedBy((it) => it.key);
     final result = Map.fromEntries(sortedResult.map((it) => MapEntry(it.key, it.value)));
     return result;
   }
