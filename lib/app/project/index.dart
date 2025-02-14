@@ -306,6 +306,7 @@ class _L10nFileEditorTabState extends ConsumerState<L10nFileEditorTab> with Auto
   var showingFileChangesDialog = false;
 
   Future<void> onFileChangedOutside(L10nFileTabState state) async {
+    if (!context.mounted) return;
     if (dataSource == null) {
       updateDataSource(state);
       return;

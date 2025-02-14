@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:i18n_tool/serialization/serializer.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -58,6 +59,14 @@ enum ProjectFileType {
       }
     }
     return null;
+  }
+
+  static Future<ProjectFileType?> estimateFromFiles(List<String> files) async {
+    final ext2Count = files.groupFoldBy<String, int>((it) => p.extension(it), (pre, next) => (pre ?? 0) + 1);
+    final ascendingByCount = ext2Count.entries.sortedBy<num>((it) => it.value);
+    final mostCommonExt = ascendingByCount.lastOrNull;
+    if (mostCommonExt == null) return null;
+    return ProjectFileType.tryParseExtension(mostCommonExt.key);
   }
 }
 

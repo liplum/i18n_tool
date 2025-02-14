@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:collection/collection.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -417,7 +416,7 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
       fileNameMatcher: fileNameMatcher,
       templateLocale: templateLocale,
     );
-    final estimated = await _estimateProjectFileType(l10nFiles);
+    final estimated = await ProjectFileType.estimateFromFiles(l10nFiles.map((it)=>(it.path)).toList());
     if (!mounted) return;
     setState(() {
       this.l10nFiles = l10nFiles;
@@ -470,14 +469,6 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
     ref.read($projects.notifier).addProject(project);
     context.pop(project);
   }
-}
-
-Future<ProjectFileType?> _estimateProjectFileType(List<L10nFile> l10nFiles) async {
-  final ext2Count = l10nFiles.groupFoldBy<String, int>((it) => p.extension(it.path), (pre, next) => (pre ?? 0) + 1);
-  final ascendingByCount = ext2Count.entries.sortedBy<num>((it) => it.value);
-  final mostCommonExt = ascendingByCount.lastOrNull;
-  if (mostCommonExt == null) return null;
-  return ProjectFileType.tryParseExtension(mostCommonExt.key);
 }
 
 final _defaultLocalesAutoSuggestionItems = DisplayNames.tables.keys.map((code) {
