@@ -19,8 +19,7 @@ class YamlL10nSerializer implements L10nSerializer {
     final object = data.toNestedObject();
     final encoder = YamlWriter.config(
       config: YamlWriterConfig(
-        quoteStyle: QuoteStyle.preferDoubleQuote,
-        emptyStringLiteral: EmptyStringLiteral.doubleQuote,
+        quoteStyle: QuoteStyle.doubleQuote,
         forceQuotedString: settings.forceQuotedString,
       ),
     );

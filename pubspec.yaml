@@ -20,7 +20,7 @@ version: 1.0.0+1
 
 environment:
   sdk: '>=3.6.1 <4.0.0'
-  flutter: 3.27.3
+  flutter: 3.29.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -42,7 +42,7 @@ dependencies:
   riverpod: ^2.6.1
   flutter_riverpod: ^2.6.1
   easy_localization: ^3.0.7+1
-  rettulf: ^2.3.0
+  rettulf: ^3.0.0
   fluent_ui: ^4.11.1
   uuid: ^4.5.1
   path: ^1.9.0

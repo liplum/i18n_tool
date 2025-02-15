@@ -416,7 +416,7 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
       fileNameMatcher: fileNameMatcher,
       templateLocale: templateLocale,
     );
-    final estimated = await ProjectFileType.estimateFromFiles(l10nFiles.map((it)=>(it.path)).toList());
+    final estimated = await ProjectFileType.estimateFromFiles(l10nFiles.map((it) => (it.path)).toList());
     if (!mounted) return;
     setState(() {
       this.l10nFiles = l10nFiles;
