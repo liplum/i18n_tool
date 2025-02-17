@@ -100,6 +100,10 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
                 ),
                 title: project.name.text(),
                 subtitle: project.rootPath.text(),
+                contentPadding:EdgeInsetsDirectional.only(
+                  end: 12.0,
+                  bottom: 6.0,
+                ),
               ),
             ),
             pane: NavigationPane(
