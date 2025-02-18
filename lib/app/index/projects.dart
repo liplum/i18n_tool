@@ -9,6 +9,7 @@ import 'package:locale_names/locale_names.dart';
 import 'package:rettulf/rettulf.dart';
 import "package:file_picker/file_picker.dart";
 import "package:path/path.dart" as p;
+import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 
 import '../model/project.dart';
 import '../project/model/working_project.dart';
@@ -295,8 +296,33 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
     return [
       "Project Root Path".text(),
       [
-        TextBox(
-          controller: $rootPath,
+        DropRegion(
+          formats: [Formats.fileUri],
+          onDropOver: (event) {
+            // You can inspect local data here, as well as formats of each item.
+            // However on certain platforms (mobile / web) the actual data is
+            // only available when the drop is accepted (onPerformDrop).
+            final item = event.session.items.first;
+            if (item.canProvide(Formats.fileUri)) {
+              return DropOperation.copy;
+            }
+            return DropOperation.none;
+          },
+          onPerformDrop: (event) async {
+            final item = event.session.items.first;
+            final reader = item.dataReader!;
+            if (reader.canProvide(Formats.fileUri)) {
+              reader.getValue(Formats.fileUri, (value) {
+                if (value != null) {
+                  final file = File.fromUri(value);
+                  onOpen(file.absolute.path);
+                }
+              });
+            }
+          },
+          child: TextBox(
+            controller: $rootPath,
+          ),
         ).expanded(),
         buildOpenButton()
       ].row(spacing: 8).expanded(),
@@ -396,13 +422,17 @@ class _CreateProjectFormState extends ConsumerState<CreateProjectForm> {
       lockParentWindow: true,
     );
     if (result == null) return;
-    $rootPath.text = result;
-    $projectName.text = p.basenameWithoutExtension(result);
+    await onOpen(result);
+  }
+
+  Future<void> onOpen(String path) async {
+    $rootPath.text = path;
+    $projectName.text = p.basenameWithoutExtension(path);
     $fileNameMatcher.text = "";
     useCustomTemplateLocale = false;
     $customTemplateLocale.text = "";
     await rebuildProjectDetails(
-      rootPath: result,
+      rootPath: path,
       fileNameMatcher: $fileNameMatcher.text,
     );
   }

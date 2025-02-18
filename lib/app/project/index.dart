@@ -100,7 +100,7 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
                 ),
                 title: project.name.text(),
                 subtitle: project.rootPath.text(),
-                contentPadding:EdgeInsetsDirectional.only(
+                contentPadding: EdgeInsetsDirectional.only(
                   end: 12.0,
                   bottom: 6.0,
                 ),
@@ -152,7 +152,7 @@ class _ProjectIndexPageState extends ConsumerState<ProjectIndexPage> {
   Future<void> addNewLanguage() async {
     await showDialog(
       context: context,
-      builder: (ctx) => CreateLanguageForm(),
+      builder: (ctx) => const CreateLanguageForm(),
     );
   }
 
