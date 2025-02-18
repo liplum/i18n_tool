@@ -686,9 +686,8 @@ class _L10nEditingFieldFlyoutState extends ConsumerState<L10nEditingFieldFlyout>
   Widget build(BuildContext context) {
     return FlyoutTarget(
       controller: $actions,
-      child: GestureDetector(
-        onDoubleTap: openFlyoutEditing,
-        child: TextBox(
+      child: [
+        TextBox(
           autofocus: true,
           maxLines: null,
           textAlignVertical: TextAlignVertical.top,
@@ -696,8 +695,12 @@ class _L10nEditingFieldFlyoutState extends ConsumerState<L10nEditingFieldFlyout>
           onSubmitted: (_) {
             widget.onSubmit();
           },
+        ).expanded(),
+        IconButton(
+          icon: Icon(FluentIcons.expand_all),
+          onPressed: openFlyoutEditing,
         ),
-      ),
+      ].row(),
     ).padAll(4);
   }
 
