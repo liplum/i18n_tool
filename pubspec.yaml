@@ -57,6 +57,7 @@ dependencies:
   yaml_writer: ^2.1.0
   path_provider: ^2.1.5
   visibility_detector: ^0.4.0+2
+  super_drag_and_drop: ^0.8.24
 
 dev_dependencies:
   flutter_test:
